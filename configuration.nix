@@ -24,15 +24,17 @@
     taps = [
       "FelixKratz/formulae"
       "koekeishiya/formulae"
+      "TheBoredTeam/boring-notch"
     ];
     brews = [
       "sketchybar" "borders" "yabai"
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "firefox"
+      "cloudflare-warp" "libreoffice" "lulu" "firefox" "signal"
       "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "alacritty"
-      "cyberduck" "vscodium" "iina" "keka" "karabiner-elements"
+      "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
+      "knockknock" "oversight" "tuta-mail" "boring-notch"
     ];
   };
 
@@ -123,7 +125,7 @@ yabai -m config split_ratio                  0.50
 yabai -m config auto_balance                 off
 
 # Padding and gaps (Night Fury spacing)
-yabai -m config top_padding                  10   # Space for SketchyBar
+yabai -m config top_padding                  20   # Space for SketchyBar
 yabai -m config bottom_padding               10
 yabai -m config left_padding                 10
 yabai -m config right_padding                10
@@ -147,19 +149,17 @@ yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Activity Monitor$" manage=off
 yabai -m rule --add app="^Finder$" manage=off
 yabai -m rule --add app="^Installer$" manage=off
-yabai -m rule --add app="^Maccy$" manage=off
-yabai -m rule --add app="^DeepL$" manage=off
 yabai -m rule --add app="^Lulu$" manage=off
-yabai -m rule --add app="^HiddenBar$" manage=off
 yabai -m rule --add app="^PearCleaner$" manage=off
 yabai -m rule --add app="^Mullvad VPN$" manage=off
 yabai -m rule --add app="^Facetime$" manage=off
 yabai -m rule --add app="^Photos$" manage=on
+yabai -m rule --add app="^Alacritty$" manage=on
 
 # Apps with specific opacity (maintain transparency)
 yabai -m rule --add app="^Alacritty$" opacity=0.65
 yabai -m rule --add app="^VSCodium$" opacity=0.92
-yabai -m rule --add app="^Zen Browser$" opacity=0.90
+yabai -m rule --add app="^Firefox$" opacity=0.90
 
 # ===== SIGNALS (SketchyBar Integration) =====
 
@@ -170,6 +170,7 @@ yabai -m signal --add event=window_title_changed action="sketchybar --trigger ti
 yabai -m signal --add event=space_changed action="sketchybar --trigger space_change"
 
 borders active_color=0xff64b5f6 inactive_color=0xff1e3a5f width=5.0 &
+sketchybar &
 echo "Night Fury yabai configuration loaded.."
     '';
   };
