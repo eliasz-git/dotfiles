@@ -35,7 +35,7 @@
       "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "alacritty"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
-      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden"
+      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "grayjay"
     ];
   };
 
