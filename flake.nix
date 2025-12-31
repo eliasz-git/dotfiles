@@ -1,5 +1,5 @@
 {
-  description = "Elias's nix-darwin flake";
+  description = "tundra-node's nix-darwin flake";
   
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";

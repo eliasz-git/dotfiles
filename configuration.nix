@@ -2,7 +2,7 @@
 
 {
   system.stateVersion = 6;
-  system.primaryUser = "elias";
+  system.primaryUser = "{user}";
   nixpkgs.config.allowUnfree = true;
 
   # Nix settings
@@ -28,18 +28,18 @@
       "netbirdio/tap"
     ];
     brews = [
-      "sketchybar" "borders" "yabai"
+      "sketchybar" "borders" "yabai" "i2pd"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "firefox" "signal" "netbird-ui"
       "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
-      "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "alacritty"
+      "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "grayjay"
+      "claude" "chatgpt"
     ];
   };
 
-  # macOS defaults - Night Fury optimized
   system.defaults = {
     dock = {
       autohide = true; 
@@ -89,7 +89,6 @@
     enableScriptingAddition = true;
     extraConfig = ''
 #!/usr/bin/env sh
-# Night Fury Yabai Configuration
 
 # Load scripting addition (requires SIP disabled)
 sudo yabai --load-sa
@@ -126,7 +125,7 @@ yabai -m config split_ratio                  0.50
 yabai -m config auto_balance                 off
 
 # Padding and gaps (Night Fury spacing)
-yabai -m config top_padding                  20   # Space for SketchyBar
+yabai -m config top_padding                  15
 yabai -m config bottom_padding               10
 yabai -m config left_padding                 10
 yabai -m config right_padding                10
@@ -152,15 +151,9 @@ yabai -m rule --add app="^Finder$" manage=off
 yabai -m rule --add app="^Installer$" manage=off
 yabai -m rule --add app="^Lulu$" manage=off
 yabai -m rule --add app="^PearCleaner$" manage=off
-yabai -m rule --add app="^Mullvad VPN$" manage=off
 yabai -m rule --add app="^Facetime$" manage=off
 yabai -m rule --add app="^Photos$" manage=on
 yabai -m rule --add app="^Alacritty$" manage=on
-
-# Apps with specific opacity (maintain transparency)
-yabai -m rule --add app="^Alacritty$" opacity=0.65
-yabai -m rule --add app="^VSCodium$" opacity=0.92
-yabai -m rule --add app="^Firefox$" opacity=0.90
 
 # ===== SIGNALS (SketchyBar Integration) =====
 
@@ -172,14 +165,14 @@ yabai -m signal --add event=space_changed action="sketchybar --trigger space_cha
 
 borders active_color=0xff64b5f6 inactive_color=0xff1e3a5f width=5.0 &
 sketchybar &
-echo "Night Fury yabai configuration loaded.."
+echo "yabai configuration loaded.."
     '';
   };
 
   # User
-  users.users.elias = {
-    name = "elias";
-    home = "/Users/elias";
+  users.users.{user} = {
+    name = "{user}";
+    home = "/Users/{user}";
     shell = pkgs.zsh;
   };
 

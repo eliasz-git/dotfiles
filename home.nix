@@ -20,7 +20,8 @@
     
     # Network tools
     wakeonlan wireguard-tools nmap tcpdump 
-    mtr speedtest-cli
+    mtr speedtest-cli librewolf 
+		#i2pd
     
     # Media tools
     ffmpeg mediainfo
@@ -33,8 +34,8 @@
   # Git configuration
   programs.git = {
     enable = true;
-    userName = "eliasz130";
-    userEmail = "eliaspublic@icloud.com";
+    userName = "{username}";
+    userEmail = "{email}";
   };
 
 	# Alacritty
@@ -265,11 +266,10 @@ set -g window-status-current-format "#[fg=#0a1628,bg=#64b5f6]#[fg=#0a1628,bg=#64
 			gc = "git commit";
 			gp = "git push";
 			gl = "git pull";
-			
-			# Homelab SSH shortcuts
-			ssh-infra = "ssh server@192.168.1.75";
-			ssh-media = "ssh server@192.168.1.76";
-			
+
+			#i2pd = "open /Applications/LibreWolf-I2P.app && i2pd";
+			end-i2pd = "ps aux | grep i2pd &&  ps aux | grep i2p && killall i2pd && killall i2p";
+
 			# macOS nix-darwin shortcuts
 			darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
 		};
@@ -287,15 +287,6 @@ set -g window-status-current-format "#[fg=#0a1628,bg=#64b5f6]#[fg=#0a1628,bg=#64
 
       # Custom functions
 
-      # SSH to homelab with WireGuard preference
-      ssh-homelab() {
-        if ping -c 1 -W 1 10.13.13.1 &> /dev/null; then
-          ssh server@10.13.13.$1
-        else
-          ssh server@192.168.1.7$1
-        fi
-      }
-
       # Update all the things
       update-all() {
           echo "Updating Nix flake..."
@@ -309,7 +300,7 @@ set -g window-status-current-format "#[fg=#0a1628,bg=#64b5f6]#[fg=#0a1628,bg=#64
                   echo "Homebrew not found, skipping..."
               fi
               echo "Rebuilding macOS system..."
-              sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook --impure
+              sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
           else
               echo "Rebuilding NixOS system..."
               sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)
