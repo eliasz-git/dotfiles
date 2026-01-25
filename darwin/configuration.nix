@@ -31,12 +31,12 @@
       "sketchybar" "borders" "yabai" "i2pd"
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "firefox" "signal" "netbird-ui"
+      "cloudflare-warp" "libreoffice" "lulu" "signal" "netbird-ui"
       "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "grayjay"
-      "claude" "chatgpt"
+      "claude" "chatgpt" "librewolf"
     ];
   };
 

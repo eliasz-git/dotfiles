@@ -20,7 +20,7 @@
     
     # Network tools
     wakeonlan wireguard-tools nmap tcpdump 
-    mtr speedtest-cli librewolf 
+    mtr speedtest-cli 
     
     # Media tools
     ffmpeg mediainfo
