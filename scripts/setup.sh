@@ -72,6 +72,11 @@ if [[ -z "$USER_EMAIL" ]]; then
     print_error "Email cannot be empty"
     exit 1
 fi
+# Validate email format
+if [[ ! "$USER_EMAIL" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+    print_error "Invalid email format"
+    exit 1
+fi
 
 echo ""
 print_info "Configuration summary:"

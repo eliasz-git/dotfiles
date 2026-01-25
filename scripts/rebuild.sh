@@ -122,11 +122,12 @@ if [[ "$OS" == "darwin" ]]; then
     
     if [[ "$DRY_RUN" == true ]]; then
         print_info "Dry run - showing what would be built..."
-        darwin-rebuild dry-run --flake "$CONFIG_DIR#macbook" 2>&1 || {
-            # dry-run might not be supported, try dry-activate
-            darwin-rebuild build --flake "$CONFIG_DIR#macbook"
-            print_info "Build completed (dry-run mode)"
+        # Use dry-build to show what would be built without actually building
+        nix build --dry-run ".#darwinConfigurations.macbook.system" --flake "$CONFIG_DIR" 2>&1 || {
+            print_warning "dry-run not available, showing build plan with nix flake check..."
+            nix flake check --no-build "$CONFIG_DIR" 2>&1 || true
         }
+        print_info "Dry run complete - no changes were made"
     else
         sudo darwin-rebuild "$BUILD_ACTION" --flake "$CONFIG_DIR#macbook"
     fi

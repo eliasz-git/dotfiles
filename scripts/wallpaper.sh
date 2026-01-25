@@ -72,21 +72,16 @@ list_wallpapers() {
 reload_wallpaper_nixos() {
     print_info "Reloading wallpaper on NixOS (Hyprland)..."
     
+    # Get hyprpaper PID for targeted kill
+    local hyprpaper_pid
+    hyprpaper_pid=$(pgrep -x "hyprpaper" 2>/dev/null || echo "")
+    
     # Check if hyprpaper is running
-    if pgrep -x "hyprpaper" > /dev/null; then
-        # Use hyprctl to reload
-        if command -v hyprctl &> /dev/null; then
-            hyprctl dispatch exec "killall hyprpaper; sleep 0.5; hyprpaper &" 2>/dev/null || {
-                print_warning "hyprctl failed, trying direct reload..."
-                killall hyprpaper 2>/dev/null || true
-                sleep 0.5
-                hyprpaper &
-            }
-        else
-            killall hyprpaper 2>/dev/null || true
-            sleep 0.5
-            hyprpaper &
-        fi
+    if [[ -n "$hyprpaper_pid" ]]; then
+        print_info "Stopping hyprpaper (PID: $hyprpaper_pid)..."
+        kill "$hyprpaper_pid" 2>/dev/null || true
+        sleep 0.5
+        hyprpaper &
         print_success "Hyprpaper reloaded"
     else
         print_info "Starting hyprpaper..."
@@ -127,18 +122,33 @@ set_new_wallpaper() {
         fi
     fi
     
-    # Backup current wallpaper
-    if [[ -f "$WALLPAPER_DIR/wallpaper.jpg" ]]; then
-        local backup_name
-        backup_name="wallpaper_backup_$(date +%Y%m%d_%H%M%S).jpg"
-        print_info "Backing up current wallpaper to $backup_name"
-        cp "$WALLPAPER_DIR/wallpaper.jpg" "$WALLPAPER_DIR/$backup_name"
-    fi
+    # Determine proper extension based on file type
+    local extension="jpg"
+    case "$mime_type" in
+        image/png) extension="png" ;;
+        image/jpeg) extension="jpg" ;;
+        image/webp) extension="webp" ;;
+    esac
+    local target_filename="wallpaper.$extension"
     
-    # Copy new wallpaper
-    print_info "Copying new wallpaper..."
-    cp "$new_wallpaper" "$WALLPAPER_DIR/wallpaper.jpg"
+    # Backup current wallpaper (any format)
+    for existing in "$WALLPAPER_DIR"/wallpaper.{jpg,jpeg,png,webp}; do
+        if [[ -f "$existing" ]]; then
+            local backup_name
+            local existing_ext="${existing##*.}"
+            backup_name="wallpaper_backup_$(date +%Y%m%d_%H%M%S).$existing_ext"
+            print_info "Backing up current wallpaper to $backup_name"
+            cp "$existing" "$WALLPAPER_DIR/$backup_name"
+            rm "$existing"
+        fi
+    done
+    
+    # Copy new wallpaper with correct extension
+    print_info "Copying new wallpaper as $target_filename..."
+    cp "$new_wallpaper" "$WALLPAPER_DIR/$target_filename"
     print_success "New wallpaper installed"
+    
+    print_warning "Note: You may need to update the wallpaper path in home.nix if the extension changed."
     
     # Reload
     if [[ "$OS" == "nixos" || "$OS" == "linux" ]]; then

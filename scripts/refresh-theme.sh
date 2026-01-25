@@ -11,6 +11,13 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Theme configuration - change these to customize
+CURSOR_THEME="Bibata-Modern-Classic"
+CURSOR_SIZE=24
+GTK_THEME="Everforest-Dark-BL"
+GTK_FALLBACK_THEME="Adwaita-dark"
+ICON_THEME="Papirus-Dark"
+
 print_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 print_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 print_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
@@ -25,6 +32,11 @@ usage() {
     echo "  -g, --gtk      Refresh GTK theme only"
     echo "  -a, --all      Refresh all themes (default)"
     echo ""
+    echo "Current theme configuration:"
+    echo "  Cursor: $CURSOR_THEME (size: $CURSOR_SIZE)"
+    echo "  GTK Theme: $GTK_THEME"
+    echo "  Icon Theme: $ICON_THEME"
+    echo ""
     echo "This script refreshes cursor and GTK themes on NixOS with Hyprland."
     echo ""
 }
@@ -33,20 +45,20 @@ refresh_cursor() {
     print_info "Refreshing cursor theme..."
     
     # Set environment variables for cursor
-    export XCURSOR_THEME="Bibata-Modern-Classic"
-    export XCURSOR_SIZE=24
+    export XCURSOR_THEME="$CURSOR_THEME"
+    export XCURSOR_SIZE="$CURSOR_SIZE"
     
     # Update Hyprland cursor config if hyprctl is available
     if command -v hyprctl &> /dev/null; then
-        hyprctl setcursor "Bibata-Modern-Classic" 24 2>/dev/null || {
+        hyprctl setcursor "$CURSOR_THEME" "$CURSOR_SIZE" 2>/dev/null || {
             print_warning "Could not set cursor via hyprctl (Hyprland may not be running)"
         }
     fi
     
     # Update gsettings if available (for GTK apps)
     if command -v gsettings &> /dev/null; then
-        gsettings set org.gnome.desktop.interface cursor-theme "Bibata-Modern-Classic" 2>/dev/null || true
-        gsettings set org.gnome.desktop.interface cursor-size 24 2>/dev/null || true
+        gsettings set org.gnome.desktop.interface cursor-theme "$CURSOR_THEME" 2>/dev/null || true
+        gsettings set org.gnome.desktop.interface cursor-size "$CURSOR_SIZE" 2>/dev/null || true
     fi
     
     print_success "Cursor theme refreshed"
@@ -57,11 +69,11 @@ refresh_gtk() {
     
     # Update gsettings if available
     if command -v gsettings &> /dev/null; then
-        gsettings set org.gnome.desktop.interface gtk-theme "Everforest-Dark-BL" 2>/dev/null || {
-            print_warning "Everforest GTK theme not found, trying alternatives..."
-            gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" 2>/dev/null || true
+        gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME" 2>/dev/null || {
+            print_warning "$GTK_THEME not found, trying fallback..."
+            gsettings set org.gnome.desktop.interface gtk-theme "$GTK_FALLBACK_THEME" 2>/dev/null || true
         }
-        gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark" 2>/dev/null || true
+        gsettings set org.gnome.desktop.interface icon-theme "$ICON_THEME" 2>/dev/null || true
         gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" 2>/dev/null || true
     fi
     
@@ -74,20 +86,20 @@ refresh_gtk() {
     # GTK 3 settings
     cat > "$gtk3_settings" << EOF
 [Settings]
-gtk-theme-name=Everforest-Dark-BL
-gtk-icon-theme-name=Papirus-Dark
-gtk-cursor-theme-name=Bibata-Modern-Classic
-gtk-cursor-theme-size=24
+gtk-theme-name=$GTK_THEME
+gtk-icon-theme-name=$ICON_THEME
+gtk-cursor-theme-name=$CURSOR_THEME
+gtk-cursor-theme-size=$CURSOR_SIZE
 gtk-application-prefer-dark-theme=true
 EOF
     
     # GTK 4 settings
     cat > "$gtk4_settings" << EOF
 [Settings]
-gtk-theme-name=Everforest-Dark-BL
-gtk-icon-theme-name=Papirus-Dark
-gtk-cursor-theme-name=Bibata-Modern-Classic
-gtk-cursor-theme-size=24
+gtk-theme-name=$GTK_THEME
+gtk-icon-theme-name=$ICON_THEME
+gtk-cursor-theme-name=$CURSOR_THEME
+gtk-cursor-theme-size=$CURSOR_SIZE
 gtk-application-prefer-dark-theme=true
 EOF
     
