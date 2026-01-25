@@ -154,11 +154,21 @@ Edit the following files and replace:
 - `flake.nix`
 
 **Quick find and replace:**
+
+*On macOS:*
 ```bash
-# Replace all placeholders at once
-find . -type f -name "*.nix" -exec sed -i '' 's/{user}/yourusername/g' {} +
-find . -type f -name "*.nix" -exec sed -i '' 's/{username}/yourgithubusername/g' {} +
-find . -type f -name "*.nix" -exec sed -i '' 's/{email}/your@email.com/g' {} +
+# Replace all placeholders at once (macOS)
+find . -type f -name "*.nix" -exec sed -i '' "s/{user}/yourusername/g" {} +
+find . -type f -name "*.nix" -exec sed -i '' "s/{username}/yourgithubusername/g" {} +
+find . -type f -name "*.nix" -exec sed -i '' "s/{email}/your@email.com/g" {} +
+```
+
+*On Linux (NixOS):*
+```bash
+# Replace all placeholders at once (Linux)
+find . -type f -name "*.nix" -exec sed -i "s/{user}/yourusername/g" {} +
+find . -type f -name "*.nix" -exec sed -i "s/{username}/yourgithubusername/g" {} +
+find . -type f -name "*.nix" -exec sed -i "s/{email}/your@email.com/g" {} +
 ```
 
 ### Step 3: System-Specific Setup
