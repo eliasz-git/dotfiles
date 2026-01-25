@@ -32,7 +32,7 @@
     
     # Network tools
     wakeonlan wireguard-tools nmap tcpdump 
-    mtr speedtest-cli librewolf i2pd
+    mtr speedtest-cli librewolf i2pd cloudflare-warp
     
     # Media tools
     ffmpeg mediainfo
@@ -147,84 +147,6 @@
       # Cursor
       cursor_shape = "block";
       cursor_blink_interval = 0;
-    };
-  };
-
-  # Alacritty - Everforest Dark Medium
-  programs.alacritty = {
-    enable = true;
-    settings = {
-      colors = {
-        bright = {
-          black = "#5a524c";
-          blue = "#7fbbb3";
-          cyan = "#83c092";
-          green = "#a7c080";
-          magenta = "#d699b6";
-          red = "#e67e80";
-          white = "#d3c6aa";
-          yellow = "#dbbc7f";
-        };
-        cursor = {
-          cursor = "#d3c6aa";
-          text = "#2d353b";
-        };
-        normal = {
-          black = "#475258";
-          blue = "#7fbbb3";
-          cyan = "#83c092";
-          green = "#a7c080";
-          magenta = "#d699b6";
-          red = "#e67e80";
-          white = "#d3c6aa";
-          yellow = "#dbbc7f";
-        };
-        primary = {
-          background = "#2d353b";
-          foreground = "#d3c6aa";
-        };
-      };
-      cursor = {
-        blink_interval = 750;
-        style = {
-          blinking = "On";
-          shape = "Beam";
-        };
-      };
-      env = {
-        TERM = "xterm-256color";
-      };
-      font = {
-        size = 14.0;
-        bold = {
-          family = "JetBrainsMono Nerd Font";
-          style = "Bold";
-        };
-        italic = {
-          family = "JetBrainsMono Nerd Font";
-          style = "Italic";
-        };
-        normal = {
-          family = "JetBrainsMono Nerd Font";
-          style = "Regular";
-        };
-      };
-      scrolling = {
-        history = 10000;
-        multiplier = 3;
-      };
-      selection = {
-        save_to_clipboard = true;
-      };
-      window = {
-        decorations = "full";
-        dynamic_title = true;
-        opacity = 0.95;
-        padding = {
-          x = 20;
-          y = 20;
-        };
-      };
     };
   };
 
@@ -563,7 +485,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         kb_layout = "us";
         follow_mouse = 1;
         touchpad = {
-          natural_scroll = true;
+          natural_scroll = false;
         };
         sensitivity = 0;
       };
