@@ -126,13 +126,13 @@
   # Thermal management for Intel CPUs
   services.thermald.enable = true;
 
-  # Power profiles integration
+  # Power profiles integration (coexists with TLP for better desktop integration)
   services.power-profiles-daemon.enable = true;
 
   # CPU Power Management
   powerManagement = {
     enable = true;
-    cpuFreqGovernor = "schedutil";  # Modern governor for 11th Gen Intel
+    # Note: cpuFreqGovernor is managed by TLP, not set here to avoid conflicts
     powertop.enable = true;
   };
 
