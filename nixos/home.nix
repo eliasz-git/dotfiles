@@ -5,6 +5,15 @@
   
   programs.home-manager.enable = true;
 
+  # Cursor theme configuration (Bibata Modern Classic)
+  home.pointerCursor = {
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
   home.packages = with pkgs; [
     # Shell utilities
     eza bat fzf zoxide zsh-syntax-highlighting
@@ -43,6 +52,10 @@
     rofi-wayland
     hyprpaper
     bibata-cursors
+    
+    # Theming
+    papirus-icon-theme
+    everforest-gtk-theme
     
     # Fonts
     nerd-fonts.jetbrains-mono
@@ -722,5 +735,29 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         color: #2d353b;
       }
     '';
+  };
+
+  # GTK theme and icon configuration for consistent theming
+  gtk = {
+    enable = true;
+    cursorTheme = {
+      name = "Bibata-Modern-Classic";
+      package = pkgs.bibata-cursors;
+      size = 24;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    theme = {
+      name = "Everforest-Dark-BL";
+      package = pkgs.everforest-gtk-theme;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
+    };
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
+    };
   };
 }

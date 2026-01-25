@@ -21,11 +21,11 @@
     xwayland.enable = true;
   };
 
-  # Enable SDDM for Wayland login
+  # Enable SDDM for Wayland login with proper theme
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    theme = "everforest";
+    theme = "chili";  # Using chili theme which supports customization
   };
 
   # XDG Portal for screen sharing
@@ -54,7 +54,7 @@
     shell = pkgs.zsh;
   };
 
-  # SDDM Everforest theme
+  # System packages including SDDM theme and cursor theme
   environment.systemPackages = with pkgs; [
     vim
     nano
@@ -63,17 +63,8 @@
     git
     librewolf
     kdePackages.dolphin
-    (pkgs.writeTextDir "share/sddm/themes/everforest/theme.conf" ''
-      [General]
-      background=${../../wallpapers/wallpaper.jpg}
-      backgroundMode=scaled
-      
-      [Design]
-      ThemeColor=#a7c080
-      AccentColor=#7fbbb3
-      BackgroundColor=#2d353b
-      OverrideLoginBoxColor=#343f44
-    '')
+    bibata-cursors           # Cursor theme for SDDM and system-wide
+    sddm-chili-theme         # Modern SDDM theme
   ];
 
   # Enable Docker
