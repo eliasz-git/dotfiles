@@ -83,6 +83,9 @@
   # Enable SSH
   services.openssh.enable = true;
 
+  # Enable KDE Connect
+  programs.kdeconnect.enable = true;
+
   # Nix settings
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];

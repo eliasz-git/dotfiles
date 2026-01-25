@@ -868,40 +868,84 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         address: "127.0.0.1:6600",
         album_art: Some((
           method: Kitty(ResizeProtocol(size: (300, 300))),
-          max_size_px: (width: 25, height: 25),
+          max_size_px: (width: 600, height: 600),
         )),
         theme: Some((
           background_color: None,
           text_color: Some("#d3c6aa"),
           header_background_color: Some("#2d353b"),
           modal_background_color: Some("#343f44"),
+          default_album_art_path: None,
+          draw_borders: true,
           tab_bar: Some((
             enabled: true,
             active_style: (fg: Some("#2d353b"), bg: Some("#a7c080"), modifiers: "Bold"),
-            inactive_style: (fg: Some("#d3c6aa"), bg: Some("#475258"), modifiers: ""),
+            inactive_style: (fg: Some("#9da9a0"), bg: Some("#343f44"), modifiers: ""),
           )),
           highlighted_item_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "Bold")),
           current_item_style: Some((fg: Some("#2d353b"), bg: Some("#a7c080"), modifiers: "Bold")),
           borders_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
           highlight_border_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "")),
           symbols: Some((
-            song: "󰝚",
-            dir: "",
-            marker: "󰐾",
+            song: " 󰎈 ",
+            dir: "  ",
+            marker: " 󰐊 ",
+            ellipsis: "…",
           )),
           progress_bar: Some((
-            symbols: ["━", "╸", "─"],
-            track_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
+            symbols: ["━", "━", "─"],
+            track_style: Some((fg: Some("#343f44"), bg: None, modifiers: "")),
             elapsed_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "")),
             thumb_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "Bold")),
           )),
           scrollbar: Some((
-            symbols: ["│", "█"],
-            track_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
+            symbols: ["▐", "█"],
+            track_style: Some((fg: Some("#343f44"), bg: None, modifiers: "")),
             ends_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
             thumb_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "")),
           )),
-          browser_column_widths: [20, 38, 42],
+          browser_column_widths: [25, 35, 40],
+          song_table_format: Some([
+            (
+              prop: (kind: Property(Track), style: (fg: Some("#7fbbb3"), bg: None, modifiers: ""), default: Some("-")),
+              width_percent: 5,
+              alignment: Right,
+            ),
+            (
+              prop: (kind: Property(Title), style: (fg: Some("#d3c6aa"), bg: None, modifiers: ""), default: Some("Unknown")),
+              width_percent: 35,
+              alignment: Left,
+            ),
+            (
+              prop: (kind: Property(Artist), style: (fg: Some("#a7c080"), bg: None, modifiers: ""), default: Some("Unknown")),
+              width_percent: 30,
+              alignment: Left,
+            ),
+            (
+              prop: (kind: Property(Album), style: (fg: Some("#d699b6"), bg: None, modifiers: ""), default: Some("Unknown")),
+              width_percent: 25,
+              alignment: Left,
+            ),
+            (
+              prop: (kind: Property(Duration), style: (fg: Some("#83c092"), bg: None, modifiers: ""), default: Some("-:--")),
+              width_percent: 5,
+              alignment: Right,
+            ),
+          ]),
+          header: Some((
+            rows: [
+              (
+                left: [(kind: Property(Status(StateV2)), style: (fg: Some("#a7c080"), bg: None, modifiers: "Bold"), default: Some("  Stopped"))],
+                center: [(kind: Property(Song(Title)), style: (fg: Some("#d3c6aa"), bg: None, modifiers: "Bold"), default: Some("No Track Playing"))],
+                right: [(kind: Property(Song(Duration)), style: (fg: Some("#83c092"), bg: None, modifiers: ""), default: Some("--:--"))],
+              ),
+              (
+                left: [(kind: Property(Volume), style: (fg: Some("#7fbbb3"), bg: None, modifiers: ""), default: Some("󰕾 --"))],
+                center: [(kind: Property(Song(Artist)), style: (fg: Some("#a7c080"), bg: None, modifiers: ""), default: Some(""))],
+                right: [(kind: Property(Song(Album)), style: (fg: Some("#d699b6"), bg: None, modifiers: ""), default: Some(""))],
+              ),
+            ],
+          )),
         )),
       )
     '';
