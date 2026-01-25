@@ -42,7 +42,6 @@
     obsidian
     libreoffice
     vlc
-    cider
     grayjay
     
     # Wayland utilities
