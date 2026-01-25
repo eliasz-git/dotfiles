@@ -62,7 +62,6 @@
     curl
     git
     librewolf
-    kdePackages.dolphin
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
   ];

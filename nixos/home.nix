@@ -20,8 +20,8 @@
     fastfetch nano yq ripgrep thefuck tree
     curl wget git htop
     
-    # Terminal & multiplexer
-    tmux alacritty
+    # Terminal & multiplexer & TUIs
+    tmux alacritty yazi netop bluetuith
     
     # Development tools
     gh lazygit
@@ -42,6 +42,7 @@
     obsidian
     libreoffice
     vlc
+    cider
     
     # Wayland utilities
     wl-clipboard
@@ -311,8 +312,8 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       gl = "git pull";
 
       # NixOS shortcuts
-      nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop";
-      nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop";
+      nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
+      nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop --impure";
     };
     
     initContent = lib.mkOrder 550 ''
@@ -330,7 +331,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
           sudo nix flake update
 
           echo "Rebuilding NixOS system..."
-          sudo nixos-rebuild switch --flake /etc/nixos#laptop
+          sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure
       }
     '';
   };
@@ -568,7 +569,9 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       "$mod" = "SUPER";
       bind = [
         # Programs
-        "$mod, Return, exec, alacritty"
+        "$mod, T, exec, alacritty"
+        "$mod, B, exec, librewolf"
+        "$mod, Return, exec, kdePackages.dolphin"
         "$mod, Space, exec, rofi -show drun"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
