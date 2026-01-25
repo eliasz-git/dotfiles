@@ -7,6 +7,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Kernel modules and parameters for power saving
+  boot.kernelModules = [ "cpufreq_stats" ];
+  boot.kernelParams = [ 
+    "pcie_aspm=force"           # Force PCIe ASPM
+    "i915.enable_psr=1"         # Intel panel self-refresh
+    "i915.enable_fbc=1"         # Intel framebuffer compression
+    "i915.enable_dc=2"          # Intel display C-states
+  ];
+
   # Networking
   networking.hostName = "nixos-laptop";
   networking.networkmanager.enable = true;
@@ -46,7 +55,7 @@
   # Enable Bluetooth
   hardware.bluetooth = {
     enable = true;
-    powerOnBoot = true;
+    powerOnBoot = false;
   };
   services.blueman.enable = true;
 
@@ -69,7 +78,7 @@
       CPU_MIN_PERF_ON_AC = 0;
       CPU_MAX_PERF_ON_AC = 100;
       CPU_MIN_PERF_ON_BAT = 0;
-      CPU_MAX_PERF_ON_BAT = 30;
+      CPU_MAX_PERF_ON_BAT = 20;
       
       # Intel CPU Boost
       CPU_BOOST_ON_AC = 1;
@@ -79,11 +88,13 @@
       INTEL_GPU_MIN_FREQ_ON_AC = 0;
       INTEL_GPU_MIN_FREQ_ON_BAT = 0;
       INTEL_GPU_MAX_FREQ_ON_AC = 1300;
-      INTEL_GPU_MAX_FREQ_ON_BAT = 800;
+      INTEL_GPU_MAX_FREQ_ON_BAT = 600;
       INTEL_GPU_BOOST_FREQ_ON_AC = 1300;
-      INTEL_GPU_BOOST_FREQ_ON_BAT = 800;
+      INTEL_GPU_BOOST_FREQ_ON_BAT = 600;
       
       # Battery Care (Extend Battery Lifespan)
+      # NOTE: HP ProBook 450 G8 doesn't support charge thresholds via tlp/hp-wmi
+      # Use BIOS "HP Battery Health Manager" -> "Maximum battery health" for 80% limit
       START_CHARGE_THRESH_BAT0 = 40;
       STOP_CHARGE_THRESH_BAT0 = 80;
       
@@ -122,6 +133,15 @@
       SOUND_POWER_SAVE_ON_AC = 0;
       SOUND_POWER_SAVE_ON_BAT = 1;
       SOUND_POWER_SAVE_CONTROLLER = "Y";
+      
+      # NMI Watchdog (saves ~1W)
+      NMI_WATCHDOG = 0;
+      
+      # Allow runtime PM for all drivers
+      RUNTIME_PM_DRIVER_DENYLIST = "";
+      
+      # USB autosuspend for all devices (disable allowlist)
+      USB_ALLOWLIST = "";
     };
   };
 
@@ -137,6 +157,36 @@
     # Note: cpuFreqGovernor is managed by TLP, not set here to avoid conflicts
     powertop.enable = true;
   };
+
+  # PowerTOP auto-tune at boot
+  systemd.services.powertop-autotune = {
+    description = "PowerTOP auto-tune";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.powertop}/bin/powertop --auto-tune";
+    };
+  };
+
+  # Runtime PM rules for maximum power saving
+  services.udev.extraRules = ''
+    # Enable runtime PM for PCI devices
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
+    
+    # Enable runtime PM for USB devices
+    ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{power/control}="auto"
+    
+    # Enable runtime PM for SCSI devices
+    ACTION=="add", SUBSYSTEM=="scsi_host", KERNEL=="host*", ATTR{link_power_management_policy}="med_power_with_dipm"
+    
+    # Disable wake-on-LAN
+    ACTION=="add", SUBSYSTEM=="net", KERNEL=="enp*", RUN+="${pkgs.ethtool}/bin/ethtool -s %k wol d"
+    
+    # Intel GPU power saving
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto"
+  '';
 
   # Define user account
   users.users.elias = {
