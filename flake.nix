@@ -50,6 +50,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "backup";
           home-manager.users.elias = import ./nixos/home.nix;
         }
       ];
