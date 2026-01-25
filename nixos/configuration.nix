@@ -154,7 +154,8 @@
     curl
     git
     librewolf
-    kdePackages.dolphin
+    xfce.thunar
+    xfce.thunar-archive-plugin
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
   ];
