@@ -21,7 +21,7 @@
     curl wget git htop
     
     # Terminal & multiplexer & TUIs
-    tmux alacritty netop bluetuith
+    tmux alacritty kitty netop bluetuith
     
     # Power management TUIs
     powertop
@@ -70,6 +70,84 @@
     enable = true;
     userName = "tundra-node";
     userEmail = "eliaspublic@icloud.com";
+  };
+
+  # Kitty terminal - Everforest Dark Medium (for album art support)
+  programs.kitty = {
+    enable = true;
+    font = {
+      name = "JetBrainsMono Nerd Font";
+      size = 13;
+    };
+    settings = {
+      # Everforest Dark Medium colors
+      background = "#2d353b";
+      foreground = "#d3c6aa";
+      
+      cursor = "#d3c6aa";
+      cursor_text_color = "#2d353b";
+      
+      selection_background = "#503946";
+      selection_foreground = "#d3c6aa";
+      
+      # Black
+      color0 = "#475258";
+      color8 = "#475258";
+      
+      # Red
+      color1 = "#e67e80";
+      color9 = "#e67e80";
+      
+      # Green
+      color2 = "#a7c080";
+      color10 = "#a7c080";
+      
+      # Yellow
+      color3 = "#dbbc7f";
+      color11 = "#dbbc7f";
+      
+      # Blue
+      color4 = "#7fbbb3";
+      color12 = "#7fbbb3";
+      
+      # Magenta
+      color5 = "#d699b6";
+      color13 = "#d699b6";
+      
+      # Cyan
+      color6 = "#83c092";
+      color14 = "#83c092";
+      
+      # White
+      color7 = "#d3c6aa";
+      color15 = "#d3c6aa";
+      
+      # Window layout
+      window_padding_width = 10;
+      
+      # Performance
+      repaint_delay = 10;
+      input_delay = 3;
+      sync_to_monitor = true;
+      
+      # Appearance
+      background_opacity = "0.85";
+      background_blur = 1;
+      
+      # Tab bar (Everforest themed)
+      tab_bar_edge = "top";
+      tab_bar_style = "powerline";
+      tab_powerline_style = "slanted";
+      active_tab_foreground = "#2d353b";
+      active_tab_background = "#a7c080";
+      active_tab_font_style = "bold";
+      inactive_tab_foreground = "#d3c6aa";
+      inactive_tab_background = "#475258";
+      
+      # Cursor
+      cursor_shape = "block";
+      cursor_blink_interval = 0;
+    };
   };
 
   # Alacritty - Everforest Dark Medium
@@ -554,6 +632,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
 
       # Window rules - Everforest opacity with layerrule for transparency
       windowrulev2 = [
+        "opacity 0.85 0.75,class:^(kitty)$"
         "opacity 0.85 0.75,class:^(Alacritty)$"
         "opacity 0.88 0.78,class:^(VSCodium)$"
         "opacity 0.92 0.85,class:^(librewolf)$"
@@ -571,7 +650,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       "$mod" = "SUPER";
       bind = [
         # Programs
-        "$mod, T, exec, alacritty"
+        "$mod, T, exec, kitty"
         "$mod, B, exec, librewolf"
         "$mod, I, exec, vscodium"
         "$mod, Return, exec, kdePackages.dolphin"
@@ -787,6 +866,10 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     config = ''
       (
         address: "127.0.0.1:6600",
+        album_art: Some((
+          method: Kitty(ResizeProtocol(size: (300, 300))),
+          max_size_px: (width: 25, height: 25),
+        )),
         theme: Some((
           background_color: None,
           text_color: Some("#d3c6aa"),
