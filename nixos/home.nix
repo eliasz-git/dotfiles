@@ -47,6 +47,7 @@
     bzip2
     xz
     zip
+    gvfs
     
     # GUI Applications
     thunderbird
