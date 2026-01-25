@@ -39,6 +39,15 @@
     # Media tools
     ffmpeg mediainfo
     
+    # Compression & Archive tools
+    p7zip
+    unzip
+    unrar
+    gzip
+    bzip2
+    xz
+    zip
+    
     # GUI Applications
     thunderbird
     vscodium
@@ -50,6 +59,7 @@
     lollypop
     tutanota-desktop
     yubioath-flutter
+    file-roller  # Archive manager with Thunar integration
     
     # Wayland utilities
     wl-clipboard
@@ -565,6 +575,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "opacity 0.92 0.85,class:^(librewolf)$"
         "opacity 0.85 0.75,class:^(thunar)$"
         "opacity 0.88 0.78,class:^(obsidian)$"
+        "opacity 0.85 0.75,class:^(org.gnome.FileRoller)$"
       ];
 
       # Make waybar translucent
@@ -580,7 +591,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "$mod, T, exec, kitty"
         "$mod, B, exec, librewolf"
         "$mod, I, exec, vscodium"
-        "$mod, Return, exec, kdePackages.dolphin"
+        "$mod, Return, exec, thunar"
         "$mod, Space, exec, rofi -show drun"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
