@@ -21,7 +21,10 @@
     curl wget git htop
     
     # Terminal & multiplexer & TUIs
-    tmux alacritty netop bluetuith mpd-small rmpc
+    tmux alacritty netop bluetuith
+    
+    # Power management TUIs
+    powertop
     
     # Development tools
     gh lazygit
@@ -761,6 +764,250 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     };
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
+    };
+  };
+
+  # MPD - Music Player Daemon with music in ~/Music
+  services.mpd = {
+    enable = true;
+    musicDirectory = "${config.home.homeDirectory}/Music";
+    extraConfig = ''
+      audio_output {
+        type "pipewire"
+        name "PipeWire Output"
+      }
+      auto_update "yes"
+      auto_update_depth "3"
+    '';
+  };
+
+  # rmpc - MPD client configuration
+  programs.rmpc = {
+    enable = true;
+    settings = {
+      address = "127.0.0.1:6600";
+      theme = {
+        background_color = "None";
+        text_color = "#d3c6aa";
+        header_background_color = "#2d353b";
+        modal_background_color = "#343f44";
+        tab_bar = {
+          enabled = true;
+          active_style = {
+            fg = "#2d353b";
+            bg = "#a7c080";
+            modifiers = "Bold";
+          };
+          inactive_style = {
+            fg = "#d3c6aa";
+            bg = "#475258";
+          };
+        };
+        highlighted_item_style = {
+          fg = "#a7c080";
+          modifiers = "Bold";
+        };
+        current_item_style = {
+          fg = "#2d353b";
+          bg = "#a7c080";
+          modifiers = "Bold";
+        };
+        borders_style = {
+          fg = "#475258";
+        };
+        highlight_border_style = {
+          fg = "#a7c080";
+        };
+        symbols = {
+          song = "󰝚";
+          dir = "";
+          marker = "󰐾";
+        };
+        progressbar = {
+          symbols = [ "━" "╸" "─" ];
+          track_style = {
+            fg = "#475258";
+          };
+          elapsed_style = {
+            fg = "#a7c080";
+          };
+          thumb_style = {
+            fg = "#a7c080";
+            modifiers = "Bold";
+          };
+        };
+        scrollbar = {
+          symbols = [ "│" "█" ];
+          track_style = {
+            fg = "#475258";
+          };
+          ends_style = {
+            fg = "#475258";
+          };
+          thumb_style = {
+            fg = "#a7c080";
+          };
+        };
+        browser_column_widths = [ 20 38 42 ];
+      };
+    };
+  };
+
+  # Fastfetch - System information with organized sections
+  programs.fastfetch = {
+    enable = true;
+    settings = {
+      logo = {
+        type = "small";
+        padding = {
+          top = 1;
+          left = 2;
+          right = 2;
+        };
+        color = {
+          "1" = "green";
+          "2" = "cyan";
+        };
+      };
+      display = {
+        separator = " → ";
+        color = {
+          keys = "green";
+          title = "cyan";
+        };
+      };
+      modules = [
+        # Title and separator
+        {
+          type = "title";
+          format = "{user-name}@{host-name}";
+        }
+        {
+          type = "separator";
+          string = "─";
+        }
+        
+        # Hardware Section
+        {
+          type = "custom";
+          format = "󰍛 HARDWARE";
+        }
+        {
+          type = "host";
+          key = "  Host";
+        }
+        {
+          type = "cpu";
+          key = "  CPU";
+        }
+        {
+          type = "gpu";
+          key = "  GPU";
+        }
+        {
+          type = "memory";
+          key = "  Memory";
+        }
+        {
+          type = "disk";
+          key = "  Disk";
+        }
+        {
+          type = "battery";
+          key = "  Battery";
+        }
+        
+        # Separator
+        {
+          type = "separator";
+          string = "─";
+        }
+        
+        # Software Section
+        {
+          type = "custom";
+          format = " SOFTWARE";
+        }
+        {
+          type = "os";
+          key = "  OS";
+        }
+        {
+          type = "kernel";
+          key = "  Kernel";
+        }
+        {
+          type = "packages";
+          key = "  Packages";
+        }
+        {
+          type = "shell";
+          key = "  Shell";
+        }
+        
+        # Separator
+        {
+          type = "separator";
+          string = "─";
+        }
+        
+        # Desktop Section
+        {
+          type = "custom";
+          format = " DESKTOP";
+        }
+        {
+          type = "de";
+          key = "  DE";
+        }
+        {
+          type = "wm";
+          key = "  WM";
+        }
+        {
+          type = "wmtheme";
+          key = "  Theme";
+        }
+        {
+          type = "terminal";
+          key = "  Terminal";
+        }
+        {
+          type = "terminalfont";
+          key = "  Font";
+        }
+        
+        # Separator
+        {
+          type = "separator";
+          string = "─";
+        }
+        
+        # System Section
+        {
+          type = "custom";
+          format = "󰥔 SYSTEM";
+        }
+        {
+          type = "uptime";
+          key = "  Uptime";
+        }
+        {
+          type = "localip";
+          key = "  Local IP";
+        }
+        
+        # Color palette
+        {
+          type = "separator";
+          string = "─";
+        }
+        {
+          type = "colors";
+          paddingLeft = 2;
+          symbol = "circle";
+        }
+      ];
     };
   };
 }
