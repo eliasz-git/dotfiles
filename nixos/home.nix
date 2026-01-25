@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.stateVersion = "25.05";
@@ -315,7 +315,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop";
     };
     
-    initExtraBeforeCompInit = ''
+    initContent = lib.mkOrder 550 ''
       # Initialize zoxide
       eval "$(zoxide init zsh)"
       eval "$(thefuck --alias)"
