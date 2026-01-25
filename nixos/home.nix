@@ -21,7 +21,7 @@
     curl wget git htop
     
     # Terminal & multiplexer & TUIs
-    tmux alacritty netop bluetuith
+    tmux alacritty netop bluetuith mpd-small rmpc
     
     # Development tools
     gh lazygit
