@@ -26,7 +26,7 @@ Multi-system Nix configuration with Everforest Dark Medium color scheme for macO
 After cloning, run the interactive setup script:
 
 ```bash
-git clone https://github.com/yourusername/nix-config ~/.config/nix-config
+git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
 cd ~/.config/nix-config
 ./scripts/setup.sh
 ```
@@ -41,7 +41,7 @@ The setup script will:
 
 **macOS:**
 ```bash
-git clone https://github.com/yourusername/nix-config ~/.config/nix-config
+git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
 cd ~/.config/nix-config
 ./darwin/replace.sh youruser yourgithubuser your@email.com
 nix flake update
@@ -50,7 +50,7 @@ sudo darwin-rebuild switch --flake .#macbook
 
 **NixOS:**
 ```bash
-git clone https://github.com/yourusername/nix-config ~/.config/nix-config
+git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
 sudo cp /etc/nixos/hardware-configuration.nix ~/.config/nix-config/nixos/
 sudo ln -sf ~/.config/nix-config /etc/nixos
 cd /etc/nixos
@@ -185,7 +185,7 @@ nix-config/
 
 ```bash
 # Both systems - clone to ~/.config/nix-config
-git clone https://github.com/yourusername/nix-config ~/.config/nix-config
+git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
 cd ~/.config/nix-config
 ```
 
