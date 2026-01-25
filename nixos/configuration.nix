@@ -53,6 +53,89 @@
   # Enable touchpad support
   services.libinput.enable = true;
 
+  # Power Management with TLP
+  services.tlp = {
+    enable = true;
+    settings = {
+      # CPU Settings
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
+      
+      CPU_MIN_PERF_ON_AC = 0;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MIN_PERF_ON_BAT = 0;
+      CPU_MAX_PERF_ON_BAT = 30;
+      
+      # Intel CPU Boost
+      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_BAT = 0;
+      
+      # Intel GPU Settings (11th Gen)
+      INTEL_GPU_MIN_FREQ_ON_AC = 0;
+      INTEL_GPU_MIN_FREQ_ON_BAT = 0;
+      INTEL_GPU_MAX_FREQ_ON_AC = 1300;
+      INTEL_GPU_MAX_FREQ_ON_BAT = 800;
+      INTEL_GPU_BOOST_FREQ_ON_AC = 1300;
+      INTEL_GPU_BOOST_FREQ_ON_BAT = 800;
+      
+      # Battery Care (Extend Battery Lifespan)
+      START_CHARGE_THRESH_BAT0 = 40;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+      
+      # Platform Profile
+      PLATFORM_PROFILE_ON_AC = "balanced";
+      PLATFORM_PROFILE_ON_BAT = "low-power";
+      
+      # WiFi Power Saving
+      WIFI_PWR_ON_AC = "off";
+      WIFI_PWR_ON_BAT = "on";
+      
+      # Runtime Power Management
+      RUNTIME_PM_ON_AC = "on";
+      RUNTIME_PM_ON_BAT = "auto";
+      
+      # USB Autosuspend
+      USB_AUTOSUSPEND = 1;
+      USB_EXCLUDE_AUDIO = 1;
+      USB_EXCLUDE_BTUSB = 0;
+      USB_EXCLUDE_PHONE = 0;
+      USB_EXCLUDE_PRINTER = 1;
+      USB_EXCLUDE_WWAN = 0;
+      
+      # SATA Link Power Management
+      SATA_LINKPWR_ON_AC = "med_power_with_dipm";
+      SATA_LINKPWR_ON_BAT = "min_power";
+      
+      # PCIe Active State Power Management
+      PCIE_ASPM_ON_AC = "default";
+      PCIE_ASPM_ON_BAT = "powersupersave";
+      
+      # Disable Wake on LAN
+      WOL_DISABLE = "Y";
+      
+      # Sound Power Saving
+      SOUND_POWER_SAVE_ON_AC = 0;
+      SOUND_POWER_SAVE_ON_BAT = 1;
+      SOUND_POWER_SAVE_CONTROLLER = "Y";
+    };
+  };
+
+  # Thermal management for Intel CPUs
+  services.thermald.enable = true;
+
+  # Power profiles integration
+  services.power-profiles-daemon.enable = true;
+
+  # CPU Power Management
+  powerManagement = {
+    enable = true;
+    cpuFreqGovernor = "schedutil";  # Modern governor for 11th Gen Intel
+    powertop.enable = true;
+  };
+
   # Define user account
   users.users.elias = {
     isNormalUser = true;
