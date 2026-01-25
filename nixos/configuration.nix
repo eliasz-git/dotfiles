@@ -43,6 +43,13 @@
     pulse.enable = true;
   };
 
+  # Enable Bluetooth
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+  services.blueman.enable = true;
+
   # Enable touchpad support
   services.libinput.enable = true;
 
@@ -50,7 +57,7 @@
   users.users.elias = {
     isNormalUser = true;
     description = "elias";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "bluetooth" ];
     shell = pkgs.zsh;
   };
 

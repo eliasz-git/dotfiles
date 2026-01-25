@@ -781,76 +781,47 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     '';
   };
 
-  # rmpc - MPD client configuration
+  # rmpc - MPD client configuration (Everforest theme)
   programs.rmpc = {
     enable = true;
-    settings = {
-      address = "127.0.0.1:6600";
-      theme = {
-        background_color = "None";
-        text_color = "#d3c6aa";
-        header_background_color = "#2d353b";
-        modal_background_color = "#343f44";
-        tab_bar = {
-          enabled = true;
-          active_style = {
-            fg = "#2d353b";
-            bg = "#a7c080";
-            modifiers = "Bold";
-          };
-          inactive_style = {
-            fg = "#d3c6aa";
-            bg = "#475258";
-          };
-        };
-        highlighted_item_style = {
-          fg = "#a7c080";
-          modifiers = "Bold";
-        };
-        current_item_style = {
-          fg = "#2d353b";
-          bg = "#a7c080";
-          modifiers = "Bold";
-        };
-        borders_style = {
-          fg = "#475258";
-        };
-        highlight_border_style = {
-          fg = "#a7c080";
-        };
-        symbols = {
-          song = "󰝚";
-          dir = "";
-          marker = "󰐾";
-        };
-        progressbar = {
-          symbols = [ "━" "╸" "─" ];
-          track_style = {
-            fg = "#475258";
-          };
-          elapsed_style = {
-            fg = "#a7c080";
-          };
-          thumb_style = {
-            fg = "#a7c080";
-            modifiers = "Bold";
-          };
-        };
-        scrollbar = {
-          symbols = [ "│" "█" ];
-          track_style = {
-            fg = "#475258";
-          };
-          ends_style = {
-            fg = "#475258";
-          };
-          thumb_style = {
-            fg = "#a7c080";
-          };
-        };
-        browser_column_widths = [ 20 38 42 ];
-      };
-    };
+    config = ''
+      (
+        address: "127.0.0.1:6600",
+        theme: Some((
+          background_color: None,
+          text_color: Some("#d3c6aa"),
+          header_background_color: Some("#2d353b"),
+          modal_background_color: Some("#343f44"),
+          tab_bar: Some((
+            enabled: true,
+            active_style: (fg: Some("#2d353b"), bg: Some("#a7c080"), modifiers: "Bold"),
+            inactive_style: (fg: Some("#d3c6aa"), bg: Some("#475258"), modifiers: ""),
+          )),
+          highlighted_item_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "Bold")),
+          current_item_style: Some((fg: Some("#2d353b"), bg: Some("#a7c080"), modifiers: "Bold")),
+          borders_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
+          highlight_border_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "")),
+          symbols: Some((
+            song: "󰝚",
+            dir: "",
+            marker: "󰐾",
+          )),
+          progress_bar: Some((
+            symbols: ["━", "╸", "─"],
+            track_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
+            elapsed_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "")),
+            thumb_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "Bold")),
+          )),
+          scrollbar: Some((
+            symbols: ["│", "█"],
+            track_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
+            ends_style: Some((fg: Some("#475258"), bg: None, modifiers: "")),
+            thumb_style: Some((fg: Some("#a7c080"), bg: None, modifiers: "")),
+          )),
+          browser_column_widths: [20, 38, 42],
+        )),
+      )
+    '';
   };
 
   # Fastfetch - System information with organized sections
