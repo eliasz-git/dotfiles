@@ -42,7 +42,6 @@
     obsidian
     libreoffice
     vlc
-    grayjay
     
     # Wayland utilities
     wl-clipboard
