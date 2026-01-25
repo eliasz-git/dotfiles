@@ -34,6 +34,14 @@
     libreoffice
     vlc
     
+    # Wayland utilities
+    wl-clipboard
+    grim
+    slurp
+    swappy
+    dunst
+    rofi-wayland
+    
     # Fonts
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
@@ -292,7 +300,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop";
     };
     
-    initExtra = ''
+    initExtraBeforeCompInit = ''
       # Initialize zoxide
       eval "$(zoxide init zsh)"
       eval "$(thefuck --alias)"
@@ -412,7 +420,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       windowrulev2 = [
         "opacity 0.95 0.85,class:^(Alacritty)$"
         "opacity 0.95 0.85,class:^(VSCodium)$"
-        "opacity 1.0 1.0,class:^(firefox)$"
+        "opacity 1.0 1.0,class:^(librewolf)$"
       ];
 
       # Key bindings
@@ -586,17 +594,4 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       }
     '';
   };
-
-  # Additional Wayland tools
-  home.packages = with pkgs; [
-    # Wayland utilities
-    wl-clipboard
-    grim
-    slurp
-    swappy
-    dunst
-    rofi-wayland
-    
-    # Existing packages...
-  ] ++ home.packages;
 }

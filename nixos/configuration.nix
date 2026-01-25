@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ /etc/nixos/nixos/hardware-configuration.nix ];
 
   # Boot loader
   boot.loader.systemd-boot.enable = true;
@@ -53,16 +53,13 @@
     shell = pkgs.zsh;
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   # System-wide packages
   environment.systemPackages = with pkgs; [
     vim
     wget
     curl
     git
-    firefox
+    librewolf
   ];
 
   # Enable Docker
