@@ -1,5 +1,5 @@
 {
-  description = "tundra-node's nix-darwin flake";
+  description = "Multi-system nix configuration with Everforest theme";
   
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
@@ -11,21 +11,46 @@
   
   outputs = { self, nixpkgs, darwin, home-manager, ... }:
   let
-    system = "aarch64-darwin";
-    pkgs = import nixpkgs { 
-      inherit system;
+    # macOS M2
+    darwinSystem = "aarch64-darwin";
+    darwinPkgs = import nixpkgs { 
+      system = darwinSystem;
+      config.allowUnfree = true;
+    };
+    
+    # NixOS Intel
+    linuxSystem = "x86_64-linux";
+    linuxPkgs = import nixpkgs { 
+      system = linuxSystem;
       config.allowUnfree = true;
     };
   in {
+    # macOS configuration
     darwinConfigurations.macbook = darwin.lib.darwinSystem {
-      inherit system pkgs;
+      system = darwinSystem;
+      pkgs = darwinPkgs;
       modules = [
-        ./configuration.nix
+        ./darwin/configuration.nix
         home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.elias = import ./home.nix;
+          home-manager.users.{user} = import ./darwin/home.nix;
+        }
+      ];
+    };
+    
+    # NixOS configuration
+    nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      pkgs = linuxPkgs;
+      modules = [
+        ./nixos/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.{user} = import ./nixos/home.nix;
         }
       ];
     };

@@ -70,7 +70,7 @@
       "com.apple.mouse.tapBehavior" = 1;
       "com.apple.trackpad.enableSecondaryClick" = true;
     };
-    screencapture.location = "/Users/elias/Pictures/Screenshots";
+    screencapture.location = "/Users/{user}/Pictures/Screenshots";
     loginwindow.GuestEnabled = false;
     screensaver.askForPasswordDelay = 5;
   };
@@ -103,20 +103,20 @@ yabai -m config window_placement             second_child
 yabai -m config window_topmost               off
 yabai -m config window_shadow                float
 
-# ===== TRANSPARENCY & BORDERS (Night Fury) =====
+# ===== TRANSPARENCY & BORDERS (Everforest) =====
 
 yabai -m config window_opacity               on
 yabai -m config window_opacity_duration      0.2
-yabai -m config active_window_opacity        0.92
-yabai -m config normal_window_opacity        0.70
+yabai -m config active_window_opacity        0.95
+yabai -m config normal_window_opacity        0.85
 yabai -m config window_animation_duration    0.2
 
-# Window borders - Electric Blue theme
+# Window borders - Everforest theme
 yabai -m config window_border                on
 yabai -m config window_border_width          3
-yabai -m config active_window_border_color   0xff64b5f6
-yabai -m config normal_window_border_color   0xff1e3a5f
-yabai -m config insert_feedback_color        0xff4dd0e1
+yabai -m config active_window_border_color   0xffa7c080
+yabai -m config normal_window_border_color   0xff475258
+yabai -m config insert_feedback_color        0xff83c092
 
 # ===== LAYOUT =====
 
@@ -124,7 +124,7 @@ yabai -m config layout                       bsp
 yabai -m config split_ratio                  0.50
 yabai -m config auto_balance                 off
 
-# Padding and gaps (Night Fury spacing)
+# Padding and gaps (Everforest spacing)
 yabai -m config top_padding                  15
 yabai -m config bottom_padding               10
 yabai -m config left_padding                 10
@@ -163,7 +163,7 @@ yabai -m signal --add event=window_destroyed action="sketchybar --trigger window
 yabai -m signal --add event=window_title_changed action="sketchybar --trigger title_change"
 yabai -m signal --add event=space_changed action="sketchybar --trigger space_change"
 
-borders active_color=0xff64b5f6 inactive_color=0xff1e3a5f width=5.0 &
+borders active_color=0xffa7c080 inactive_color=0xff475258 width=5.0 &
 sketchybar &
 echo "yabai configuration loaded.."
     '';
