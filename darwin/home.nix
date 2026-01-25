@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home.stateVersion = "25.05";
@@ -284,7 +284,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
     };
     
-    initExtraBeforeCompInit = ''
+    initContent = lib.mkOrder 550 ''
       # Ensure Home Manager CLI is in PATH
       export PATH="$HOME/.nix-profile/bin:$PATH"
 
