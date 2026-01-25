@@ -32,6 +32,7 @@ Multi-system Nix configuration with Everforest Dark Medium color scheme for macO
 
 ### Common Features (Both Systems)
 - 🎨 **Everforest Dark Medium** theme throughout
+- 🖼️ **Custom wallpapers** - Shared wallpaper folder for both systems
 - 🐚 **Zsh** with Starship prompt
 - 📝 **Alacritty** terminal (Everforest themed)
 - 🔧 **Tmux** with custom Everforest status bar
@@ -47,10 +48,12 @@ Multi-system Nix configuration with Everforest Dark Medium color scheme for macO
 
 ### NixOS Specific
 - 🪟 **Hyprland** - Modern Wayland compositor (Everforest themed)
-- 📊 **Waybar** - Status bar (Everforest themed)
+- 📊 **Waybar** - Translucent status bar (Everforest themed)
 - 🔔 **Dunst** - Notification daemon
 - 📸 **Screenshot tools** - grim, slurp, swappy
-- 🚀 **rofi-wayland** - Application launcher
+- 🚀 **rofi-wayland** - Application launcher (`Super + Space`)
+- 🖼️ **hyprpaper** - Wallpaper manager
+- ✨ **Enhanced transparency** - Blur effects and translucent windows
 
 ## 🎨 Everforest Color Palette
 
@@ -80,6 +83,9 @@ nix-config/
 ├── nixos/                       # NixOS configurations
 │   ├── configuration.nix        # System configuration
 │   └── home.nix                 # User environment
+│
+├── wallpapers/                  # Shared wallpapers
+│   └── wallpaper.jpg           # Default wallpaper (customizable)
 │
 └── sketchybar/                  # macOS SketchyBar
     ├── colors.sh
@@ -127,16 +133,18 @@ cd ~/.config/nix-config
 
 **NixOS:**
 ```bash
+# Clone to home directory first
+git clone https://github.com/yourusername/nix-config ~/.config/nix-config
+
 # FIRST: Backup the auto-generated hardware config
 sudo cp /etc/nixos/hardware-configuration.nix ~/hardware-configuration.nix.backup
 
-# Clone to /etc/nixos (requires sudo)
-sudo rm -rf /etc/nixos/*
-sudo git clone https://github.com/yourusername/nix-config /etc/nixos
-cd /etc/nixos
+# Create symlink from /etc/nixos to your config
+sudo rm -rf /etc/nixos
+sudo ln -s ~/.config/nix-config /etc/nixos
 
 # Restore hardware configuration to the nixos directory
-sudo cp ~/hardware-configuration.nix.backup /etc/nixos/nixos/hardware-configuration.nix
+sudo cp ~/hardware-configuration.nix.backup ~/.config/nix-config/nixos/hardware-configuration.nix
 ```
 
 ### Step 2: Replace Placeholders
@@ -171,7 +179,14 @@ find . -type f -name "*.nix" -exec sed -i "s/{username}/yourgithubusername/g" {}
 find . -type f -name "*.nix" -exec sed -i "s/{email}/your@email.com/g" {} +
 ```
 
-### Step 3: System-Specific Setup
+### Step 3: Add Your Wallpaper (Optional)
+
+```bash
+# The repo includes a default wallpaper, but you can replace it
+cp /path/to/your/wallpaper.jpg ~/.config/nix-config/wallpapers/wallpaper.jpg
+```
+
+### Step 4: System-Specific Setup
 
 **macOS:**
 
@@ -193,7 +208,12 @@ nix flake update
 sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
 ```
 
-4. For yabai to work fully, you need to disable SIP (System Integrity Protection):
+4. Set wallpaper (optional):
+```bash
+osascript -e 'tell application "Finder" to set desktop picture to POSIX file "'$HOME'/.config/nix-config/wallpapers/wallpaper.jpg"'
+```
+
+5. For yabai to work fully, you need to disable SIP (System Integrity Protection):
    - Reboot into Recovery Mode (hold Cmd+R during boot)
    - Open Terminal from Utilities menu
    - Run: `csrutil disable`
@@ -201,16 +221,11 @@ sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
 
 **NixOS:**
 
-1. Copy hardware configuration:
-```bash
-# Hardware config is already in /etc/nixos/nixos/ from the clone step
-# Verify it exists:
-ls -la /etc/nixos/nixos/hardware-configuration.nix
-```
+1. Hardware config should already be in place from Step 1
 
-2. Edit `nixos/configuration.nix` to import hardware config (should already be there):
+2. Edit `nixos/configuration.nix` to verify hardware config import:
 ```nix
-imports = [ ./hardware-configuration.nix ];
+imports = [ /etc/nixos/nixos/hardware-configuration.nix ];
 ```
 
 3. Update timezone in `nixos/configuration.nix`:
@@ -220,7 +235,7 @@ time.timeZone = "America/New_York";  # Change to your timezone
 
 4. Build system:
 ```bash
-sudo nixos-rebuild switch --flake /etc/nixos#laptop
+sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop
 ```
 
 5. Reboot:
@@ -235,6 +250,7 @@ sudo reboot
 1. At the login screen (SDDM), select "Hyprland" as your session
 2. Log in with your user credentials
 3. Press `Super + Enter` to open Alacritty terminal
+4. Press `Super + Space` to open rofi app launcher
 
 ### Configure Git
 
@@ -271,7 +287,7 @@ update-all
 sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
 
 # NixOS
-sudo nixos-rebuild switch --flake /etc/nixos#laptop
+sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop
 ```
 
 **Update Flake Inputs:**
@@ -281,7 +297,7 @@ cd ~/.config/nix-config
 nix flake update
 
 # NixOS
-cd /etc/nixos
+cd ~/.config/nix-config
 sudo nix flake update
 ```
 
@@ -310,6 +326,7 @@ gl → git pull
 | Keybinding | Action |
 |------------|--------|
 | `Super + Enter` | Open terminal (Alacritty) |
+| `Super + Space` | Open app launcher (rofi) |
 | `Super + Q` | Close window |
 | `Super + F` | Toggle floating |
 | `Super + H/J/K/L` | Navigate windows (vim-style) |
@@ -324,6 +341,36 @@ gl → git pull
 Yabai is controlled via `skhd` (install separately) or via keyboard shortcuts you configure.
 
 ## 🎨 Customization
+
+### Change Wallpaper
+
+Simply replace the wallpaper file:
+
+```bash
+# Both systems
+cp /path/to/new/wallpaper.jpg ~/.config/nix-config/wallpapers/wallpaper.jpg
+
+# NixOS - Rebuild to apply
+sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop
+
+# macOS - Set manually or use osascript
+osascript -e 'tell application "Finder" to set desktop picture to POSIX file "'$HOME'/.config/nix-config/wallpapers/wallpaper.jpg"'
+```
+
+You can also use different wallpapers for each system by using different filenames and updating the respective home.nix files.
+
+### Adjust Transparency (NixOS)
+
+Edit `nixos/home.nix` and modify the opacity values in `windowrulev2`:
+
+```nix
+windowrulev2 = [
+  "opacity 0.90 0.80,class:^(Alacritty)$"  # First value = focused, second = unfocused
+  # Adjust these values between 0.0 (fully transparent) and 1.0 (opaque)
+];
+```
+
+Waybar transparency is controlled in the CSS with `rgba()` values. Lower alpha = more transparent.
 
 ### Change Color Scheme
 
@@ -410,11 +457,42 @@ killall waybar
 waybar &
 ```
 
+**Waybar icons not showing:**
+Make sure JetBrainsMono Nerd Font is installed and rebuild:
+```bash
+sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop
+```
+
+**Wallpaper not loading:**
+```bash
+# Check if hyprpaper is running
+pgrep hyprpaper
+
+# Restart it manually
+killall hyprpaper
+hyprpaper &
+
+# Check the wallpaper path exists
+ls -la ~/.config/nix-config/wallpapers/wallpaper.jpg
+```
+
 **Screen sharing not working:**
 ```bash
 # Install additional portal
 # Add to nixos/configuration.nix:
 xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+```
+
+**Hyprland decoration errors:**
+If you see errors about `drop_shadow`, `shadow_range`, etc., make sure you're using the updated `nixos/home.nix` from this repo with the new shadow syntax:
+```nix
+decoration = {
+  shadow = {
+    enabled = true;
+    range = 4;
+    # ... etc
+  };
+};
 ```
 
 ### General Issues
@@ -431,14 +509,19 @@ nix flake metadata --refresh
 nix flake update nixpkgs
 
 # Clean build
-sudo nixos-rebuild switch --flake /etc/nixos#laptop --recreate-lock-file
+sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop --recreate-lock-file
 ```
+
+**Deprecated options warnings:**
+This config uses `initExtraBeforeCompInit` instead of the deprecated `initExtra` for zsh. If you see warnings about deprecated options, check the latest version of the config files.
 
 ## 📝 Notes
 
 - **macOS users**: Some Homebrew casks may require manual interaction during first install
 - **NixOS users**: First build may take 30-60 minutes to download and compile everything
 - **Both systems**: The `hardware-configuration.nix` on NixOS is system-specific and should not be committed to git (it's in `.gitignore`)
+- **Wallpapers**: Wallpapers are committed to the repo by default. If you want to keep them private, add `wallpapers/` to `.gitignore`
+- **Transparency**: NixOS uses layered transparency with blur effects. Adjust opacity values in `windowrulev2` and waybar CSS to your preference
 
 ## 🤝 Contributing
 

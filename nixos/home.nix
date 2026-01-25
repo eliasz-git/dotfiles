@@ -41,6 +41,7 @@
     swappy
     dunst
     rofi-wayland
+    hyprpaper
     
     # Fonts
     nerd-fonts.jetbrains-mono
@@ -326,6 +327,21 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     enableZshIntegration = true;
   };
 
+  # Hyprpaper for wallpaper
+  services.hyprpaper = {
+    enable = true;
+    settings = {
+      preload = [
+        "~/.config/nix-config/wallpapers/wallpaper.jpg"
+      ];
+      wallpaper = [
+        ",~/.config/nix-config/wallpapers/wallpaper.jpg"
+      ];
+      splash = false;
+      ipc = "on";
+    };
+  };
+
   # Hyprland configuration
   wayland.windowManager.hyprland = {
     enable = true;
@@ -337,6 +353,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       exec-once = [
         "waybar"
         "dunst"
+        "hyprpaper"
       ];
 
       # Environment variables
@@ -373,13 +390,14 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
           enabled = true;
           size = 3;
           passes = 1;
+          vibrancy = 0.1696;
         };
-        drop_shadow = true;
-        shadow_range = 4;
-        shadow_render_power = 3;
-        "col.shadow" = "rgba(1a1a1aee)";
-        active_opacity = 0.95;
-        inactive_opacity = 0.85;
+        shadow = {
+          enabled = true;
+          range = 4;
+          render_power = 3;
+          color = "rgba(1a1a1aee)";
+        };
       };
 
       # Animations
@@ -416,11 +434,19 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         force_default_wallpaper = 0;
       };
 
-      # Window rules - Everforest opacity
+      # Window rules - Everforest opacity with layerrule for transparency
       windowrulev2 = [
-        "opacity 0.95 0.85,class:^(Alacritty)$"
-        "opacity 0.95 0.85,class:^(VSCodium)$"
-        "opacity 1.0 1.0,class:^(librewolf)$"
+        "opacity 0.90 0.80,class:^(Alacritty)$"
+        "opacity 0.92 0.85,class:^(VSCodium)$"
+        "opacity 0.95 0.90,class:^(librewolf)$"
+        "opacity 0.90 0.80,class:^(thunar)$"
+        "opacity 0.90 0.80,class:^(obsidian)$"
+      ];
+
+      # Make waybar translucent
+      layerrule = [
+        "blur,waybar"
+        "ignorezero,waybar"
       ];
 
       # Key bindings
@@ -428,6 +454,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       bind = [
         # Programs
         "$mod, Return, exec, alacritty"
+        "$mod, Space, exec, rofi -show drun"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
         "$mod, F, togglefloating,"
@@ -498,7 +525,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         modules-right = [ "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
 
         "hyprland/workspaces" = {
-          format = "{id}";
+          format = "{name}";
           on-click = "activate";
         };
 
@@ -512,29 +539,29 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         };
 
         cpu = {
-          format = " {usage}%";
+          format = "󰻠 {usage}%";
         };
 
         memory = {
-          format = " {}%";
+          format = "󰍛 {percentage}%";
         };
 
         battery = {
           format = "{icon} {capacity}%";
-          format-icons = [ "" "" "" "" "" ];
+          format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         };
 
         network = {
-          format-wifi = " {signalStrength}%";
-          format-ethernet = " Connected";
-          format-disconnected = "⚠ Disconnected";
+          format-wifi = "󰖨 {signalStrength}%";
+          format-ethernet = "󰈀 Connected";
+          format-disconnected = "󰖪 Disconnected";
         };
 
         pulseaudio = {
           format = "{icon} {volume}%";
-          format-muted = " Muted";
+          format-muted = "󰖁 Muted";
           format-icons = {
-            default = [ "" "" "" ];
+            default = [ "󰕿" "󰖀" "󰕾" ];
           };
         };
       };
@@ -546,20 +573,20 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       }
 
       window#waybar {
-        background-color: #2d353b;
+        background-color: rgba(45, 53, 59, 0.85);
         color: #d3c6aa;
       }
 
       #workspaces button {
         padding: 0 10px;
         color: #d3c6aa;
-        background-color: #475258;
+        background-color: rgba(71, 82, 88, 0.7);
         margin: 3px;
         border-radius: 5px;
       }
 
       #workspaces button.active {
-        background-color: #a7c080;
+        background-color: rgba(167, 192, 128, 0.9);
         color: #2d353b;
       }
 
@@ -573,23 +600,23 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       #tray {
         padding: 0 10px;
         margin: 3px;
-        background-color: #475258;
+        background-color: rgba(71, 82, 88, 0.7);
         color: #d3c6aa;
         border-radius: 5px;
       }
 
       #battery.charging {
-        background-color: #a7c080;
+        background-color: rgba(167, 192, 128, 0.9);
         color: #2d353b;
       }
 
       #battery.warning:not(.charging) {
-        background-color: #dbbc7f;
+        background-color: rgba(219, 188, 127, 0.9);
         color: #2d353b;
       }
 
       #battery.critical:not(.charging) {
-        background-color: #e67e80;
+        background-color: rgba(230, 126, 128, 0.9);
         color: #2d353b;
       }
     '';

@@ -8,10 +8,9 @@ result
 result-*
 *.backup
 
-# NixOS hardware configuration (system-specific)
-nixos/hardware-configuration.nix
+# NixOS hardware configuration (system-specific) (Uncomment this when commiting)
+# nixos/hardware-configuration.nix
 
-# Flake lock (optional - some prefer to commit this)
 # flake.lock
 
 # Editor files
