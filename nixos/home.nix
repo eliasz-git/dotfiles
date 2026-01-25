@@ -42,6 +42,7 @@
     dunst
     rofi-wayland
     hyprpaper
+    bibata-cursors
     
     # Fonts
     nerd-fonts.jetbrains-mono
@@ -327,6 +328,106 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     enableZshIntegration = true;
   };
 
+  # Rofi - Everforest theme
+  programs.rofi = {
+    enable = true;
+    package = pkgs.rofi-wayland;
+    theme = let
+      inherit (config.lib.formats.rasi) mkLiteral;
+    in {
+      "*" = {
+        bg = mkLiteral "#2d353b";
+        bg-alt = mkLiteral "#343f44";
+        fg = mkLiteral "#d3c6aa";
+        fg-alt = mkLiteral "#9da9a0";
+        
+        background-color = mkLiteral "transparent";
+        text-color = mkLiteral "@fg";
+        
+        margin = 0;
+        padding = 0;
+        spacing = 0;
+      };
+
+      "window" = {
+        location = mkLiteral "center";
+        width = 640;
+        background-color = mkLiteral "@bg";
+        border-radius = 8;
+      };
+
+      "inputbar" = {
+        spacing = 8;
+        padding = 12;
+        background-color = mkLiteral "@bg-alt";
+        border-radius = mkLiteral "8px 8px 0 0";
+      };
+
+      "prompt, entry, element-icon, element-text" = {
+        vertical-align = mkLiteral "0.5";
+      };
+
+      "prompt" = {
+        text-color = mkLiteral "#a7c080";
+      };
+
+      "textbox" = {
+        padding = 8;
+        background-color = mkLiteral "@bg-alt";
+      };
+
+      "listview" = {
+        padding = mkLiteral "4px 0";
+        lines = 8;
+        columns = 1;
+        fixed-height = false;
+      };
+
+      "element" = {
+        padding = 8;
+        spacing = 8;
+      };
+
+      "element normal normal" = {
+        text-color = mkLiteral "@fg";
+      };
+
+      "element normal urgent" = {
+        text-color = mkLiteral "#e67e80";
+      };
+
+      "element normal active" = {
+        text-color = mkLiteral "#7fbbb3";
+      };
+
+      "element selected normal" = {
+        background-color = mkLiteral "#a7c080";
+        text-color = mkLiteral "@bg";
+        border-radius = 4;
+      };
+
+      "element selected urgent" = {
+        background-color = mkLiteral "#e67e80";
+        text-color = mkLiteral "@bg";
+        border-radius = 4;
+      };
+
+      "element selected active" = {
+        background-color = mkLiteral "#7fbbb3";
+        text-color = mkLiteral "@bg";
+        border-radius = 4;
+      };
+
+      "element-icon" = {
+        size = mkLiteral "1em";
+      };
+
+      "element-text" = {
+        text-color = mkLiteral "inherit";
+      };
+    };
+  };
+
   # Hyprpaper for wallpaper
   services.hyprpaper = {
     enable = true;
@@ -359,6 +460,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       # Environment variables
       env = [
         "XCURSOR_SIZE,24"
+        "XCURSOR_THEME,Bibata-Modern-Classic"
         "QT_QPA_PLATFORMTHEME,qt5ct"
       ];
 
@@ -436,11 +538,11 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
 
       # Window rules - Everforest opacity with layerrule for transparency
       windowrulev2 = [
-        "opacity 0.90 0.80,class:^(Alacritty)$"
-        "opacity 0.92 0.85,class:^(VSCodium)$"
-        "opacity 0.95 0.90,class:^(librewolf)$"
-        "opacity 0.90 0.80,class:^(thunar)$"
-        "opacity 0.90 0.80,class:^(obsidian)$"
+        "opacity 0.85 0.75,class:^(Alacritty)$"
+        "opacity 0.88 0.78,class:^(VSCodium)$"
+        "opacity 0.92 0.85,class:^(librewolf)$"
+        "opacity 0.85 0.75,class:^(thunar)$"
+        "opacity 0.88 0.78,class:^(obsidian)$"
       ];
 
       # Make waybar translucent
@@ -573,20 +675,20 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       }
 
       window#waybar {
-        background-color: rgba(45, 53, 59, 0.85);
+        background-color: rgba(45, 53, 59, 0.75);
         color: #d3c6aa;
       }
 
       #workspaces button {
         padding: 0 10px;
         color: #d3c6aa;
-        background-color: rgba(71, 82, 88, 0.7);
+        background-color: rgba(71, 82, 88, 0.6);
         margin: 3px;
         border-radius: 5px;
       }
 
       #workspaces button.active {
-        background-color: rgba(167, 192, 128, 0.9);
+        background-color: rgba(167, 192, 128, 0.85);
         color: #2d353b;
       }
 
@@ -600,7 +702,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
       #tray {
         padding: 0 10px;
         margin: 3px;
-        background-color: rgba(71, 82, 88, 0.7);
+        background-color: rgba(71, 82, 88, 0.6);
         color: #d3c6aa;
         border-radius: 5px;
       }

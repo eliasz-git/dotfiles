@@ -25,6 +25,7 @@
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
+    theme = "everforest";
   };
 
   # XDG Portal for screen sharing
@@ -41,7 +42,7 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
-
+  
   # Enable touchpad support
   services.libinput.enable = true;
 
@@ -53,13 +54,24 @@
     shell = pkgs.zsh;
   };
 
-  # System-wide packages
+  # SDDM Everforest theme
   environment.systemPackages = with pkgs; [
     vim
     wget
     curl
     git
     librewolf
+    (pkgs.writeTextDir "share/sddm/themes/everforest/theme.conf" ''
+      [General]
+      background=${../../wallpapers/wallpaper.jpg}
+      backgroundMode=scaled
+      
+      [Design]
+      ThemeColor=#a7c080
+      AccentColor=#7fbbb3
+      BackgroundColor=#2d353b
+      OverrideLoginBoxColor=#343f44
+    '')
   ];
 
   # Enable Docker
