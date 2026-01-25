@@ -127,10 +127,16 @@ cd ~/.config/nix-config
 
 **NixOS:**
 ```bash
+# FIRST: Backup the auto-generated hardware config
+sudo cp /etc/nixos/hardware-configuration.nix ~/hardware-configuration.nix.backup
+
 # Clone to /etc/nixos (requires sudo)
 sudo rm -rf /etc/nixos/*
 sudo git clone https://github.com/yourusername/nix-config /etc/nixos
 cd /etc/nixos
+
+# Restore hardware configuration to the nixos directory
+sudo cp ~/hardware-configuration.nix.backup /etc/nixos/nixos/hardware-configuration.nix
 ```
 
 ### Step 2: Replace Placeholders
@@ -187,11 +193,12 @@ sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
 
 1. Copy hardware configuration:
 ```bash
-# NixOS installer creates this file
-sudo cp /etc/nixos/hardware-configuration.nix.backup nixos/hardware-configuration.nix
+# Hardware config is already in /etc/nixos/nixos/ from the clone step
+# Verify it exists:
+ls -la /etc/nixos/nixos/hardware-configuration.nix
 ```
 
-2. Edit `nixos/configuration.nix` to import hardware config:
+2. Edit `nixos/configuration.nix` to import hardware config (should already be there):
 ```nix
 imports = [ ./hardware-configuration.nix ];
 ```
