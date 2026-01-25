@@ -140,7 +140,7 @@
       # Allow runtime PM for all drivers
       RUNTIME_PM_DRIVER_DENYLIST = "";
       
-      # USB autosuspend all devices
+      # USB autosuspend for all devices (disable allowlist)
       USB_ALLOWLIST = "";
     };
   };
