@@ -202,7 +202,7 @@ This handles everything automatically. If you prefer manual setup, continue belo
 #### Replace Placeholders
 
 Edit the following files and replace:
-- `{user}` → Your username (e.g., `elias`)
+- `{user}` → Your username (e.g., `john`)
 - `{username}` → Your GitHub username
 - `{email}` → Your GitHub email
 
