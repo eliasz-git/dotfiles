@@ -21,7 +21,7 @@
     curl wget git htop
     
     # Terminal & multiplexer & TUIs
-    tmux alacritty kitty netop bluetuith
+    tmux kitty netop bluetuith
     
     # Power management TUIs
     powertop
