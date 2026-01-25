@@ -48,6 +48,7 @@
     libreoffice
     vlc
     lollypop
+    tutanota-desktop
     
     # Wayland utilities
     wl-clipboard
