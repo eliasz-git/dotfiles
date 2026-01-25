@@ -126,8 +126,8 @@
   # Thermal management for Intel CPUs
   services.thermald.enable = true;
 
-  # Power profiles integration (coexists with TLP for better desktop integration)
-  services.power-profiles-daemon.enable = true;
+  # Disable power-profiles-daemon as it conflicts with TLP
+  services.power-profiles-daemon.enable = false;
 
   # CPU Power Management
   powerManagement = {
