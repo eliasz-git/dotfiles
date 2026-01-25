@@ -21,7 +21,7 @@
     curl wget git htop
     
     # Terminal & multiplexer & TUIs
-    tmux alacritty yazi netop bluetuith
+    tmux alacritty netop bluetuith
     
     # Development tools
     gh lazygit
