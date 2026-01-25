@@ -25,7 +25,7 @@
     
     # Development tools
     gh lazygit
-    python312 nodejs_22 go rustup
+    python312 nodejs_22 go rustup 
     
     # Network tools
     wakeonlan wireguard-tools nmap tcpdump 
@@ -43,6 +43,7 @@
     libreoffice
     vlc
     cider
+    grayjay
     
     # Wayland utilities
     wl-clipboard
@@ -571,6 +572,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         # Programs
         "$mod, T, exec, alacritty"
         "$mod, B, exec, librewolf"
+        "$mod, I, exec, vscodium"
         "$mod, Return, exec, kdePackages.dolphin"
         "$mod, Space, exec, rofi -show drun"
         "$mod, Q, killactive,"
