@@ -47,9 +47,9 @@
   services.libinput.enable = true;
 
   # Define user account
-  users.users.{user} = {
+  users.users.elias = {
     isNormalUser = true;
-    description = "{user}";
+    description = "elias";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     shell = pkgs.zsh;
   };

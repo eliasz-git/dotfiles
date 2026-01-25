@@ -33,8 +33,8 @@
   # Git configuration
   programs.git = {
     enable = true;
-    userName = "{username}";
-    userEmail = "{email}";
+    userName = "tundra-node";
+    userEmail = "eliaspublic@icloud.com";
   };
 
   # Alacritty - Everforest Dark Medium

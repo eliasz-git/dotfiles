@@ -2,7 +2,7 @@
 
 {
   system.stateVersion = 6;
-  system.primaryUser = "{user}";
+  system.primaryUser = "elias";
   nixpkgs.config.allowUnfree = true;
 
   # Nix settings
@@ -70,7 +70,7 @@
       "com.apple.mouse.tapBehavior" = 1;
       "com.apple.trackpad.enableSecondaryClick" = true;
     };
-    screencapture.location = "/Users/{user}/Pictures/Screenshots";
+    screencapture.location = "/Users/elias/Pictures/Screenshots";
     loginwindow.GuestEnabled = false;
     screensaver.askForPasswordDelay = 5;
   };
@@ -170,9 +170,9 @@ echo "yabai configuration loaded.."
   };
 
   # User
-  users.users.{user} = {
-    name = "{user}";
-    home = "/Users/{user}";
+  users.users.elias = {
+    name = "elias";
+    home = "/Users/elias";
     shell = pkgs.zsh;
   };
 
