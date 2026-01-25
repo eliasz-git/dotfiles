@@ -49,6 +49,7 @@
     vlc
     lollypop
     tutanota-desktop
+    yubioath-flutter
     
     # Wayland utilities
     wl-clipboard
