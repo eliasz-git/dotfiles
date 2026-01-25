@@ -32,7 +32,7 @@
     
     # Network tools
     wakeonlan wireguard-tools nmap tcpdump 
-    mtr speedtest-cli librewolf i2pd cloudflare-warp
+    mtr speedtest-cli librewolf i2pd
     
     # Media tools
     ffmpeg mediainfo

@@ -11,7 +11,7 @@ result-*
 # NixOS hardware configuration (system-specific)
 nixos/hardware-configuration.nix
 
-# flake.lock
+# ./flake.lock
 
 # Editor files
 .vscode/
