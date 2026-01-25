@@ -53,6 +53,8 @@
   # Enable touchpad support
   services.libinput.enable = true;
 
+  services.pcscd.enable = true;
+
   # Power Management with TLP
   services.tlp = {
     enable = true;
