@@ -42,7 +42,7 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
-  
+
   # Enable touchpad support
   services.libinput.enable = true;
 
@@ -57,10 +57,12 @@
   # SDDM Everforest theme
   environment.systemPackages = with pkgs; [
     vim
+    nano
     wget
     curl
     git
     librewolf
+    kdePackages.dolphin
     (pkgs.writeTextDir "share/sddm/themes/everforest/theme.conf" ''
       [General]
       background=${../../wallpapers/wallpaper.jpg}
