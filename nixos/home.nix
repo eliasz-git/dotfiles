@@ -864,6 +864,9 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
   programs.rmpc = {
     enable = true;
     config = ''
+      #![enable(implicit_some)]
+      #![enable(unwrap_newtypes)]
+      #![enable(unwrap_variant_newtypes)]
       (
         address: "127.0.0.1:6600",
         album_art: Some((
