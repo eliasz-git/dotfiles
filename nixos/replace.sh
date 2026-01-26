@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # NixOS placeholder replacement script
 # Usage: ./replace.sh <username> <github_username> <email>
 # Or run without arguments for interactive mode
