@@ -5,8 +5,9 @@
     ../modules/shared/programs.nix
     ../modules/shared/shell.nix
     ../modules/shared/git.nix
-    ../modules/shared/terminal.nix
     ../modules/shared/multiplexer.nix
+    ../modules/shared/fastfetch.nix
+    ../modules/darwin/terminal.nix
   ];
 
   home.stateVersion = "25.05";
@@ -14,7 +15,7 @@
 
   # macOS-specific packages only
   home.packages = with pkgs; [
-    # Add any macOS-specific CLI tools here
+    alacritty
   ];
 
   # macOS-specific shell aliases

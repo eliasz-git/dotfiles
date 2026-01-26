@@ -25,13 +25,12 @@
       "FelixKratz/formulae"
       "koekeishiya/formulae"
       "TheBoredTeam/boring-notch"
-      "netbirdio/tap"
     ];
     brews = [
       "sketchybar" "borders" "yabai" "i2pd"
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "signal" "netbird-ui"
+      "cloudflare-warp" "libreoffice" "lulu" "signal"
       "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
