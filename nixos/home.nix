@@ -1,11 +1,64 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ../modules/shared/programs.nix
+    ../modules/shared/shell.nix
+    ../modules/shared/git.nix
+    ../modules/shared/terminal.nix
+    ../modules/shared/multiplexer.nix
+  ];
+
   home.stateVersion = "25.05";
-  
   programs.home-manager.enable = true;
 
-  # Cursor theme configuration (Bibata Modern Classic)
+  # NixOS-specific packages
+  home.packages = with pkgs; [
+    # Power management TUIs
+    powertop brightnessctl playerctl
+    
+    # Network/Bluetooth TUIs
+    bluetuith netop
+    
+    # Wayland utilities
+    wl-clipboard grim slurp swappy
+    dunst rofi-wayland hyprpaper
+    
+    # GUI Applications
+    librewolf thunderbird vscodium signal-desktop
+    bitwarden obsidian libreoffice vlc lollypop
+    tutanota-desktop yubioath-flutter file-roller
+    
+    # File manager
+    xfce.thunar
+    xfce.thunar-archive-plugin
+    gvfs
+    
+    # Theming
+    bibata-cursors
+    papirus-icon-theme
+    everforest-gtk-theme
+  ];
+
+  # NixOS-specific shell aliases
+  programs.zsh.shellAliases = {
+    nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
+    nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop --impure";
+  };
+
+  # NixOS-specific update function
+  programs.zsh.initContent = lib.mkOrder 600 ''
+    update-all() {
+        echo "Updating Nix flake..."
+        cd /etc/nixos
+        sudo nix flake update
+
+        echo "Rebuilding NixOS system..."
+        sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure
+    }
+  '';
+
+  # Cursor theme configuration
   home.pointerCursor = {
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
@@ -14,352 +67,28 @@
     x11.enable = true;
   };
 
-  home.packages = with pkgs; [
-    # Shell utilities
-    eza bat fzf zoxide zsh-syntax-highlighting
-    fastfetch yq ripgrep thefuck tree
-    curl wget git htop
-    
-    # Terminal & multiplexer & TUIs
-    tmux kitty netop bluetuith
-    
-    # Power management TUIs
-    powertop
-    brightnessctl  # For brightness control
-    playerctl  # For media playback control
-    
-    # Development tools
-    gh lazygit
-    python312 nodejs_22 go rustup 
-    
-    # Network tools
-    wakeonlan wireguard-tools nmap tcpdump 
-    mtr speedtest-cli librewolf i2pd
-    
-    # Media tools
-    ffmpeg mediainfo
-    
-    # Compression & Archive tools
-    p7zip
-    unzip
-    unrar
-    gzip
-    bzip2
-    xz
-    zip
-    gvfs
-    
-    # GUI Applications
-    thunderbird
-    vscodium
-    signal-desktop
-    bitwarden
-    obsidian
-    libreoffice
-    vlc
-    lollypop
-    tutanota-desktop
-    yubioath-flutter
-    file-roller  # Archive manager with Thunar integration
-    #kdePackages.kdenlive
-    #gimp
-
-    # Wayland utilities
-    wl-clipboard
-    grim
-    slurp
-    swappy
-    dunst
-    rofi-wayland
-    hyprpaper
-    bibata-cursors
-    
-    # Theming
-    papirus-icon-theme
-    everforest-gtk-theme
-    
-    # Fonts
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.fira-code
-  ];
-
-  # Git configuration
-  programs.git = {
+  # GTK theme and icon configuration
+  gtk = {
     enable = true;
-    userName = "tundra-node";
-    userEmail = "eliaspublic@icloud.com";
-  };
-
-  # Kitty terminal - Everforest Dark Medium (for album art support)
-  programs.kitty = {
-    enable = true;
-    font = {
-      name = "JetBrainsMono Nerd Font";
-      size = 13;
+    cursorTheme = {
+      name = "Bibata-Modern-Classic";
+      package = pkgs.bibata-cursors;
+      size = 24;
     };
-    settings = {
-      # Everforest Dark Medium colors
-      background = "#2d353b";
-      foreground = "#d3c6aa";
-      
-      cursor = "#d3c6aa";
-      cursor_text_color = "#2d353b";
-      
-      selection_background = "#503946";
-      selection_foreground = "#d3c6aa";
-      
-      # Black
-      color0 = "#475258";
-      color8 = "#475258";
-      
-      # Red
-      color1 = "#e67e80";
-      color9 = "#e67e80";
-      
-      # Green
-      color2 = "#a7c080";
-      color10 = "#a7c080";
-      
-      # Yellow
-      color3 = "#dbbc7f";
-      color11 = "#dbbc7f";
-      
-      # Blue
-      color4 = "#7fbbb3";
-      color12 = "#7fbbb3";
-      
-      # Magenta
-      color5 = "#d699b6";
-      color13 = "#d699b6";
-      
-      # Cyan
-      color6 = "#83c092";
-      color14 = "#83c092";
-      
-      # White
-      color7 = "#d3c6aa";
-      color15 = "#d3c6aa";
-      
-      # Window layout
-      window_padding_width = 10;
-      
-      # Performance
-      repaint_delay = 10;
-      input_delay = 3;
-      sync_to_monitor = true;
-      
-      # Appearance
-      background_opacity = "0.85";
-      background_blur = 1;
-      
-      # Tab bar (Everforest themed)
-      tab_bar_edge = "top";
-      tab_bar_style = "powerline";
-      tab_powerline_style = "slanted";
-      active_tab_foreground = "#2d353b";
-      active_tab_background = "#a7c080";
-      active_tab_font_style = "bold";
-      inactive_tab_foreground = "#d3c6aa";
-      inactive_tab_background = "#475258";
-      
-      # Cursor
-      cursor_shape = "block";
-      cursor_blink_interval = 0;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
     };
-  };
-
-  # Starship - Everforest theme
-  programs.starship = {
-    enable = true;
-    settings = {
-      add_newline = true;
-      format = "$username$hostname$directory$git_branch$git_status$nix_shell$character";
-      character = {
-        error_symbol = "[➜](bold #e67e80)";
-        success_symbol = "[➜](bold #a7c080)";
-      };
-      directory = {
-        style = "bold #7fbbb3";
-        truncate_to_repo = true;
-        truncation_length = 3;
-      };
-      git_branch = {
-        style = "bold #d699b6";
-        symbol = " ";
-      };
-      git_status = {
-        ahead = "⇡\${count}";
-        behind = "⇣\${count}";
-        diverged = "⇕⇡\${ahead_count}⇣\${behind_count}";
-        style = "bold #dbbc7f";
-      };
-      hostname = {
-        format = "[$hostname]($style) ";
-        ssh_only = false;
-        style = "bold #83c092";
-      };
-      nix_shell = {
-        format = "via [$symbol$state]($style) ";
-        style = "bold #7fbbb3";
-        symbol = " ";
-      };
-      username = {
-        format = "[$user]($style)@";
-        show_always = false;
-        style_user = "bold #a7c080";
-      };
+    theme = {
+      name = "Everforest-Dark-BL";
+      package = pkgs.everforest-gtk-theme;
     };
-  };
-
-  # Tmux - Everforest theme
-  programs.tmux = {
-    enable = true;
-    extraConfig = ''
-set  -g default-terminal "screen-256color"
-set  -g base-index      0
-setw -g pane-base-index 0
-set -g status-keys vi
-set -g mode-keys   vi
-set  -g mouse             on
-set  -g focus-events      off
-setw -g aggressive-resize off
-setw -g clock-mode-style  12
-set  -s escape-time       0
-set  -g history-limit     50000
-# Better prefix
-unbind C-b
-set -g prefix C-a
-bind C-a send-prefix
-# Easy config reload
-bind r source-file ~/.tmux.conf \; display "Reloaded!"
-# Better splits
-bind | split-window -h
-bind - split-window -v
-# Vim-like pane navigation
-bind h select-pane -L
-bind j select-pane -D
-bind k select-pane -U
-bind l select-pane -R
-# Everforest theme
-set -g status-style "bg=#2d353b,fg=#d3c6aa"
-set -g status-left-style "bg=#475258,fg=#a7c080"
-set -g status-right-style "bg=#475258,fg=#a7c080"
-set -g window-status-current-style "bg=#a7c080,fg=#2d353b,bold"
-set -g window-status-style "bg=#475258,fg=#d3c6aa"
-set -g pane-border-style "fg=#475258"
-set -g pane-active-border-style "fg=#a7c080"
-set -g message-style "bg=#475258,fg=#a7c080"
-set -g message-command-style "bg=#475258,fg=#a7c080"
-# Status bar content
-set -g status-left "#[fg=#a7c080,bg=#475258,bold] #S #[fg=#475258,bg=#2d353b]"
-set -g status-right "#[fg=#475258,bg=#2d353b]#[fg=#a7c080,bg=#475258] %H:%M #[fg=#83c092] %Y-%m-%d "
-set -g status-left-length 20
-set -g status-right-length 50
-# Window status format
-set -g window-status-format "#[fg=#2d353b,bg=#475258]#[fg=#d3c6aa,bg=#475258] #I #W #[fg=#475258,bg=#2d353b]"
-set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7c080,bold] #I #W #[fg=#a7c080,bg=#2d353b]"
-    '';
-  };
-
-  # Lazygit - Everforest theme
-  programs.lazygit = {
-    enable = true;
-    settings = {
-      gui = {
-        theme = {
-          activeBorderColor = [ "#a7c080" "bold" ];
-          inactiveBorderColor = [ "#475258" ];
-          selectedLineBgColor = [ "#343f44" ];
-          selectedRangeBgColor = [ "#475258" ];
-          cherryPickedCommitBgColor = [ "#7fbbb3" ];
-          cherryPickedCommitFgColor = [ "#2d353b" ];
-          unstagedChangesColor = [ "#e67e80" ];
-        };
-      };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
     };
-  };
-
-  # Bat - Everforest compatible theme
-  programs.bat = {
-    enable = true;
-    extraPackages = with pkgs.bat-extras; [ batdiff batman batgrep batwatch ];
-    config = {
-      theme = "gruvbox-dark";
-      pager = "less -FR";
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
     };
-  };
-
-  # FZF - Everforest colors
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-    colors = {
-      bg = "#2d353b";
-      "bg+" = "#475258";
-      fg = "#d3c6aa";
-      "fg+" = "#d3c6aa";
-      hl = "#a7c080";
-      "hl+" = "#a7c080";
-      info = "#dbbc7f";
-      marker = "#e67e80";
-      prompt = "#7fbbb3";
-      spinner = "#83c092";
-      pointer = "#d699b6";
-      header = "#83c092";
-    };
-  };
-
-  # Zsh
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-    
-    shellAliases = {
-      # System
-      ls = "eza --icons";
-      ll = "eza -la --icons";
-      cat = "bat";
-      cd = "z";
-      
-      # Git
-      g = "git";
-      gs = "git status";
-      gd = "git diff";
-      gc = "git commit";
-      gp = "git push";
-      gl = "git pull";
-
-      # NixOS shortcuts
-      nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
-      nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop --impure";
-    };
-    
-    initContent = lib.mkOrder 550 ''
-      # Initialize zoxide
-      eval "$(zoxide init zsh)"
-      eval "$(thefuck --alias)"
-
-      # FZF keybindings
-      export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
-      # Update function for NixOS
-      update-all() {
-          echo "Updating Nix flake..."
-          cd /etc/nixos
-          sudo nix flake update
-
-          echo "Rebuilding NixOS system..."
-          sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure
-      }
-    '';
-  };
-
-  # Zoxide
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
   };
 
   # Rofi - Everforest theme
@@ -374,88 +103,71 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         bg-alt = mkLiteral "#343f44";
         fg = mkLiteral "#d3c6aa";
         fg-alt = mkLiteral "#9da9a0";
-        
         background-color = mkLiteral "transparent";
         text-color = mkLiteral "@fg";
-        
         margin = 0;
         padding = 0;
         spacing = 0;
       };
-
       "window" = {
         location = mkLiteral "center";
         width = 640;
         background-color = mkLiteral "@bg";
         border-radius = 8;
       };
-
       "inputbar" = {
         spacing = 8;
         padding = 12;
         background-color = mkLiteral "@bg-alt";
         border-radius = mkLiteral "8px 8px 0 0";
       };
-
       "prompt, entry, element-icon, element-text" = {
         vertical-align = mkLiteral "0.5";
       };
-
       "prompt" = {
         text-color = mkLiteral "#a7c080";
       };
-
       "textbox" = {
         padding = 8;
         background-color = mkLiteral "@bg-alt";
       };
-
       "listview" = {
         padding = mkLiteral "4px 0";
         lines = 8;
         columns = 1;
         fixed-height = false;
       };
-
       "element" = {
         padding = 8;
         spacing = 8;
       };
-
       "element normal normal" = {
         text-color = mkLiteral "@fg";
       };
-
       "element normal urgent" = {
         text-color = mkLiteral "#e67e80";
       };
-
       "element normal active" = {
         text-color = mkLiteral "#7fbbb3";
       };
-
       "element selected normal" = {
         background-color = mkLiteral "#a7c080";
         text-color = mkLiteral "@bg";
         border-radius = 4;
       };
-
       "element selected urgent" = {
         background-color = mkLiteral "#e67e80";
         text-color = mkLiteral "@bg";
         border-radius = 4;
       };
-
       "element selected active" = {
         background-color = mkLiteral "#7fbbb3";
         text-color = mkLiteral "@bg";
         border-radius = 4;
       };
-
       "element-icon" = {
         size = mkLiteral "1em";
       };
-
       "element-text" = {
         text-color = mkLiteral "inherit";
       };
@@ -481,24 +193,20 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
-      # Monitor configuration
       monitor = ",preferred,auto,1";
 
-      # Autostart
       exec-once = [
         "waybar"
         "dunst"
         "hyprpaper"
       ];
 
-      # Environment variables
       env = [
         "XCURSOR_SIZE,24"
         "XCURSOR_THEME,Bibata-Modern-Classic"
         "QT_QPA_PLATFORMTHEME,qt5ct"
       ];
 
-      # Input configuration
       input = {
         kb_layout = "us";
         follow_mouse = 1;
@@ -508,7 +216,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         sensitivity = 0;
       };
 
-      # General settings - Everforest theme
       general = {
         gaps_in = 5;
         gaps_out = 10;
@@ -519,7 +226,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         allow_tearing = false;
       };
 
-      # Decoration - Everforest transparency
       decoration = {
         rounding = 8;
         blur = {
@@ -536,7 +242,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         };
       };
 
-      # Animations
       animations = {
         enabled = true;
         bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
@@ -550,7 +255,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         ];
       };
 
-      # Layouts
       dwindle = {
         pseudotile = true;
         preserve_split = true;
@@ -560,17 +264,14 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         new_status = "master";
       };
 
-      # Gestures
       gestures = {
         workspace_swipe = true;
       };
 
-      # Misc
       misc = {
         force_default_wallpaper = 0;
       };
 
-      # Window rules - Everforest opacity with layerrule for transparency
       windowrulev2 = [
         "opacity 0.85 0.75,class:^(kitty)$"
         "opacity 0.85 0.75,class:^(Alacritty)$"
@@ -581,16 +282,13 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "opacity 0.85 0.75,class:^(org.gnome.FileRoller)$"
       ];
 
-      # Make waybar translucent
       layerrule = [
         "blur,waybar"
         "ignorezero,waybar"
       ];
 
-      # Key bindings
       "$mod" = "SUPER";
       bind = [
-        # Programs
         "$mod, T, exec, kitty"
         "$mod, B, exec, librewolf"
         "$mod, I, exec, vscodium"
@@ -602,7 +300,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "$mod, P, pseudo,"
         "$mod, J, togglesplit,"
 
-        # Focus
         "$mod, left, movefocus, l"
         "$mod, right, movefocus, r"
         "$mod, up, movefocus, u"
@@ -612,7 +309,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "$mod, k, movefocus, u"
         "$mod, j, movefocus, d"
 
-        # Workspaces
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
         "$mod, 3, workspace, 3"
@@ -624,7 +320,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
-        # Move to workspace
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -636,25 +331,20 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
-        # Special workspace
         "$mod, S, togglespecialworkspace, magic"
         "$mod SHIFT, S, movetoworkspace, special:magic"
 
-        # Scroll workspaces
         "$mod, mouse_down, workspace, e+1"
         "$mod, mouse_up, workspace, e-1"
 
-        # Brightness controls
         ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
         ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
 
-        # Volume controls
         ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
         ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
         ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
         ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
 
-        # Media playback controls
         ", XF86AudioPlay, exec, playerctl play-pause"
         ", XF86AudioPause, exec, playerctl play-pause"
         ", XF86AudioNext, exec, playerctl next"
@@ -662,7 +352,6 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
         ", XF86AudioStop, exec, playerctl stop"
       ];
 
-      # Mouse bindings
       bindm = [
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
@@ -670,7 +359,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     };
   };
 
-  # Waybar configuration - Everforest theme
+  # Waybar configuration
   programs.waybar = {
     enable = true;
     settings = {
@@ -780,31 +469,7 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
     '';
   };
 
-  # GTK theme and icon configuration for consistent theming
-  gtk = {
-    enable = true;
-    cursorTheme = {
-      name = "Bibata-Modern-Classic";
-      package = pkgs.bibata-cursors;
-      size = 24;
-    };
-    iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
-    };
-    theme = {
-      name = "Everforest-Dark-BL";
-      package = pkgs.everforest-gtk-theme;
-    };
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
-    };
-    gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
-    };
-  };
-
-  # Fastfetch - System information with organized sections
+  # Fastfetch
   programs.fastfetch = {
     enable = true;
     settings = {
@@ -815,150 +480,10 @@ set -g window-status-current-format "#[fg=#2d353b,bg=#a7c080]#[fg=#2d353b,bg=#a7
           left = 2;
           right = 2;
         };
-        color = {
-          "1" = "green";
-          "2" = "cyan";
-        };
       };
       display = {
         separator = " → ";
-        color = {
-          keys = "green";
-          title = "cyan";
-        };
       };
-      modules = [
-        # Title and separator
-        {
-          type = "title";
-          format = "{user-name}@{host-name}";
-        }
-        {
-          type = "separator";
-          string = "─";
-        }
-        
-        # Hardware Section
-        {
-          type = "custom";
-          format = "󰍛 HARDWARE";
-        }
-        {
-          type = "host";
-          key = "  Host";
-        }
-        {
-          type = "cpu";
-          key = "  CPU";
-        }
-        {
-          type = "gpu";
-          key = "  GPU";
-        }
-        {
-          type = "memory";
-          key = "  Memory";
-        }
-        {
-          type = "disk";
-          key = "  Disk";
-        }
-        {
-          type = "battery";
-          key = "  Battery";
-        }
-        
-        # Separator
-        {
-          type = "separator";
-          string = "─";
-        }
-        
-        # Software Section
-        {
-          type = "custom";
-          format = " SOFTWARE";
-        }
-        {
-          type = "os";
-          key = "  OS";
-        }
-        {
-          type = "kernel";
-          key = "  Kernel";
-        }
-        {
-          type = "packages";
-          key = "  Packages";
-        }
-        {
-          type = "shell";
-          key = "  Shell";
-        }
-        
-        # Separator
-        {
-          type = "separator";
-          string = "─";
-        }
-        
-        # Desktop Section
-        {
-          type = "custom";
-          format = " DESKTOP";
-        }
-        {
-          type = "de";
-          key = "  DE";
-        }
-        {
-          type = "wm";
-          key = "  WM";
-        }
-        {
-          type = "wmtheme";
-          key = "  Theme";
-        }
-        {
-          type = "terminal";
-          key = "  Terminal";
-        }
-        {
-          type = "terminalfont";
-          key = "  Font";
-        }
-        
-        # Separator
-        {
-          type = "separator";
-          string = "─";
-        }
-        
-        # System Section
-        {
-          type = "custom";
-          format = "󰥔 SYSTEM";
-        }
-        {
-          type = "uptime";
-          key = "  Uptime";
-        }
-        {
-          type = "localip";
-          key = "  Local IP";
-        }
-        
-        # Color palette
-        {
-          type = "separator";
-          string = "─";
-        }
-        {
-          type = "colors";
-          paddingLeft = 2;
-          symbol = "circle";
-        }
-      ];
     };
   };
 }

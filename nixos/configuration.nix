@@ -64,6 +64,20 @@
 
   services.pcscd.enable = true;
 
+  # YubiKey U2F/FIDO2 support
+  services.udev.packages = [ pkgs.yubikey-personalization ];
+  
+  security.pam.u2f = {
+    enable = true;
+    control = "sufficient";  # Try YubiKey, fall back to password
+  };
+  
+  security.pam.services = {
+    login.u2fAuth = true;
+    sudo.u2fAuth = true;
+    swaylock.u2fAuth = true;
+  };
+
   # Power Management with TLP
   services.tlp = {
     enable = true;
@@ -208,6 +222,10 @@
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
     networkmanagerapplet
+    yubikey-manager
+    yubikey-personalization
+    yubico-pam
+    pam_u2f
   ];
 
   # Enable Docker

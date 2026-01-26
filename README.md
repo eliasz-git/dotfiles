@@ -1,592 +1,361 @@
-# 🌲 Nix Configuration - Everforest Theme
+# 🌲 Nix Configuration
 
-Multi-system Nix configuration with Everforest Dark Medium color scheme for macOS (M2) and NixOS (Intel laptop).
+Multi-system Nix configuration with Everforest Dark theme for macOS (M2) and NixOS (Intel laptop).
 
-> **Note**: This configuration uses NixOS/nixpkgs **25.05** and home-manager **release-25.05**.
+[![NixOS 25.05](https://img.shields.io/badge/NixOS-25.05-blue.svg)](https://nixos.org)
+[![Built with Nix](https://img.shields.io/badge/Built_With-Nix-5277C3.svg)](https://nixos.org)
 
-## 📋 Table of Contents
+## 📋 Quick Links
 
-- [Quick Start](#-quick-start)
-- [Systems](#-systems)
-- [Features](#-features)
-- [Screenshots](#-screenshots)
-- [File Structure](#-file-structure)
-- [Detailed Installation](#-detailed-installation)
-- [Post-Installation](#-post-installation)
-- [Usage](#-usage)
-- [Customization](#-customization)
-- [Known Issues & Solutions](#-known-issues--solutions)
-- [Helper Scripts](#-helper-scripts)
-- [Troubleshooting](#-troubleshooting)
+- [Systems](#-systems) - What's configured
+- [Quick Start](#-quick-start) - Get running fast
+- [Features](#-features) - What's included
+- [Installation](#-installation) - Detailed setup
+- [Usage](#-usage) - Daily operations
+
+## 💻 Systems
+
+| System | Architecture | WM/DE | Status |
+|--------|--------------|-------|--------|
+| **MacBook M2** | aarch64-darwin | yabai + SketchyBar | ✅ Active |
+| **HP ProBook 450 G8** | x86_64-linux | Hyprland + Waybar | ✅ Active |
+
+**Shared Features:**
+- 🎨 Everforest Dark Medium theme
+- 🐚 Zsh + Starship
+- 📝 Kitty terminal
+- 🔧 Dev tools: Python, Node.js, Go, Rust
 
 ## 🚀 Quick Start
 
-### One-Liner Setup (Recommended)
-
-After cloning, run the interactive setup script:
+### First-Time Setup
 
 ```bash
+# Clone the repository
 git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
 cd ~/.config/nix-config
+
+# Run interactive setup
 ./scripts/setup.sh
 ```
 
 The setup script will:
-- Detect your operating system (macOS or NixOS)
-- Prompt for your username, GitHub username, and email
-- Replace all placeholders in configuration files
-- Provide OS-specific next steps
+1. Detect your OS
+2. Prompt for your details (username, email)
+3. Configure everything automatically
+4. Show you the next steps
 
-### Manual Quick Start
+### Manual Setup
 
 **macOS:**
 ```bash
-git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
-cd ~/.config/nix-config
-./darwin/replace.sh youruser yourgithubuser your@email.com
+cd darwin
+./replace.sh youruser yourgithubuser your@email.com
+cd ..
 nix flake update
 sudo darwin-rebuild switch --flake .#macbook
 ```
 
 **NixOS:**
 ```bash
-git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
-sudo cp /etc/nixos/hardware-configuration.nix ~/.config/nix-config/nixos/
+# Copy hardware config
+sudo cp /etc/nixos/hardware-configuration.nix ./nixos/
+
+# Replace placeholders
+cd nixos
+./replace.sh youruser yourgithubuser your@email.com
+
+# Link and build
 sudo ln -sf ~/.config/nix-config /etc/nixos
 cd /etc/nixos
-./nixos/replace.sh youruser yourgithubuser your@email.com
 sudo nix flake update
 sudo nixos-rebuild switch --flake .#laptop
 ```
-
-## 💻 Systems
-
-### macOS (M2 MacBook)
-- **Architecture**: aarch64-darwin
-- **Window Manager**: yabai (tiling)
-- **Status Bar**: SketchyBar
-- **Package Manager**: Nix + Homebrew
-
-### NixOS (Intel Laptop)
-- **Architecture**: x86_64-linux
-- **Window Manager**: Hyprland (Wayland)
-- **Status Bar**: Waybar
-- **Display Manager**: SDDM with Chili theme
-- **Cursor Theme**: Bibata Modern Classic
-- **GTK Theme**: Everforest Dark
-- **Icons**: Papirus Dark
-- **Package Manager**: Nix (pure)
 
 ## ✨ Features
 
-### Common Features (Both Systems)
-- 🎨 **Everforest Dark Medium** theme throughout
-- 🖼️ **Custom wallpapers** - Shared wallpaper folder for both systems
-- 🐚 **Zsh** with Starship prompt
-- 📝 **Alacritty** terminal (Everforest themed)
-- 🔧 **Tmux** with custom Everforest status bar
-- 📦 **Development tools**: Git, GitHub CLI, Lazygit, Python, Node.js, Go, Rust
-- 🔍 **Modern CLI tools**: eza, bat, fzf, zoxide, ripgrep
-- 🎯 **Consistent keybindings** and aliases
+### macOS (yabai + SketchyBar)
+- **Window Manager**: yabai with Everforest borders
+- **Status Bar**: Custom SketchyBar with system info
+- **Package Manager**: Nix + Homebrew for GUI apps
 
-### macOS Specific
-- 🪟 **yabai** - Tiling window manager with Everforest borders
-- 📊 **SketchyBar** - Custom status bar (Everforest themed)
-- 🍺 **Homebrew** - For GUI applications
-- 🎨 **borders** - Window border highlighting
+### NixOS (Hyprland + Waybar)
+- **Compositor**: Hyprland with blur and transparency
+- **Status Bar**: Translucent Waybar
+- **Login**: SDDM with Chili theme
+- **Power**: TLP optimized
+- **Extras**: Dunst, rofi, screenshot tools
 
-### NixOS Specific
-- 🪟 **Hyprland** - Modern Wayland compositor (Everforest themed)
-- 📊 **Waybar** - Translucent status bar (Everforest themed)
-- 🔔 **Dunst** - Notification daemon
-- 📸 **Screenshot tools** - grim, slurp, swappy
-- 🚀 **rofi-wayland** - Application launcher (`Super + Space`)
-- 🖼️ **hyprpaper** - Wallpaper manager
-- ✨ **Enhanced transparency** - Blur effects and translucent windows
-- 🖱️ **Bibata cursors** - Modern cursor theme, system-wide
-
-## 🎨 Everforest Color Palette
-
+### Development Environment
 ```
-Background:  #2d353b
-Foreground:  #d3c6aa
-Green:       #a7c080 (accent)
-Red:         #e67e80
-Yellow:      #dbbc7f
-Blue:        #7fbbb3
-Cyan:        #83c092
-Magenta:     #d699b6
+Languages:  Python 3.12, Node.js 22, Go, Rust
+CLI Tools:  bat, eza, fzf, ripgrep, zoxide
+Git:        gh, lazygit
+Editors:    VSCodium, Neovim (via packages)
 ```
 
-## 📁 File Structure
-
-```
-nix-config/
-├── .gitignore
-├── README.md
-├── flake.nix                    # Main flake (nixpkgs 25.05)
-│
-├── darwin/                      # macOS configurations
-│   ├── configuration.nix        # System configuration
-│   ├── home.nix                 # User environment
-│   └── replace.sh               # Placeholder replacement script
-│
-├── nixos/                       # NixOS configurations
-│   ├── configuration.nix        # System configuration
-│   ├── home.nix                 # User environment
-│   └── replace.sh               # Placeholder replacement script
-│
-├── scripts/                     # Helper scripts
-│   ├── setup.sh                 # Interactive setup wizard
-│   ├── rebuild.sh               # Easy rebuild with options
-│   ├── wallpaper.sh             # Wallpaper management
-│   └── refresh-theme.sh         # Refresh cursor/GTK themes
-│
-├── wallpapers/                  # Shared wallpapers
-│   └── wallpaper.jpg           # Default wallpaper
-│
-└── sketchybar/                  # macOS SketchyBar
-    ├── colors.sh
-    ├── sketchybarrc
-    ├── items/
-    │   ├── battery.sh
-    │   ├── calendar.sh
-    │   ├── cpu.sh
-    │   ├── front_app.sh
-    │   ├── media.sh
-    │   ├── spaces.sh
-    │   └── volume.sh
-    └── plugins/
-        ├── battery.sh
-        ├── calendar.sh
-        ├── cpu.sh
-        ├── front_app.sh
-        ├── icon_map_fn.sh
-        ├── media.sh
-        ├── space.sh
-        ├── space_windows.sh
-        └── volume.sh
-```
-
-## 📥 Detailed Installation
+## 📥 Installation
 
 ### Prerequisites
 
-**macOS:**
-- Nix package manager installed ([install guide](https://nixos.org/download.html))
-- nix-darwin installed ([install guide](https://github.com/LnL7/nix-darwin))
-- Command Line Tools for Xcode
+**Both Systems:**
+- Nix package manager ([install](https://nixos.org/download.html))
+- Git
 
-**NixOS:**
+**macOS Only:**
+- nix-darwin ([install](https://github.com/LnL7/nix-darwin))
+- Command Line Tools: `xcode-select --install`
+
+**NixOS Only:**
 - Fresh NixOS installation
-- Internet connection
 
-### Step 1: Clone Repository
+### Step-by-Step
 
-```bash
-# Both systems - clone to ~/.config/nix-config
-git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
-cd ~/.config/nix-config
-```
+<details>
+<summary><b>macOS Installation</b></summary>
 
-### Step 2: Run Setup Script (Recommended)
+1. **Clone repo:**
+   ```bash
+   git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
+   cd ~/.config/nix-config
+   ```
 
-```bash
-./scripts/setup.sh
-```
+2. **Run setup:**
+   ```bash
+   ./scripts/setup.sh
+   ```
 
-This handles everything automatically. If you prefer manual setup, continue below.
+3. **For yabai (optional):**
+   - Disable SIP in Recovery Mode
+   - Reboot holding Cmd+R (Intel) or Power button (M1/M2)
+   - Terminal → `csrutil disable`
+   - Reboot normally
 
-### Step 3: Manual Setup (Alternative)
+4. **Post-install:**
+   ```bash
+   brew services restart sketchybar
+   brew services restart yabai
+   ```
 
-#### Replace Placeholders
+</details>
 
-Edit the following files and replace:
-- `{user}` → Your username (e.g., `john`)
-- `{username}` → Your GitHub username
-- `{email}` → Your GitHub email
+<details>
+<summary><b>NixOS Installation</b></summary>
 
-**Files to edit:**
-- `darwin/configuration.nix`
-- `darwin/home.nix`
-- `nixos/configuration.nix`
-- `nixos/home.nix`
-- `flake.nix`
+1. **Clone repo:**
+   ```bash
+   git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
+   cd ~/.config/nix-config
+   ```
 
-**Using the replace scripts:**
+2. **Copy hardware config:**
+   ```bash
+   sudo cp /etc/nixos/hardware-configuration.nix ./nixos/
+   ```
 
-*On macOS:*
-```bash
-cd darwin
-./replace.sh youruser yourgithubuser your@email.com
-```
+3. **Run setup:**
+   ```bash
+   ./scripts/setup.sh
+   ```
 
-*On NixOS:*
-```bash
-cd nixos
-./replace.sh youruser yourgithubuser your@email.com
-```
+4. **Update timezone** in `nixos/configuration.nix`:
+   ```nix
+   time.timeZone = "Your/Timezone";  # e.g., "America/New_York"
+   ```
 
-### Step 4: System-Specific Setup
+5. **Build and reboot:**
+   ```bash
+   sudo nixos-rebuild switch --flake /etc/nixos#laptop
+   sudo reboot
+   ```
 
-**macOS:**
+6. **First login:**
+   - Select "Hyprland" session at SDDM
+   - `Super + Enter` → Terminal
+   - `Super + Space` → App launcher
 
-1. Make SketchyBar scripts executable:
-```bash
-chmod +x sketchybar/*.sh
-chmod +x sketchybar/items/*.sh
-chmod +x sketchybar/plugins/*.sh
-```
-
-2. Update and build:
-```bash
-nix flake update
-sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
-```
-
-3. For yabai to work fully, disable SIP:
-   - Reboot into Recovery Mode (hold Cmd+R during boot on Intel, or hold power button on M1/M2)
-   - Open Terminal from Utilities menu
-   - Run: `csrutil disable`
-   - Reboot
-
-**NixOS:**
-
-1. Copy hardware configuration:
-```bash
-sudo cp /etc/nixos/hardware-configuration.nix ~/.config/nix-config/nixos/
-```
-
-2. Create symlink:
-```bash
-sudo rm -rf /etc/nixos
-sudo ln -s ~/.config/nix-config /etc/nixos
-```
-
-3. Update timezone in `nixos/configuration.nix`:
-```nix
-time.timeZone = "America/New_York";  # Change to your timezone
-```
-
-4. Build and reboot:
-```bash
-cd /etc/nixos
-sudo nix flake update
-sudo nixos-rebuild switch --flake .#laptop
-sudo reboot
-```
-
-## 🎯 Post-Installation
-
-### First Login (NixOS with Hyprland)
-
-1. At the login screen (SDDM), select "Hyprland" as your session
-2. Log in with your user credentials
-3. Press `Super + Enter` to open Alacritty terminal
-4. Press `Super + Space` to open rofi app launcher
-
-### Verify Git Configuration
-
-```bash
-git config --global user.name
-git config --global user.email
-```
-
-### Refresh Themes (NixOS)
-
-If cursors or GTK themes aren't applied, run:
-```bash
-./scripts/refresh-theme.sh
-```
+</details>
 
 ## 📚 Usage
 
 ### Helper Scripts
 
-The `scripts/` directory contains helper utilities:
+All scripts are in `scripts/`:
 
-| Script | Description |
-|--------|-------------|
-| `setup.sh` | Interactive first-time setup |
-| `rebuild.sh` | Easy system rebuild with options |
-| `wallpaper.sh` | Change and reload wallpaper |
-| `refresh-theme.sh` | Refresh cursor and GTK themes |
-
-**Examples:**
 ```bash
 # Rebuild system
 ./scripts/rebuild.sh
 
-# Rebuild with flake update
+# Update flake and rebuild
 ./scripts/rebuild.sh --update
 
-# Test build without committing (NixOS)
+# Test without committing (NixOS)
 ./scripts/rebuild.sh --test
 
 # Change wallpaper
-./scripts/wallpaper.sh /path/to/new/wallpaper.jpg
+./scripts/wallpaper.sh /path/to/wallpaper.jpg
 
-# Reload current wallpaper
-./scripts/wallpaper.sh --reload
-
-# Refresh themes after changes
+# Refresh themes (NixOS)
 ./scripts/refresh-theme.sh
 ```
 
-### Common Commands
+### Common Tasks
 
-**Update System:**
+**Update everything:**
 ```bash
-# Using helper script
 ./scripts/rebuild.sh --update
-
-# Or manually
-update-all  # Shell alias (both systems)
 ```
 
-**Rebuild System Manually:**
+**Edit configuration:**
 ```bash
 # macOS
-sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
+code ~/.config/nix-config/darwin/
 
 # NixOS
-sudo nixos-rebuild switch --flake /etc/nixos#laptop
+code ~/.config/nix-config/nixos/
 ```
+
+**Add a package:**
+1. Edit `home.nix` in your system folder
+2. Add to `home.packages = with pkgs; [ your-package ];`
+3. Rebuild: `./scripts/rebuild.sh`
+
+### Keybindings
+
+<details>
+<summary><b>NixOS (Hyprland)</b></summary>
+
+| Key | Action |
+|-----|--------|
+| `Super + T` | Kitty terminal |
+| `Super + B` | Librewolf browser |
+| `Super + Space` | App launcher |
+| `Super + Q` | Close window |
+| `Super + F` | Toggle float |
+| `Super + H/J/K/L` | Navigate windows |
+| `Super + 1-9` | Switch workspace |
+| `Super + Shift + 1-9` | Move to workspace |
+
+**Media keys work out of the box** (brightness, volume, play/pause)
+
+</details>
+
+<details>
+<summary><b>macOS (yabai)</b></summary>
+
+Standard macOS shortcuts apply. Check `sketchybar/` for custom configs.
+
+</details>
 
 ### Shell Aliases
 
-Both systems include these aliases:
-
 ```bash
-# Navigation
-ls → eza --icons
-ll → eza -la --icons
-cd → z (zoxide)
-cat → bat
+ll        # eza -la --icons
+cat       # bat (syntax highlighting)
+cd x      # z x (smart jumping with zoxide)
 
-# Git shortcuts
-g → git
-gs → git status
-gd → git diff
-gc → git commit
-gp → git push
-gl → git pull
-
-# System shortcuts
-nixos-rebuild → sudo nixos-rebuild switch --flake /etc/nixos#laptop  # NixOS
-darwin-rebuild → sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook  # macOS
+g         # git
+gs        # git status
+gc        # git commit
+gp        # git push
 ```
-
-### Hyprland Keybindings (NixOS)
-
-| Keybinding | Action |
-|------------|--------|
-| `Super + Enter` | Open terminal (Alacritty) |
-| `Super + Space` | Open app launcher (rofi) |
-| `Super + Q` | Close window |
-| `Super + F` | Toggle floating |
-| `Super + H/J/K/L` | Navigate windows (vim-style) |
-| `Super + 1-9` | Switch to workspace 1-9 |
-| `Super + Shift + 1-9` | Move window to workspace 1-9 |
-| `Super + Mouse Left` | Move window |
-| `Super + Mouse Right` | Resize window |
-| `Super + Shift + E` | Exit Hyprland |
 
 ## 🎨 Customization
 
-### Change Wallpaper
+### Change Theme Colors
 
-**Using the helper script:**
-```bash
-./scripts/wallpaper.sh /path/to/new/wallpaper.jpg
-```
-
-**Manual method:**
-```bash
-cp /path/to/new/wallpaper.jpg ~/.config/nix-config/wallpapers/wallpaper.jpg
-
-# NixOS - Reload hyprpaper
-killall hyprpaper; hyprpaper &
-
-# macOS - Set via osascript
-osascript -e 'tell application "Finder" to set desktop picture to POSIX file "'$HOME'/.config/nix-config/wallpapers/wallpaper.jpg"'
+Edit the Everforest colors in your `home.nix`:
+```nix
+# Look for color definitions like:
+background = "#2d353b";
+foreground = "#d3c6aa";
+# Change to your preferred colors
 ```
 
 ### Adjust Transparency (NixOS)
 
-Edit `nixos/home.nix` and modify the opacity values in `windowrulev2`:
-
+In `nixos/home.nix`, modify opacity values:
 ```nix
 windowrulev2 = [
-  "opacity 0.85 0.75,class:^(Alacritty)$"  # First value = focused, second = unfocused
+  "opacity 0.90 0.80,class:^(kitty)$"  # More opaque
+  "opacity 0.75 0.65,class:^(kitty)$"  # More transparent
 ];
 ```
 
-### Change Cursor Theme (NixOS)
+### Change Wallpaper
 
-1. Edit `nixos/home.nix`:
-```nix
-home.pointerCursor = {
-  name = "Your-Cursor-Theme";
-  package = pkgs.your-cursor-package;
-  size = 24;
-};
-```
-
-2. Rebuild and refresh:
 ```bash
-./scripts/rebuild.sh
-./scripts/refresh-theme.sh
+# Quick change
+./scripts/wallpaper.sh /path/to/image.jpg
+
+# Or manually
+cp image.jpg ~/.config/nix-config/wallpapers/wallpaper.jpg
+./scripts/wallpaper.sh --reload
 ```
-
-### Change GTK Theme (NixOS)
-
-1. Edit `nixos/home.nix`:
-```nix
-gtk.theme = {
-  name = "Your-Theme-Name";
-  package = pkgs.your-theme-package;
-};
-```
-
-2. Rebuild and refresh:
-```bash
-./scripts/rebuild.sh
-./scripts/refresh-theme.sh
-```
-
-## ⚠️ Known Issues & Solutions
-
-### SDDM Login Screen
-
-**Issue**: Custom SDDM theme not applying or showing default theme.
-
-**Solution**: The configuration uses the `sddm-chili-theme` package. If the theme doesn't appear:
-1. Ensure the package is installed: check `environment.systemPackages` in `nixos/configuration.nix`
-2. Verify theme files exist: `ls /run/current-system/sw/share/sddm/themes/`
-3. Check SDDM config: `cat /etc/sddm.conf`
-
-### Cursor Theme Not Applying
-
-**Issue**: Cursor theme doesn't change system-wide or in specific applications.
-
-**Solution**:
-1. Run the theme refresh script: `./scripts/refresh-theme.sh`
-2. Ensure `home.pointerCursor` is set in `home.nix`
-3. Log out and back in for SDDM changes
-4. Some apps (like Firefox) need `XCURSOR_THEME` environment variable
-
-### Wallpaper Not Loading
-
-**Issue**: Wallpaper doesn't appear or is stuck.
-
-**Solution**:
-1. Check hyprpaper is running: `pgrep hyprpaper`
-2. Verify wallpaper path exists: `ls -la ~/.config/nix-config/wallpapers/`
-3. Reload hyprpaper: `./scripts/wallpaper.sh --reload`
-4. Check hyprpaper config in `home.nix` uses correct path
-
-### Hyprland Not Starting
-
-**Issue**: Black screen or crash on login.
-
-**Solution**:
-1. Switch to TTY (Ctrl+Alt+F2) and login
-2. Check Hyprland logs: `cat ~/.local/share/hypr/hyprland.log`
-3. Try starting manually: `Hyprland`
-4. Ensure graphics drivers are installed
-
-### GTK Apps Look Wrong
-
-**Issue**: GTK applications don't follow the theme.
-
-**Solution**:
-1. Run: `./scripts/refresh-theme.sh`
-2. Ensure `gtk.enable = true` in `home.nix`
-3. Install GTK theme packages: `everforest-gtk-theme`, `papirus-icon-theme`
-4. For Flatpak apps, apply separately: `flatpak override --filesystem=~/.themes`
 
 ## 🔧 Troubleshooting
 
-### macOS Issues
+<details>
+<summary><b>Build fails with "error: No such file or directory"</b></summary>
 
-**SketchyBar not loading:**
+Make sure you've run `git add .` - flakes only include tracked files!
+
 ```bash
-brew services restart sketchybar
+git add .
+git commit -m "Add configuration"
 ```
 
-**yabai not tiling windows:**
+</details>
+
+<details>
+<summary><b>NixOS: Cursor/GTK theme not applying</b></summary>
+
 ```bash
-csrutil status  # Check if SIP is disabled
-brew services restart yabai
+./scripts/refresh-theme.sh
+# Log out and back in
 ```
 
-### NixOS Issues
+</details>
 
-**Hyprland not starting:**
-```bash
-journalctl -u display-manager.service
-Hyprland  # Try starting manually
-```
+<details>
+<summary><b>NixOS: Hyprland won't start</b></summary>
 
-**Waybar icons not showing:**
-```bash
-# Ensure fonts are installed
-fc-list | grep -i "JetBrainsMono"
-# Rebuild if missing
-sudo nixos-rebuild switch --flake /etc/nixos#laptop
-```
+1. Switch to TTY: `Ctrl + Alt + F2`
+2. Check logs: `journalctl -u display-manager.service`
+3. Try manual start: `Hyprland`
 
-**Screen sharing not working:**
-Add to `nixos/configuration.nix`:
-```nix
-xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
-```
+</details>
 
-### General Issues
+<details>
+<summary><b>macOS: yabai not tiling windows</b></summary>
 
-**Flake evaluation errors:**
-```bash
-nix flake metadata --refresh
-```
+Check SIP status: `csrutil status`
 
-**Build failures:**
-```bash
-nix flake update nixpkgs
-sudo nixos-rebuild switch --flake /etc/nixos#laptop
-```
+Should say "disabled". If not, disable in Recovery Mode.
 
-## 📝 Version Information
-
-| Component | Version |
-|-----------|---------|
-| nixpkgs | 25.05 |
-| home-manager | release-25.05 |
-| nix-darwin | nix-darwin-25.05 |
-| NixOS stateVersion | 25.05 |
-
-## 📝 Notes
-
-- **macOS users**: Some Homebrew casks may require manual interaction during first install
-- **NixOS users**: First build may take 30-60 minutes to download and compile everything
-- **Both systems**: The `hardware-configuration.nix` on NixOS is system-specific and should not be committed to git
-- **Wallpapers**: Wallpapers are committed to the repo by default. Add `wallpapers/` to `.gitignore` to keep them private
+</details>
 
 ## 🤝 Contributing
 
-Feel free to fork this configuration and adapt it to your needs!
+This is a personal configuration, but feel free to:
+- Fork for your own use
+- Open issues for bugs
+- Submit PRs for improvements
 
 ## 📄 License
 
 MIT License - Use freely!
 
-## 🙏 Credits
+## 🙏 Acknowledgments
 
-- [Nix](https://nixos.org/)
-- [nix-darwin](https://github.com/LnL7/nix-darwin)
+- [NixOS](https://nixos.org/) & [nix-darwin](https://github.com/LnL7/nix-darwin)
 - [home-manager](https://github.com/nix-community/home-manager)
-- [Everforest Theme](https://github.com/sainnhe/everforest)
-- [Hyprland](https://hyprland.org/)
-- [yabai](https://github.com/koekeishiya/yabai)
-- [SketchyBar](https://github.com/FelixKratz/SketchyBar)
-- [Bibata Cursors](https://github.com/ful1e5/Bibata_Cursor)
+- [Everforest](https://github.com/sainnhe/everforest) theme
+- [Hyprland](https://hyprland.org/) & [yabai](https://github.com/koekeishiya/yabai)
+
+---
+
+**Version Info:**
+- nixpkgs: 25.05
+- home-manager: release-25.05
+- nix-darwin: nix-darwin-25.05
