@@ -203,9 +203,9 @@
   '';
 
   # Define user account
-  users.users.elias = {
+  users.users.{user} = {
     isNormalUser = true;
-    description = "elias";
+    description = "{user}";
     extraGroups = [ "networkmanager" "wheel" "docker" "bluetooth" ];
     shell = pkgs.zsh;
   };

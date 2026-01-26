@@ -21,4 +21,4 @@ nixos/hardware-configuration.nix
 *~
 
 # Logs
-*.log
+*.log*.backup

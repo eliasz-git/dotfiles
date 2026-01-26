@@ -3,8 +3,8 @@
 {
   programs.git = {
     enable = true;
-    userName = "tundra-node";
-    userEmail = "eliaspublic@icloud.com";
+    userName = "{username}";
+    userEmail = "{email}";
     extraConfig = {
       init.defaultBranch = "main";
       pull.rebase = false;

@@ -35,7 +35,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.elias = import ./darwin/home.nix;
+          home-manager.users.{user} = import ./darwin/home.nix;
         }
       ];
     };
@@ -51,7 +51,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
-          home-manager.users.elias = import ./nixos/home.nix;
+          home-manager.users.{user} = import ./nixos/home.nix;
         }
       ];
     };
