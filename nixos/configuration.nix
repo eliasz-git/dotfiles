@@ -207,6 +207,7 @@
     xfce.thunar-archive-plugin
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
+    networkmanagerapplet
   ];
 
   # Enable Docker
