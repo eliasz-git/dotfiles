@@ -62,6 +62,7 @@
     yubioath-flutter
     file-roller  # Archive manager with Thunar integration
     #kdePackages.kdenlive
+    #gimp
 
     # Wayland utilities
     wl-clipboard
