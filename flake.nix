@@ -30,12 +30,12 @@
       system = darwinSystem;
       pkgs = darwinPkgs;
       modules = [
-        ./darwin/configuration.nix
+        ./hosts/darwin/configuration.nix
         home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.{user} = import ./hosts/darwin/home.nix;
+          home-manager.users.tundra = import ./hosts/darwin/home.nix;
         }
       ];
     };
@@ -45,13 +45,13 @@
       system = linuxSystem;
       pkgs = linuxPkgs;
       modules = [
-        ./nixos/configuration.nix
+        ./hosts/nixos/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
-          home-manager.users.{user} = import ./hosts/nixos/home.nix;
+          home-manager.users.tundra = import ./hosts/nixos/home.nix;
         }
       ];
     };

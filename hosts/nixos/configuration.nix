@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ /etc/nixos/nixos/hardware-configuration.nix ];
+  imports = [ /etc/nixos/hosts/nixos/hardware-configuration.nix ];
 
   # Boot loader
   boot.loader.systemd-boot.enable = true;
@@ -17,7 +17,7 @@
   ];
 
   # Networking
-  networking.hostName = "nixos-laptop";
+  networking.hostName = "icarus";
   networking.networkmanager.enable = true;
 
   # Time zone and locale
@@ -203,9 +203,9 @@
   '';
 
   # Define user account
-  users.users.{user} = {
+  users.users.tundra = {
     isNormalUser = true;
-    description = "{user}";
+    description = "tundra";
     extraGroups = [ "networkmanager" "wheel" "docker" "bluetooth" ];
     shell = pkgs.zsh;
   };

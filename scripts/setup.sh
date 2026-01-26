@@ -99,13 +99,13 @@ replace_placeholders() {
     local file="$1"
     if [[ -f "$file" ]]; then
         if [[ "$OS" == "darwin" ]]; then
-            sed -i '' "s/{user}/$USER_NAME/g" "$file" 2>/dev/null || true
-            sed -i '' "s/{username}/$GITHUB_USERNAME/g" "$file" 2>/dev/null || true
-            sed -i '' "s/{email}/$USER_EMAIL/g" "$file" 2>/dev/null || true
+            sed -i '' "s/tundra/$USER_NAME/g" "$file" 2>/dev/null || true
+            sed -i '' "s/tundra-node/$GITHUB_USERNAME/g" "$file" 2>/dev/null || true
+            sed -i '' "s/117379918+tundra-node@users.noreply.github.com/$USER_EMAIL/g" "$file" 2>/dev/null || true
         else
-            sed -i "s/{user}/$USER_NAME/g" "$file" 2>/dev/null || true
-            sed -i "s/{username}/$GITHUB_USERNAME/g" "$file" 2>/dev/null || true
-            sed -i "s/{email}/$USER_EMAIL/g" "$file" 2>/dev/null || true
+            sed -i "s/tundra/$USER_NAME/g" "$file" 2>/dev/null || true
+            sed -i "s/tundra-node/$GITHUB_USERNAME/g" "$file" 2>/dev/null || true
+            sed -i "s/117379918+tundra-node@users.noreply.github.com/$USER_EMAIL/g" "$file" 2>/dev/null || true
         fi
     fi
 }

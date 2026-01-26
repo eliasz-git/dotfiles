@@ -2,12 +2,12 @@
 
 {
   imports = [
-    ../modules/shared/programs.nix
-    ../modules/shared/shell.nix
-    ../modules/shared/git.nix
-    ../modules/shared/multiplexer.nix
-    ../modules/shared/fastfetch.nix
-    ../modules/nixos/terminal.nix
+    ../../modules/shared/programs.nix
+    ../../modules/shared/shell.nix
+    ../../modules/shared/git.nix
+    ../../modules/shared/multiplexer.nix
+    ../../modules/shared/fastfetch.nix
+    ../../modules/nixos/terminal.nix
   ];
 
   home.stateVersion = "25.05";
@@ -276,7 +276,6 @@
 
       windowrulev2 = [
         "opacity 0.85 0.75,class:^(kitty)$"
-        "opacity 0.85 0.75,class:^(Alacritty)$"
         "opacity 0.88 0.78,class:^(VSCodium)$"
         "opacity 0.92 0.85,class:^(librewolf)$"
         "opacity 0.85 0.75,class:^(thunar)$"

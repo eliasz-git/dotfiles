@@ -49,9 +49,9 @@ echo "  Email: $EMAIL"
 echo ""
 
 # Perform replacements (macOS sed syntax with -i '')
-find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/{user}/$USER_NAME/g" {} +
-find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/{username}/$GITHUB_USER/g" {} +
-find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/{email}/$EMAIL/g" {} +
+find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra/$USER_NAME/g" {} +
+find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra-node/$GITHUB_USER/g" {} +
+find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/117379918+tundra-node@users.noreply.github.com/$EMAIL/g" {} +
 
 print_success "Placeholders replaced successfully!"
 echo ""

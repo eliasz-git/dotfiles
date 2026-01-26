@@ -1,8 +1,10 @@
+{ ... }:
+
+{
   programs.fastfetch = {
     enable = true;
     settings = {
       logo = {
-        type = "medium";
         padding = {
           top = 1;
           left = 2;
@@ -154,3 +156,4 @@
       ];
     };
   };
+}

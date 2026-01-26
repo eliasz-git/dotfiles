@@ -14,9 +14,7 @@
   programs.home-manager.enable = true;
 
   # macOS-specific packages only
-  home.packages = with pkgs; [
-    alacritty
-  ];
+  home.packages = with pkgs; [];
 
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {
