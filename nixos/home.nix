@@ -17,7 +17,7 @@
   home.packages = with pkgs; [
     # Shell utilities
     eza bat fzf zoxide zsh-syntax-highlighting
-    fastfetch nano yq ripgrep thefuck tree
+    fastfetch yq ripgrep thefuck tree
     curl wget git htop
     
     # Terminal & multiplexer & TUIs

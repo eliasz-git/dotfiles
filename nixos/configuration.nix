@@ -198,7 +198,6 @@
 
   # System packages including SDDM theme and cursor theme
   environment.systemPackages = with pkgs; [
-    vim
     nano
     wget
     curl
