@@ -61,7 +61,8 @@
     tutanota-desktop
     yubioath-flutter
     file-roller  # Archive manager with Thunar integration
-    
+    #kdePackages.kdenlive
+
     # Wayland utilities
     wl-clipboard
     grim
