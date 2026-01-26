@@ -9,7 +9,7 @@ result-*
 *.backup
 
 # NixOS hardware configuration (system-specific)
-nixos/hardware-configuration.nix
+hosts/nixos/hardware-configuration.nix
 
 # ./flake.lock
 
@@ -21,4 +21,4 @@ nixos/hardware-configuration.nix
 *~
 
 # Logs
-*.log*.backup
+*.log
