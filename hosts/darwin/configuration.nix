@@ -2,7 +2,7 @@
 
 {
   system.stateVersion = 6;
-  system.primaryUser = "tundra";
+  system.primaryUser = "elias";
   nixpkgs.config.allowUnfree = true;
 
   # Nix settings
@@ -69,7 +69,7 @@
       "com.apple.mouse.tapBehavior" = 1;
       "com.apple.trackpad.enableSecondaryClick" = true;
     };
-    screencapture.location = "/Users/tundra/Pictures/Screenshots";
+    screencapture.location = "/Users/elias/Pictures/Screenshots";
     loginwindow.GuestEnabled = false;
     screensaver.askForPasswordDelay = 5;
   };
@@ -169,9 +169,9 @@ echo "yabai configuration loaded.."
   };
 
   # User
-  users.users.tundra = {
-    name = "tundra";
-    home = "/Users/tundra";
+  users.users.elias = {
+    name = "elias";
+    home = "/Users/elias";
     shell = pkgs.zsh;
   };
 
