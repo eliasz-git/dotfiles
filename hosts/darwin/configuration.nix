@@ -69,7 +69,7 @@
       "com.apple.mouse.tapBehavior" = 1;
       "com.apple.trackpad.enableSecondaryClick" = true;
     };
-    screencapture.location = "/Users/elias/Pictures/Screenshots";
+    screencapture.location = "/Users/tundra/Pictures/Screenshots";
     loginwindow.GuestEnabled = false;
     screensaver.askForPasswordDelay = 5;
   };
@@ -171,7 +171,7 @@ echo "yabai configuration loaded.."
   # User
   users.users.tundra = {
     name = "tundra";
-    home = "/Users/elias";
+    home = "/Users/tundra";
     shell = pkgs.zsh;
   };
 
