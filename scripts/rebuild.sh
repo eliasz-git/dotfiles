@@ -145,7 +145,7 @@ elif [[ "$OS" == "nixos" ]]; then
         print_info "Dry run - showing what would be built..."
         sudo nixos-rebuild dry-run --flake "$FLAKE_PATH#laptop"
     else
-        sudo nixos-rebuild "$BUILD_ACTION" --flake "$FLAKE_PATH#laptop"
+        sudo nixos-rebuild "$BUILD_ACTION" --flake "$FLAKE_PATH#laptop --impure"
     fi
 fi
 
