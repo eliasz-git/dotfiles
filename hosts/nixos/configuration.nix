@@ -202,11 +202,14 @@
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto"
   '';
 
+  # Nemo
+  services.udisks2.enable = true;  # For automatic mounting of removable media
+
   # Define user account
   users.users.tundra = {
     isNormalUser = true;
     description = "tundra";
-    extraGroups = [ "networkmanager" "wheel" "docker" "bluetooth" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "bluetooth"];
     shell = pkgs.zsh;
   };
 
@@ -217,8 +220,9 @@
     curl
     git
     librewolf
-    xfce.thunar
-    xfce.thunar-archive-plugin
+    nemo
+    nemo-fileroller
+    polkit_gnome
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
     networkmanagerapplet
@@ -236,10 +240,7 @@
 
   # Enable SSH
   services.openssh.enable = true;
-
-  # Enable KDE Connect
-  programs.kdeconnect.enable = true;
-
+  
   # Nix settings
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];

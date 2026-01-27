@@ -29,13 +29,8 @@
     # GUI Applications
     librewolf thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
-    tutanota-desktop yubioath-flutter file-roller
-    
-    # File manager
-    xfce.thunar
-    xfce.thunar-archive-plugin
-    gvfs
-    
+    tutanota-desktop yubioath-flutter
+
     # Theming
     bibata-cursors
     papirus-icon-theme
@@ -280,7 +275,7 @@
         "opacity 0.92 0.85,class:^(librewolf)$"
         "opacity 0.85 0.75,class:^(thunar)$"
         "opacity 0.88 0.78,class:^(obsidian)$"
-        "opacity 0.85 0.75,class:^(org.gnome.FileRoller)$"
+        "opacity 0.85 0.75,class:^(nemo)$"
       ];
 
       layerrule = [
@@ -292,8 +287,9 @@
       bind = [
         "$mod, T, exec, kitty"
         "$mod, B, exec, librewolf"
-        "$mod, I, exec, vscodium"
-        "$mod, Return, exec, thunar"
+        "$mod, I, exec, VSCodium"
+        "$mod, M, exec, lollypop"
+        "$mod, Return, exec, nemo"
         "$mod, Space, exec, rofi -show drun"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
