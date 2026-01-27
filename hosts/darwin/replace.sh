@@ -51,6 +51,7 @@ echo ""
 # Perform replacements - EMAIL FIRST to avoid conflicts with tundra-node in email (macOS sed syntax with -i '')
 find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/117379918+tundra-node@users.noreply.github.com/$EMAIL/g" {} +
 find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra-node/$GITHUB_USER/g" {} +
+find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra/$USER_NAME/g" {} +
 find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/elias/$USER_NAME/g" {} +
 
 print_success "Placeholders replaced successfully!"
