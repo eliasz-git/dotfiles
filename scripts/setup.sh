@@ -51,27 +51,19 @@ if [[ ! -f "$CONFIG_DIR/flake.nix" ]]; then
     exit 1
 fi
 
-# Prompt for user details
-echo "Please provide the following details:"
+# Prompt for user details with option to keep defaults
+echo "Please provide the following details (or press Enter to keep defaults):"
 echo ""
 
-read -rp "Enter your system username (e.g., john): " USER_NAME
-if [[ -z "$USER_NAME" ]]; then
-    print_error "Username cannot be empty"
-    exit 1
-fi
+read -rp "Enter your system username [default: tundra]: " USER_NAME
+USER_NAME="${USER_NAME:-tundra}"
 
-read -rp "Enter your GitHub username (for git config): " GITHUB_USERNAME
-if [[ -z "$GITHUB_USERNAME" ]]; then
-    print_error "GitHub username cannot be empty"
-    exit 1
-fi
+read -rp "Enter your GitHub username [default: tundra-node]: " GITHUB_USERNAME
+GITHUB_USERNAME="${GITHUB_USERNAME:-tundra-node}"
 
-read -rp "Enter your email (for git config): " USER_EMAIL
-if [[ -z "$USER_EMAIL" ]]; then
-    print_error "Email cannot be empty"
-    exit 1
-fi
+read -rp "Enter your email [default: 117379918+tundra-node@users.noreply.github.com]: " USER_EMAIL
+USER_EMAIL="${USER_EMAIL:-117379918+tundra-node@users.noreply.github.com}"
+
 # Validate email format
 if [[ ! "$USER_EMAIL" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
     print_error "Invalid email format"
@@ -85,49 +77,45 @@ echo "  - GitHub username: $GITHUB_USERNAME"
 echo "  - Email: $USER_EMAIL"
 echo ""
 
-read -rp "Is this correct? (y/n): " CONFIRM
-if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
-    print_warning "Setup cancelled. Run the script again with correct details."
-    exit 0
-fi
-
-echo ""
-print_info "Replacing placeholders in configuration files..."
-
-# Function to replace placeholders
-replace_placeholders() {
-    local file="$1"
-    if [[ -f "$file" ]]; then
-        if [[ "$OS" == "darwin" ]]; then
-            sed -i '' "s/tundra/$USER_NAME/g" "$file" 2>/dev/null || true
-            sed -i '' "s/tundra-node/$GITHUB_USERNAME/g" "$file" 2>/dev/null || true
-            sed -i '' "s/117379918+tundra-node@users.noreply.github.com/$USER_EMAIL/g" "$file" 2>/dev/null || true
-        else
-            sed -i "s/tundra/$USER_NAME/g" "$file" 2>/dev/null || true
-            sed -i "s/tundra-node/$GITHUB_USERNAME/g" "$file" 2>/dev/null || true
-            sed -i "s/117379918+tundra-node@users.noreply.github.com/$USER_EMAIL/g" "$file" 2>/dev/null || true
-        fi
+# Check if using defaults
+if [[ "$USER_NAME" == "tundra" && "$GITHUB_USERNAME" == "tundra-node" && "$USER_EMAIL" == "117379918+tundra-node@users.noreply.github.com" ]]; then
+    print_info "Using default values - no placeholder replacement needed"
+    SKIP_REPLACEMENT=true
+else
+    SKIP_REPLACEMENT=false
+    read -rp "Is this correct? (y/n): " CONFIRM
+    if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
+        print_warning "Setup cancelled. Run the script again with correct details."
+        exit 0
     fi
-}
-
-# Replace in all nix files
-find "$CONFIG_DIR" -type f -name "*.nix" | while read -r file; do
-    replace_placeholders "$file"
-    print_info "Processed: $file"
-done
-
-print_success "Placeholders replaced successfully!"
-echo ""
+fi
 
 # OS-specific setup
 if [[ "$OS" == "darwin" ]]; then
     print_info "Running macOS-specific setup..."
     
+    # Replace placeholders if needed
+    if [[ "$SKIP_REPLACEMENT" == false ]]; then
+        echo ""
+        print_info "Replacing placeholders in configuration files..."
+        
+        if [[ -f "$CONFIG_DIR/hosts/darwin/replace.sh" ]]; then
+            cd "$CONFIG_DIR/hosts/darwin"
+            chmod +x replace.sh
+            ./replace.sh "$USER_NAME" "$GITHUB_USERNAME" "$USER_EMAIL"
+            cd "$CONFIG_DIR"
+            print_success "Placeholders replaced successfully!"
+        else
+            print_error "replace.sh not found in hosts/darwin/"
+            exit 1
+        fi
+    fi
+    
     # Make sketchybar scripts executable
-    if [[ -d "$CONFIG_DIR/sketchybar" ]]; then
-        chmod +x "$CONFIG_DIR/sketchybar/"*.sh 2>/dev/null || true
-        chmod +x "$CONFIG_DIR/sketchybar/items/"*.sh 2>/dev/null || true
-        chmod +x "$CONFIG_DIR/sketchybar/plugins/"*.sh 2>/dev/null || true
+    if [[ -d "$CONFIG_DIR/modules/darwin/sketchybar" ]]; then
+        chmod +x "$CONFIG_DIR/modules/darwin/sketchybar/"*.sh 2>/dev/null || true
+        chmod +x "$CONFIG_DIR/modules/darwin/sketchybar/items/"*.sh 2>/dev/null || true
+        chmod +x "$CONFIG_DIR/modules/darwin/sketchybar/plugins/"*.sh 2>/dev/null || true
         print_success "SketchyBar scripts made executable"
     fi
     
@@ -142,14 +130,32 @@ elif [[ "$OS" == "nixos" ]]; then
     print_info "Running NixOS-specific setup..."
     
     # Check for hardware-configuration.nix
-    if [[ ! -f "$CONFIG_DIR/nixos/hardware-configuration.nix" ]]; then
+    if [[ ! -f "$CONFIG_DIR/hosts/nixos/hardware-configuration.nix" ]]; then
         print_warning "hardware-configuration.nix not found!"
         if [[ -f "/etc/nixos/hardware-configuration.nix" ]]; then
             print_info "Copying from /etc/nixos/hardware-configuration.nix..."
-            cp /etc/nixos/hardware-configuration.nix "$CONFIG_DIR/nixos/hardware-configuration.nix"
+            cp /etc/nixos/hardware-configuration.nix "$CONFIG_DIR/hosts/nixos/hardware-configuration.nix"
             print_success "hardware-configuration.nix copied"
         else
-            print_error "Please copy your hardware-configuration.nix to $CONFIG_DIR/nixos/"
+            print_error "Please copy your hardware-configuration.nix to $CONFIG_DIR/hosts/nixos/"
+            exit 1
+        fi
+    fi
+    
+    # Replace placeholders if needed
+    if [[ "$SKIP_REPLACEMENT" == false ]]; then
+        echo ""
+        print_info "Replacing placeholders in configuration files..."
+        
+        if [[ -f "$CONFIG_DIR/hosts/nixos/replace.sh" ]]; then
+            cd "$CONFIG_DIR/hosts/nixos"
+            chmod +x replace.sh
+            ./replace.sh "$USER_NAME" "$GITHUB_USERNAME" "$USER_EMAIL"
+            cd "$CONFIG_DIR"
+            print_success "Placeholders replaced successfully!"
+        else
+            print_error "replace.sh not found in hosts/nixos/"
+            exit 1
         fi
     fi
     
@@ -169,13 +175,23 @@ elif [[ "$OS" == "nixos" ]]; then
         
         sudo ln -s "$CONFIG_DIR" /etc/nixos
         print_success "Symlink created: /etc/nixos -> $CONFIG_DIR"
+        
+        echo ""
+        print_info "Verifying symlink..."
+        if [[ -L "/etc/nixos" ]]; then
+            LINK_TARGET=$(readlink -f /etc/nixos)
+            print_success "Symlink verified: /etc/nixos -> $LINK_TARGET"
+        else
+            print_error "Symlink creation failed!"
+            exit 1
+        fi
     fi
     
     echo ""
     print_info "Next steps for NixOS:"
-    echo "  1. Verify hardware-configuration.nix is in nixos/ directory"
-    echo "  2. Update timezone in nixos/configuration.nix if needed"
-    echo "  3. Update the flake: cd $CONFIG_DIR && sudo nix flake update"
+    echo "  1. Verify hardware-configuration.nix is in hosts/nixos/ directory"
+    echo "  2. Update timezone in hosts/nixos/configuration.nix if needed"
+    echo "  3. Update the flake: cd /etc/nixos && sudo nix flake update"
     echo "  4. Build: sudo nixos-rebuild switch --flake /etc/nixos#laptop"
     echo "  5. Reboot: sudo reboot"
     echo ""
