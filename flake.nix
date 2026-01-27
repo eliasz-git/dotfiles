@@ -35,7 +35,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.elias = import ./hosts/darwin/home.nix;
+          home-manager.users.tundra = import ./hosts/darwin/home.nix;
         }
       ];
     };
