@@ -48,15 +48,15 @@ echo "  GitHub: $GITHUB_USER"
 echo "  Email: $EMAIL"
 echo ""
 
-# Perform replacements (macOS sed syntax with -i '')
-find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra/$USER_NAME/g" {} +
-find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra-node/$GITHUB_USER/g" {} +
+# Perform replacements - EMAIL FIRST to avoid conflicts with tundra-node in email (macOS sed syntax with -i '')
 find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/117379918+tundra-node@users.noreply.github.com/$EMAIL/g" {} +
+find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/tundra-node/$GITHUB_USER/g" {} +
+find "$SCRIPT_DIR" -type f -name "*.nix" -exec sed -i '' "s/elias/$USER_NAME/g" {} +
 
 print_success "Placeholders replaced successfully!"
 echo ""
 echo "Next steps:"
-echo "  1. Make SketchyBar scripts executable: chmod +x ../sketchybar/**/*.sh"
+echo "  1. Make SketchyBar scripts executable: chmod +x ../../modules/darwin/sketchybar/**/*.sh"
 echo "  2. Update flake: nix flake update"
 echo "  3. Build: sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook"
 echo ""
