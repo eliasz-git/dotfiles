@@ -49,9 +49,9 @@ The setup script will:
 
 **macOS:**
 ```bash
-cd darwin
+cd hosts/darwin
 ./replace.sh youruser yourgithubuser your@email.com
-cd ..
+cd ../..
 nix flake update
 sudo darwin-rebuild switch --flake .#macbook
 ```
@@ -59,14 +59,18 @@ sudo darwin-rebuild switch --flake .#macbook
 **NixOS:**
 ```bash
 # Copy hardware config
-sudo cp /etc/nixos/hardware-configuration.nix ./nixos/
+sudo cp /etc/nixos/hardware-configuration.nix ./hosts/nixos/
 
-# Replace placeholders
-cd nixos
+# Replace placeholders (optional - or use setup.sh)
+cd hosts/nixos
 ./replace.sh youruser yourgithubuser your@email.com
+cd ../..
 
-# Link and build
-sudo ln -sf ~/.config/nix-config /etc/nixos
+# Remove existing /etc/nixos and create symlink
+sudo rm -rf /etc/nixos
+sudo ln -s ~/.config/nix-config /etc/nixos
+
+# Update and build
 cd /etc/nixos
 sudo nix flake update
 sudo nixos-rebuild switch --flake .#laptop
@@ -150,28 +154,51 @@ Editors:    VSCodium, Neovim (via packages)
 
 2. **Copy hardware config:**
    ```bash
-   sudo cp /etc/nixos/hardware-configuration.nix ./nixos/
+   sudo cp /etc/nixos/hardware-configuration.nix ./hosts/nixos/
    ```
 
-3. **Run setup:**
+3. **Run setup (recommended):**
    ```bash
    ./scripts/setup.sh
    ```
+   
+   **Or manual setup:**
+   ```bash
+   # Replace placeholders in config files
+   cd hosts/nixos
+   ./replace.sh youruser yourgithubuser your@email.com
+   cd ../..
+   ```
 
-4. **Update timezone** in `nixos/configuration.nix`:
+4. **Create symlink to config:**
+   ```bash
+   # Remove default /etc/nixos directory
+   sudo rm -rf /etc/nixos
+   
+   # Create symlink (no trailing slash!)
+   sudo ln -s ~/.config/nix-config /etc/nixos
+   
+   # Verify it worked
+   ls -la /etc/nixos
+   # Should show: /etc/nixos -> /home/youruser/.config/nix-config
+   ```
+
+5. **Update timezone** in `hosts/nixos/configuration.nix`:
    ```nix
    time.timeZone = "Your/Timezone";  # e.g., "America/New_York"
    ```
 
-5. **Build and reboot:**
+6. **Build and reboot:**
    ```bash
-   sudo nixos-rebuild switch --flake /etc/nixos#laptop
+   cd /etc/nixos
+   sudo nix flake update
+   sudo nixos-rebuild switch --flake .#laptop
    sudo reboot
    ```
 
-6. **First login:**
+7. **First login:**
    - Select "Hyprland" session at SDDM
-   - `Super + Enter` → Terminal
+   - `Super + T` → Terminal
    - `Super + Space` → App launcher
 
 </details>
@@ -209,10 +236,10 @@ All scripts are in `scripts/`:
 **Edit configuration:**
 ```bash
 # macOS
-code ~/.config/nix-config/darwin/
+code ~/.config/nix-config/hosts/darwin/
 
 # NixOS
-code ~/.config/nix-config/nixos/
+code ~/.config/nix-config/hosts/nixos/
 ```
 
 **Add a package:**
@@ -243,7 +270,7 @@ code ~/.config/nix-config/nixos/
 <details>
 <summary><b>macOS (yabai)</b></summary>
 
-Standard macOS shortcuts apply. Check `sketchybar/` for custom configs.
+Standard macOS shortcuts apply. Check `modules/darwin/sketchybar/` for custom configs.
 
 </details>
 
@@ -274,7 +301,7 @@ foreground = "#d3c6aa";
 
 ### Adjust Transparency (NixOS)
 
-In `nixos/home.nix`, modify opacity values:
+In `hosts/nixos/home.nix`, modify opacity values:
 ```nix
 windowrulev2 = [
   "opacity 0.90 0.80,class:^(kitty)$"  # More opaque
@@ -303,6 +330,25 @@ Make sure you've run `git add .` - flakes only include tracked files!
 ```bash
 git add .
 git commit -m "Add configuration"
+```
+
+</details>
+
+<details>
+<summary><b>NixOS: /etc/nixos symlink created inside directory instead of replacing it</b></summary>
+
+This happens if `/etc/nixos` already exists as a directory. Fix:
+
+```bash
+# Remove the existing directory
+sudo rm -rf /etc/nixos
+
+# Create the symlink correctly (no trailing slash!)
+sudo ln -s ~/.config/nix-config /etc/nixos
+
+# Verify
+ls -la /etc/nixos
+# Should show: /etc/nixos -> /home/youruser/.config/nix-config
 ```
 
 </details>
