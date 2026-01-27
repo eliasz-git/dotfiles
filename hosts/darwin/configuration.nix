@@ -2,7 +2,7 @@
 
 {
   system.stateVersion = 6;
-  system.primaryUser = "elias";
+  system.primaryUser = "tundra";
   nixpkgs.config.allowUnfree = true;
 
   # Nix settings
@@ -169,8 +169,8 @@ echo "yabai configuration loaded.."
   };
 
   # User
-  users.users.elias = {
-    name = "elias";
+  users.users.tundra = {
+    name = "tundra";
     home = "/Users/elias";
     shell = pkgs.zsh;
   };
