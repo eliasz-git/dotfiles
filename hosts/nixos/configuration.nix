@@ -219,9 +219,9 @@
     xkb = {
       layout = "us,us";
       variant = "colemak,";
-      options = "grp:alt_shift_toggle"
-    }
-  }
+      options = "grp:alt_shift_toggle";
+    };
+  };
 
   # System packages including SDDM theme and cursor theme
   environment.systemPackages = with pkgs; [
