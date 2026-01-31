@@ -205,7 +205,9 @@
       ];
 
       input = {
-        kb_layout = "us";
+        kb_layout = "us,us";
+        kb_variant = "colemak,";
+        kb_options = "grp:alt_shift_toggle";
         follow_mouse = 1;
         touchpad = {
           natural_scroll = false;

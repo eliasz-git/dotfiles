@@ -213,6 +213,16 @@
     shell = pkgs.zsh;
   };
 
+  console.keyMap = "colemak";
+
+  services.xserver = {
+    xkb = {
+      layout = "us,us";
+      variant = "colemak,";
+      options = "grp:alt_shift_toggle"
+    }
+  }
+
   # System packages including SDDM theme and cursor theme
   environment.systemPackages = with pkgs; [
     nano
@@ -220,8 +230,8 @@
     curl
     git
     librewolf
-    nemo
-    nemo-fileroller
+    xfce.thunar
+    xfce.thunar-archive-plugin
     polkit_gnome
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
