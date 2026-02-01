@@ -368,7 +368,7 @@
         height = 35;
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
+        modules-right = [ "mpris" "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
 
         "hyprland/workspaces" = {
           format = "{name}";
@@ -401,6 +401,23 @@
           format-wifi = "󰖨 {signalStrength}%";
           format-ethernet = "󰈀 Connected";
           format-disconnected = "󰖪 Disconnected";
+        };
+
+        "mpris" = {
+          format = "{player_icon} {title} - {artist}";
+          format-paused = "{status_icon} {title} - {artist}";
+          player-icons = {
+            default = "󰐊";
+            mpv = "󰝚";
+            spotify = "󰓇";
+          };
+          status-icons = {
+            paused = "󰏤";
+          };
+          max-length = 40;
+          on-click = "playerctl play-pause";
+          on-click-right = "playerctl next";
+          on-click-middle = "playerctl previous";
         };
 
         pulseaudio = {
@@ -443,11 +460,20 @@
       #memory,
       #network,
       #pulseaudio,
+      #mpris,
       #tray {
         padding: 0 10px;
         margin: 3px;
         background-color: rgba(71, 82, 88, 0.6);
         color: #d3c6aa;
+        border-radius: 5px;
+      }
+
+      #mpris {
+        padding: 0 10px;
+        margin: 3px;
+        background-color: rgba(131, 192, 146, 0.7);
+        color: #2d353b;
         border-radius: 5px;
       }
 
