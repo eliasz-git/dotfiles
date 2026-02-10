@@ -80,7 +80,11 @@ sudo nixos-rebuild switch --flake .#laptop
 
 ### macOS (yabai + SketchyBar)
 - **Window Manager**: yabai with Everforest borders
-- **Status Bar**: Custom SketchyBar with system info
+- **Status Bar**: Custom SketchyBar with enhanced transparency and modern design
+  - **Printing**: Integrated CUPS support with printer status indicator
+  - **iCloud**: Live iCloud Drive sync status monitoring
+  - System monitors: CPU, Battery, Volume, Calendar
+  - Transparent background with subtle shadows for depth
 - **Package Manager**: Nix + Homebrew for GUI apps
 
 ### NixOS (Hyprland + Waybar)
@@ -272,6 +276,14 @@ code ~/.config/nix-config/hosts/nixos/
 
 Standard macOS shortcuts apply. Check `modules/darwin/sketchybar/` for custom configs.
 
+**Menu Bar Items:**
+- **Printer Status** 󰐪: Click to open printer preferences, shows active print jobs
+- **iCloud Status** 󰀂: Monitor iCloud Drive sync status (green=synced, yellow=syncing, cyan=online, red=offline)
+- **Calendar** 􀧞: Current date and time
+- **Volume** 🔊: System volume with live updates
+- **Battery** 🔋: Battery percentage and charging status
+- **CPU** 􀧓: CPU usage percentage
+
 </details>
 
 ### Shell Aliases
@@ -308,6 +320,32 @@ windowrulev2 = [
   "opacity 0.75 0.65,class:^(kitty)$"  # More transparent
 ];
 ```
+
+### Adjust Menu Bar Transparency (macOS)
+
+In `modules/darwin/sketchybar/colors.sh`, modify transparency values:
+```bash
+export BAR_COLOR=0x882d353b        # Semi-transparent (88 = ~53% opacity)
+export ITEM_BG_COLOR=0xaa475258    # Item background (aa = ~67% opacity)
+# Format: 0xAARRGGBB where AA is alpha (00=transparent, ff=opaque)
+```
+
+### Configure Printing (macOS)
+
+The configuration includes CUPS printing support:
+- Printer status shows in menu bar (click to open preferences)
+- Add printers via System Preferences → Printers & Scanners
+- Or use command line: `lpstat -p` to list printers
+
+### iCloud Integration (macOS)
+
+iCloud Drive status is monitored automatically:
+- Green 󰀂: Synced and up-to-date
+- Yellow 󰅟: Currently syncing
+- Cyan 󰀂: Online and connected
+- Red 󰅤: Offline or not available
+
+Ensure iCloud Drive is enabled in System Preferences → Apple ID → iCloud.
 
 ### Change Wallpaper
 
