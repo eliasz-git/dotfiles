@@ -443,12 +443,7 @@
               if [ "$jobs" -gt 0 ]; then
                 echo "$jobs"
               else
-                printers=$(lpstat -p 2>/dev/null | grep -c "printer")
-                if [ "$printers" -gt 0 ]; then
-                  echo ""
-                else
-                  echo ""
-                fi
+                echo ""
               fi
             else
               echo ""
