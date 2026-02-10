@@ -89,7 +89,12 @@ sudo nixos-rebuild switch --flake .#laptop
 
 ### NixOS (Hyprland + Waybar)
 - **Compositor**: Hyprland with blur and transparency
-- **Status Bar**: Translucent Waybar
+- **Status Bar**: Enhanced Waybar with full transparency and modern design
+  - **Printing**: CUPS support with printer status indicator and multi-driver support
+  - **Cloud Sync**: Nextcloud/DavMail integration with live sync status
+  - System monitors: CPU, Memory, Battery, Network, Volume
+  - Transparent background with shadows and rounded corners
+  - iCloud calendar/contacts sync via DavMail or GNOME Online Accounts
 - **Login**: SDDM with Chili theme
 - **Power**: TLP optimized
 - **Extras**: Dunst, rofi, screenshot tools
@@ -269,6 +274,15 @@ code ~/.config/nix-config/hosts/nixos/
 
 **Media keys work out of the box** (brightness, volume, play/pause)
 
+**Waybar Modules:**
+- **Printer Status** 󰐪: Click to open printer manager, shows active print jobs count
+- **Cloud Sync** 󰅟: Shows Nextcloud/DavMail sync status (Synced/Connected/Offline)
+- **Media** 󰐊: Current playing media with play/pause controls
+- **Network** 󰖨: WiFi signal strength or ethernet status
+- **CPU** 󰻠: CPU usage percentage
+- **Memory** 󰍛: RAM usage percentage
+- **Battery** 󰁹: Battery percentage with charging indicator
+
 </details>
 
 <details>
@@ -320,6 +334,52 @@ windowrulev2 = [
   "opacity 0.75 0.65,class:^(kitty)$"  # More transparent
 ];
 ```
+
+**Waybar Transparency:**
+```nix
+# In the style section, adjust module backgrounds:
+background-color: rgba(71, 82, 88, 0.5);  # 0.5 = 50% opacity
+# Main bar is fully transparent by default
+window#waybar {
+  background-color: transparent;
+}
+```
+
+### Configure Printing (NixOS)
+
+The configuration includes CUPS with multiple printer drivers:
+- **Printer status** shows in Waybar (click 󰐪 to open manager)
+- **Add printers** via `system-config-printer` GUI or:
+  ```bash
+  lpstat -p  # List printers
+  lpadmin -p printer_name -E -v device_uri  # Add printer
+  ```
+- **Network printer discovery** enabled via Avahi/mDNS
+- **Supported drivers**: HP, Epson, Brother, Canon, and generic Gutenprint
+
+### Cloud Sync & iCloud Integration (NixOS)
+
+**Nextcloud** (iCloud Drive alternative):
+- Sync status shown in Waybar 󰅟
+- Click icon to open Nextcloud client
+- Configure via: `nextcloud` → Settings → Add Account
+
+**iCloud Calendar & Contacts Sync**:
+1. **Option 1 - DavMail (recommended)**:
+   ```bash
+   davmail  # Start DavMail gateway
+   # Configure Thunderbird to connect to localhost:1080 (IMAP)
+   # Use your iCloud credentials
+   ```
+
+2. **Option 2 - GNOME Online Accounts**:
+   - Add iCloud account in Settings → Online Accounts
+   - Sync with Evolution or Thunderbird
+
+**Status Indicators**:
+- "Synced" 󰅟: Nextcloud actively syncing
+- "Connected" 󰅟: DavMail connected to iCloud
+- "Offline" 󰅟: No sync services running
 
 ### Adjust Menu Bar Transparency (macOS)
 
