@@ -202,6 +202,25 @@
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto"
   '';
 
+  # Printing with CUPS
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [ 
+      gutenprint 
+      hplip 
+      epson-escpr 
+      brlaser 
+      cnijfilter2
+    ];
+  };
+  
+  # Enable printer discovery
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   # Nemo
   services.udisks2.enable = true;  # For automatic mounting of removable media
 
@@ -240,6 +259,9 @@
     yubikey-personalization
     yubico-pam
     pam_u2f
+    # Printing utilities
+    cups
+    system-config-printer    # GUI for printer management
   ];
 
   # Enable Docker
