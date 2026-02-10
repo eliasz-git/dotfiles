@@ -240,6 +240,7 @@
     yubikey-personalization
     yubico-pam
     pam_u2f
+    mullvad-vpn
   ];
 
   # Enable Docker
