@@ -11,10 +11,10 @@ COLOR=$CYAN
 if [ -d "$HOME/Library/Mobile Documents/com~apple~CloudDocs" ]; then
   # Check if brctl (iCloud control tool) is available
   if command -v brctl &> /dev/null; then
-    # Get sync status
-    SYNC_STATUS=$(brctl monitor 2>&1 | grep -i "sync" | head -n 1)
+    # Get sync status with timeout to prevent hanging
+    SYNC_STATUS=$(timeout 2 brctl diagnose 2>&1 | grep -i "sync\|status" | head -n 1)
     
-    if echo "$SYNC_STATUS" | grep -qi "idle\|synced"; then
+    if echo "$SYNC_STATUS" | grep -qi "idle\|synced\|up.*to.*date"; then
       ICON="󰀂"  # Cloud check icon
       COLOR=$GREEN
       ICLOUD_STATUS="synced"

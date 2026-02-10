@@ -371,7 +371,7 @@
         layer = "top";
         position = "top";
         height = 40;
-        margin = "5 10 0 10";
+        margin = "5px 10px 0px 10px";
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];
         modules-right = [ "mpris" "custom/printer" "custom/cloud" "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
@@ -462,7 +462,7 @@
           format = "󰅟 {}";
           interval = 60;
           exec = ''
-            if pgrep -x nextcloud >/dev/null; then
+            if pgrep -x "nextcloud" >/dev/null || pgrep -f "nextcloud" >/dev/null; then
               echo "Synced"
             elif pgrep -x davmail >/dev/null; then
               echo "Connected"
