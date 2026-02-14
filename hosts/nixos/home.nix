@@ -29,7 +29,7 @@
     # GUI Applications
     librewolf thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
-    tutanota-desktop yubioath-flutter
+    tutanota-desktop yubioath-flutter prismlauncher
     
     # Cloud sync and iCloud alternatives
     nextcloud-client         # Cloud file sync (iCloud alternative)

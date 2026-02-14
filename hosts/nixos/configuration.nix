@@ -259,13 +259,10 @@
     yubikey-personalization
     yubico-pam
     pam_u2f
-<<<<<<< HEAD
     mullvad-vpn
-=======
     # Printing utilities
     cups
     system-config-printer    # GUI for printer management
->>>>>>> eb6a6f2f6d9a22a3c7bd17e53a632ae9743a520a
   ];
 
   # Enable Docker
