@@ -374,7 +374,7 @@
         margin = "5px 10px 0px 10px";
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "mpris" "custom/printer" "custom/cloud" "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
+        modules-right = [ "mpris" "custom/printer" "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
 
         "hyprland/workspaces" = {
           format = "{name}";
@@ -452,22 +452,6 @@
           on-click = "system-config-printer";
           tooltip-format = "Click to manage printers";
         };
-
-        "custom/cloud" = {
-          format = "󰅟 {}";
-          interval = 60;
-          exec = ''
-            if pgrep -x "nextcloud" >/dev/null || pgrep -f "nextcloud" >/dev/null; then
-              echo "Synced"
-            elif pgrep -x davmail >/dev/null; then
-              echo "Connected"
-            else
-              echo "Offline"
-            fi
-          '';
-          on-click = "nextcloud";
-          tooltip-format = "Cloud sync status";
-        };
       };
     };
     style = ''
@@ -505,8 +489,7 @@
       #pulseaudio,
       #mpris,
       #tray,
-      #custom-printer,
-      #custom-cloud {
+      #custom-printer {
         padding: 0 12px;
         margin: 3px;
         background-color: rgba(71, 82, 88, 0.5);
@@ -526,11 +509,6 @@
 
       #custom-printer {
         background-color: rgba(127, 187, 179, 0.6);
-        color: #d3c6aa;
-      }
-
-      #custom-cloud {
-        background-color: rgba(131, 192, 146, 0.6);
         color: #d3c6aa;
       }
 
