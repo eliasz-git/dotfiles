@@ -18,9 +18,13 @@
       gp = "git push";
       gl = "git pull";
     };
+    sessionVariables = {
+      NPM_CONFIG_PREFIX = "$HOME/.npm-global";
+    };
     initContent = lib.mkOrder 550 ''
       eval "$(zoxide init zsh)"
       eval "$(thefuck --alias)"
+      export PATH="$HOME/.npm-global/bin:$PATH"
     '';
   };
   programs.zoxide = {
