@@ -202,6 +202,25 @@
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto"
   '';
 
+  # Printing with CUPS
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [ 
+      gutenprint 
+      hplip 
+      epson-escpr 
+      brlaser 
+      cnijfilter2
+    ];
+  };
+  
+  # Enable printer discovery
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   # Nemo
   services.udisks2.enable = true;  # For automatic mounting of removable media
 
@@ -213,6 +232,16 @@
     shell = pkgs.zsh;
   };
 
+  console.keyMap = "colemak";
+
+  services.xserver = {
+    xkb = {
+      layout = "us,us";
+      variant = "colemak,";
+      options = "grp:alt_shift_toggle";
+    };
+  };
+
   # System packages including SDDM theme and cursor theme
   environment.systemPackages = with pkgs; [
     nano
@@ -220,8 +249,8 @@
     curl
     git
     librewolf
-    nemo
-    nemo-fileroller
+    xfce.thunar
+    xfce.thunar-archive-plugin
     polkit_gnome
     bibata-cursors           # Cursor theme for SDDM and system-wide
     sddm-chili-theme         # Modern SDDM theme
@@ -230,6 +259,10 @@
     yubikey-personalization
     yubico-pam
     pam_u2f
+    mullvad-vpn
+    # Printing utilities
+    cups
+    system-config-printer    # GUI for printer management
   ];
 
   # Enable Docker

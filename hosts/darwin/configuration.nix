@@ -12,7 +12,12 @@
   '';
 
   # System-wide packages (only essential system tools)
-  environment.systemPackages = with pkgs; [];
+  environment.systemPackages = with pkgs; [
+    # Printing utilities
+    cups
+    gutenprint
+    ghostscript
+  ];
 
   # Homebrew integration
   homebrew = {
@@ -28,6 +33,7 @@
     ];
     brews = [
       "sketchybar" "borders" "yabai" "i2pd"
+      "cups"  # Additional CUPS support for printing
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal"
@@ -35,7 +41,7 @@
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "grayjay"
-      "claude" "chatgpt" "librewolf" "musicbrainz-picard"
+      "claude" "chatgpt" "librewolf" "musicbrainz-picard" "prismlauncher"
     ];
   };
 

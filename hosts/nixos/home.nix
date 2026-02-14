@@ -29,8 +29,13 @@
     # GUI Applications
     librewolf thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
-    tutanota-desktop yubioath-flutter
-
+    tutanota-desktop yubioath-flutter prismlauncher
+    
+    # Cloud sync and iCloud alternatives
+    nextcloud-client         # Cloud file sync (iCloud alternative)
+    davmail                  # Exchange/iCloud calendar and contacts bridge
+    gnome-online-accounts    # Calendar and contacts sync
+    
     # Theming
     bibata-cursors
     papirus-icon-theme
@@ -205,7 +210,9 @@
       ];
 
       input = {
-        kb_layout = "us";
+        kb_layout = "us,us";
+        kb_variant = "colemak,";
+        kb_options = "grp:alt_shift_toggle";
         follow_mouse = 1;
         touchpad = {
           natural_scroll = false;
@@ -363,10 +370,11 @@
       mainBar = {
         layer = "top";
         position = "top";
-        height = 35;
+        height = 40;
+        margin = "5px 10px 0px 10px";
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
+        modules-right = [ "mpris" "custom/printer" "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
 
         "hyprland/workspaces" = {
           format = "{name}";
@@ -401,12 +409,48 @@
           format-disconnected = "󰖪 Disconnected";
         };
 
+        "mpris" = {
+          format = "{player_icon} {title} - {artist}";
+          format-paused = "{status_icon} {title} - {artist}";
+          player-icons = {
+            default = "󰐊";
+            mpv = "󰝚";
+            spotify = "󰓇";
+          };
+          status-icons = {
+            paused = "󰏤";
+          };
+          max-length = 40;
+          on-click = "playerctl play-pause";
+          on-click-right = "playerctl next";
+          on-click-middle = "playerctl previous";
+        };
+
         pulseaudio = {
           format = "{icon} {volume}%";
           format-muted = "󰖁 Muted";
           format-icons = {
             default = [ "󰕿" "󰖀" "󰕾" ];
           };
+        };
+
+        "custom/printer" = {
+          format = "󰐪 {}";
+          interval = 30;
+          exec = ''
+            if command -v lpstat &>/dev/null; then
+              jobs=$(lpstat -o 2>/dev/null | wc -l)
+              if [ "$jobs" -gt 0 ]; then
+                echo "$jobs"
+              else
+                echo ""
+              fi
+            else
+              echo ""
+            fi
+          '';
+          on-click = "system-config-printer";
+          tooltip-format = "Click to manage printers";
         };
       };
     };
@@ -417,21 +461,23 @@
       }
 
       window#waybar {
-        background-color: rgba(45, 53, 59, 0.75);
+        background-color: transparent;
         color: #d3c6aa;
       }
 
       #workspaces button {
         padding: 0 10px;
         color: #d3c6aa;
-        background-color: rgba(71, 82, 88, 0.6);
+        background-color: rgba(71, 82, 88, 0.5);
         margin: 3px;
-        border-radius: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #workspaces button.active {
-        background-color: rgba(167, 192, 128, 0.85);
+        background-color: rgba(167, 192, 128, 0.9);
         color: #2d353b;
+        box-shadow: 0 3px 6px rgba(167, 192, 128, 0.4);
       }
 
       #window,
@@ -441,27 +487,47 @@
       #memory,
       #network,
       #pulseaudio,
-      #tray {
-        padding: 0 10px;
+      #mpris,
+      #tray,
+      #custom-printer {
+        padding: 0 12px;
         margin: 3px;
-        background-color: rgba(71, 82, 88, 0.6);
+        background-color: rgba(71, 82, 88, 0.5);
         color: #d3c6aa;
-        border-radius: 5px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      #mpris {
+        padding: 0 12px;
+        margin: 3px;
+        background-color: rgba(131, 192, 146, 0.7);
+        color: #2d353b;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(131, 192, 146, 0.4);
+      }
+
+      #custom-printer {
+        background-color: rgba(127, 187, 179, 0.6);
+        color: #d3c6aa;
       }
 
       #battery.charging {
         background-color: rgba(167, 192, 128, 0.9);
         color: #2d353b;
+        box-shadow: 0 2px 4px rgba(167, 192, 128, 0.4);
       }
 
       #battery.warning:not(.charging) {
         background-color: rgba(219, 188, 127, 0.9);
         color: #2d353b;
+        box-shadow: 0 2px 4px rgba(219, 188, 127, 0.4);
       }
 
       #battery.critical:not(.charging) {
         background-color: rgba(230, 126, 128, 0.9);
         color: #2d353b;
+        box-shadow: 0 2px 4px rgba(230, 126, 128, 0.4);
       }
     '';
   };
