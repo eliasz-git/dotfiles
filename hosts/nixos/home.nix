@@ -311,7 +311,6 @@
         "$mod, code:43, movefocus, l"
         "$mod, code:46, movefocus, r"
         "$mod, code:45, movefocus, u"
-        "$mod, code:44, movefocus, d"
 
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
