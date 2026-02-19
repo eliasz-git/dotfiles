@@ -12,12 +12,11 @@
   '';
 
   # System-wide packages (only essential system tools)
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; let extraPrinting = if stdenv.isLinux then [ gutenprint ] else []; in [
     # Printing utilities
     cups
-    gutenprint
     ghostscript
-  ];
+  ] ++ extraPrinting;
 
   # Homebrew integration
   homebrew = {
