@@ -8,6 +8,7 @@
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
     ../../modules/nixos/terminal.nix
+    ../../modules/nixos/openclaw.nix
   ];
 
   home.stateVersion = "25.05";

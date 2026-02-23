@@ -7,6 +7,7 @@
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-openclaw.url = "github:openclaw/nix-openclaw";
   };
   
   outputs = { self, nixpkgs, darwin, home-manager, ... }:
@@ -46,6 +47,7 @@
       pkgs = linuxPkgs;
       modules = [
         ./hosts/nixos/configuration.nix
+        nix-openclaw.homeManagerModules.default
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
