@@ -42,13 +42,6 @@
     everforest-gtk-theme
   ];
 
-  # Create a Brave wrapper in ~/.local/bin so it always uses KWallet
-  home.file.".local/bin/brave".text = ''
-    #!/bin/sh
-    exec /run/current-system/sw/bin/brave --password-store=kwallet "$@"
-  '';
-  home.file.".local/bin/brave".mode = "0755";
-
   # NixOS-specific shell aliases
   programs.zsh.shellAliases = {
     nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
@@ -208,13 +201,11 @@
         "waybar"
         "dunst"
         "hyprpaper"
-        "/run/current-system/sw/bin/kwalletd5 &"
       ];
 
       env = [
         "XCURSOR_SIZE,24"
         "XCURSOR_THEME,Bibata-Modern-Classic"
-        "QT_QPA_PLATFORMTHEME,qt5ct"
       ];
 
       input = {
