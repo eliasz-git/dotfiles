@@ -8,7 +8,6 @@
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
     ../../modules/nixos/terminal.nix
-    ../../modules/nixos/openclaw.nix
   ];
 
   home.stateVersion = "25.05";
@@ -28,7 +27,7 @@
     dunst rofi-wayland hyprpaper
     
     # GUI Applications
-    librewolf thunderbird vscodium signal-desktop
+    librewolf brave thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
     tutanota-desktop yubioath-flutter prismlauncher
     
@@ -42,6 +41,13 @@
     papirus-icon-theme
     everforest-gtk-theme
   ];
+
+  # Create a Brave wrapper in ~/.local/bin so it always uses KWallet
+  home.file.".local/bin/brave".text = ''
+    #!/bin/sh
+    exec /run/current-system/sw/bin/brave --password-store=kwallet "$@"
+  '';
+  home.file.".local/bin/brave".mode = "0755";
 
   # NixOS-specific shell aliases
   programs.zsh.shellAliases = {
@@ -202,6 +208,7 @@
         "waybar"
         "dunst"
         "hyprpaper"
+        "/run/current-system/sw/bin/kwalletd5 &"
       ];
 
       env = [
@@ -466,18 +473,18 @@
       }
 
       #workspaces button {
-        padding: 0 10px;
-        color: #d3c6aa;
-        background-color: rgba(71, 82, 88, 0.5);
-        margin: 3px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding = 0 10px;
+        color = #d3c6aa;
+        background-color = rgba(71, 82, 88, 0.5);
+        margin = 3px;
+        border-radius = 8px;
+        box-shadow = 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #workspaces button.active {
-        background-color: rgba(167, 192, 128, 0.9);
-        color: #2d353b;
-        box-shadow: 0 3px 6px rgba(167, 192, 128, 0.4);
+        background-color = rgba(167, 192, 128, 0.9);
+        color = #2d353b;
+        box-shadow = 0 3px 6px rgba(167, 192, 128, 0.4);
       }
 
       #window,
@@ -490,44 +497,44 @@
       #mpris,
       #tray,
       #custom-printer {
-        padding: 0 12px;
-        margin: 3px;
-        background-color: rgba(71, 82, 88, 0.5);
-        color: #d3c6aa;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding = 0 12px;
+        margin = 3px;
+        background-color = rgba(71, 82, 88, 0.5);
+        color = #d3c6aa;
+        border-radius = 8px;
+        box-shadow = 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #mpris {
-        padding: 0 12px;
-        margin: 3px;
-        background-color: rgba(131, 192, 146, 0.7);
-        color: #2d353b;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(131, 192, 146, 0.4);
+        padding = 0 12px;
+        margin = 3px;
+        background-color = rgba(131, 192, 146, 0.7);
+        color = #2d353b;
+        border-radius = 8px;
+        box-shadow = 0 2px 4px rgba(131, 192, 146, 0.4);
       }
 
       #custom-printer {
-        background-color: rgba(127, 187, 179, 0.6);
-        color: #d3c6aa;
+        background-color = rgba(127, 187, 179, 0.6);
+        color = #d3c6aa;
       }
 
       #battery.charging {
-        background-color: rgba(167, 192, 128, 0.9);
-        color: #2d353b;
-        box-shadow: 0 2px 4px rgba(167, 192, 128, 0.4);
+        background-color = rgba(167, 192, 128, 0.9);
+        color = #2d353b;
+        box-shadow = 0 2px 4px rgba(167, 192, 128, 0.4);
       }
 
       #battery.warning:not(.charging) {
-        background-color: rgba(219, 188, 127, 0.9);
-        color: #2d353b;
-        box-shadow: 0 2px 4px rgba(219, 188, 127, 0.4);
+        background-color = rgba(219, 188, 127, 0.9);
+        color = #2d353b;
+        box-shadow = 0 2px 4px rgba(219, 188, 127, 0.4);
       }
 
       #battery.critical:not(.charging) {
-        background-color: rgba(230, 126, 128, 0.9);
-        color: #2d353b;
-        box-shadow: 0 2px 4px rgba(230, 126, 128, 0.4);
+        background-color = rgba(230, 126, 128, 0.9);
+        color = #2d353b;
+        box-shadow = 0 2px 4px rgba(230, 126, 128, 0.4);
       }
     '';
   };
