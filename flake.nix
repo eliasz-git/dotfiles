@@ -55,5 +55,20 @@
         }
       ];
     };
+
+    nixosConfigurations.terminal = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      pkgs = linuxPkgs;
+      modules = [
+        ./hosts/terminal/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.users.tundra = import ./hosts/terminal/home.nix;
+        }
+      ];
+    };
   };
 }
