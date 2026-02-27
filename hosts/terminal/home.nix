@@ -18,8 +18,6 @@
     browsh
     w3m
 
-    # Editor
-    neovim
     helix
 
     # File manager
@@ -57,6 +55,16 @@
   programs.zsh.shellAliases = {
     terminal-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#terminal --impure";
     terminal-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#terminal --impure";
+    qwerty = "loadkeys us";
+    colemak = "loadkeys colemak";
+    qwfpgj = "loadkeys us";
+  };
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
   };
 
   # Auto-launch tmux on login

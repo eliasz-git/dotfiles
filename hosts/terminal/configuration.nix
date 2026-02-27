@@ -21,7 +21,19 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Auto-login to TTY1 — no display manager needed
-  services.getty.autologin = "tundra";
+  services.getty.autologinUser = "tundra";
+  
+  security.sudo.extraRules = [
+  {
+      users = [ "tundra" ];
+      commands = [
+        {
+          command = "${pkgs.kbd}/bin/loadkeys";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 
   # Sound
   security.rtkit.enable = true;
