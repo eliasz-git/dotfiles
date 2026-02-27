@@ -221,9 +221,6 @@
     openFirewall = true;
   };
 
-  # Nemo
-  services.udisks2.enable = true;  # For automatic mounting of removable media
-
   # Define user account
   users.users.tundra = {
     isNormalUser = true;
@@ -260,8 +257,6 @@
     yubico-pam
     pam_u2f
     mullvad-vpn
-    kdePackages.kwallet
-    kdePackages.kwallet-pam
     # Printing utilities
     cups
     system-config-printer    # GUI for printer management
