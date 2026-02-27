@@ -13,43 +13,34 @@
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
 
-  # NixOS-specific packages
   home.packages = with pkgs; [
     kitty
-    # Power management TUIs
     powertop brightnessctl playerctl
-    
-    # Network/Bluetooth TUIs
     bluetuith netop
-    
-    # Wayland utilities
     wl-clipboard grim slurp swappy
     dunst rofi-wayland hyprpaper
-    
-    # GUI Applications
     librewolf brave thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
     tutanota-desktop yubioath-flutter prismlauncher
-    
-    # Cloud sync and iCloud alternatives
-    nextcloud-client         # Cloud file sync (iCloud alternative)
-    davmail                  # Exchange/iCloud calendar and contacts bridge
-    gnome-online-accounts    # Calendar and contacts sync
-    
-    # Theming
+    nextcloud-client
+    davmail
+    gnome-online-accounts
     bibata-cursors
     papirus-icon-theme
     everforest-gtk-theme
   ];
 
-  # NixOS-specific shell aliases
   programs.zsh.shellAliases = {
+    rb = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
     nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
     nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop --impure";
   };
 
-  # NixOS-specific update function
   programs.zsh.initContent = lib.mkOrder 600 ''
+    eval "$(zoxide init zsh)"
+    eval "$(thefuck --alias)"
+    export PATH="$HOME/.npm-global/bin:$PATH"
+
     update-all() {
         echo "Updating Nix flake..."
         cd /etc/nixos
@@ -60,7 +51,6 @@
     }
   '';
 
-  # Cursor theme configuration
   home.pointerCursor = {
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
@@ -69,7 +59,6 @@
     x11.enable = true;
   };
 
-  # GTK theme and icon configuration
   gtk = {
     enable = true;
     cursorTheme = {
@@ -93,7 +82,6 @@
     };
   };
 
-  # Rofi - Everforest theme
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
@@ -176,7 +164,6 @@
     };
   };
 
-  # Hyprpaper for wallpaper
   services.hyprpaper = {
     enable = true;
     settings = {
@@ -191,7 +178,6 @@
     };
   };
 
-  # Hyprland configuration
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
@@ -300,7 +286,7 @@
         "$mod, code:24, killactive,"
         "$mod SHIFT, code:26, exit,"
         "$mod, code:41, togglefloating,"
-        "$mod, code:33, pseudo,"
+        "$mod, code:33, exec, pseudo,"
         "$mod, code:44, togglesplit,"
 
         "$mod, left, movefocus, l"
@@ -361,7 +347,6 @@
     };
   };
 
-  # Waybar configuration
   programs.waybar = {
     enable = true;
     settings = {
@@ -464,18 +449,18 @@
       }
 
       #workspaces button {
-        padding = 0 10px;
-        color = #d3c6aa;
-        background-color = rgba(71, 82, 88, 0.5);
-        margin = 3px;
-        border-radius = 8px;
-        box-shadow = 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding: 0 10px;
+        color: #d3c6aa;
+        background-color: rgba(71, 82, 88, 0.5);
+        margin: 3px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #workspaces button.active {
-        background-color = rgba(167, 192, 128, 0.9);
-        color = #2d353b;
-        box-shadow = 0 3px 6px rgba(167, 192, 128, 0.4);
+        background-color: rgba(167, 192, 128, 0.9);
+        color: #2d353b;
+        box-shadow: 0 3px 6px rgba(167, 192, 128, 0.4);
       }
 
       #window,
@@ -488,44 +473,44 @@
       #mpris,
       #tray,
       #custom-printer {
-        padding = 0 12px;
-        margin = 3px;
-        background-color = rgba(71, 82, 88, 0.5);
-        color = #d3c6aa;
-        border-radius = 8px;
-        box-shadow = 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding: 0 12px;
+        margin: 3px;
+        background-color: rgba(71, 82, 88, 0.5);
+        color: #d3c6aa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #mpris {
-        padding = 0 12px;
-        margin = 3px;
-        background-color = rgba(131, 192, 146, 0.7);
-        color = #2d353b;
-        border-radius = 8px;
-        box-shadow = 0 2px 4px rgba(131, 192, 146, 0.4);
+        padding: 0 12px;
+        margin: 3px;
+        background-color: rgba(131, 192, 146, 0.7);
+        color: #2d353b;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(131, 192, 146, 0.4);
       }
 
       #custom-printer {
-        background-color = rgba(127, 187, 179, 0.6);
-        color = #d3c6aa;
+        background-color: rgba(127, 187, 179, 0.6);
+        color: #d3c6aa;
       }
 
       #battery.charging {
-        background-color = rgba(167, 192, 128, 0.9);
-        color = #2d353b;
-        box-shadow = 0 2px 4px rgba(167, 192, 128, 0.4);
+        background-color: rgba(167, 192, 128, 0.9);
+        color: #2d353b;
+        box-shadow: 0 2px 4px rgba(167, 192, 128, 0.4);
       }
 
       #battery.warning:not(.charging) {
-        background-color = rgba(219, 188, 127, 0.9);
-        color = #2d353b;
-        box-shadow = 0 2px 4px rgba(219, 188, 127, 0.4);
+        background-color: rgba(219, 188, 127, 0.9);
+        color: #2d353b;
+        box-shadow: 0 2px 4px rgba(219, 188, 127, 0.4);
       }
 
       #battery.critical:not(.charging) {
-        background-color = rgba(230, 126, 128, 0.9);
-        color = #2d353b;
-        box-shadow = 0 2px 4px rgba(230, 126, 128, 0.4);
+        background-color: rgba(230, 126, 128, 0.9);
+        color: #2d353b;
+        box-shadow: 0 2px 4px rgba(230, 126, 128, 0.4);
       }
     '';
   };
