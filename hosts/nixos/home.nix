@@ -278,10 +278,10 @@
       "$mod" = "SUPER";
       bind = [
         "$mod, code:28, exec, kitty"
-        "$mod, code:56, exec, librewolf"
-        "$mod, code:31, exec, VSCodium"
+        "$mod, code:56, exec, brave"
+        "$mod, code:31, exec, vscodium"
         "$mod, code:58, exec, lollypop"
-        "$mod, Return, exec, nemo"
+        "$mod, Return, exec, thunar"
         "$mod, Space, exec, rofi -show drun"
         "$mod, code:24, killactive,"
         "$mod SHIFT, code:26, exit,"
