@@ -10,9 +10,6 @@ result-*
 
 # NixOS hardware configuration (system-specific)
 hosts/nixos/hardware-configuration.nix
-hosts/terminal/hardware-configuration.nix
-
-# ./flake.lock
 
 # Editor files
 .vscode/
