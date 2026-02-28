@@ -14,7 +14,9 @@
   programs.home-manager.enable = true;
 
   # macOS-specific packages only
-  home.packages = with pkgs; [];
+  home.packages = with pkgs; [
+    moonlight-qt
+  ];
 
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {

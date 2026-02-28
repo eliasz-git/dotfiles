@@ -67,7 +67,7 @@
         save_to_clipboard = true;
       };
       window = {
-        decorations = "full";
+        decorations = "none";
         dynamic_title = true;
         opacity = 0.95;
         padding = {
