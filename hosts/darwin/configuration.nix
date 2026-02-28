@@ -40,7 +40,7 @@
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "grayjay"
-      "claude" "chatgpt" "librewolf" "musicbrainz-picard" "prismlauncher"
+      "claude" "chatgpt" "librewolf" "musicbrainz-picard" "prismlauncher" "brave-browser"
     ];
   };
 
