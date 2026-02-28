@@ -13,43 +13,34 @@
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
 
-  # NixOS-specific packages
   home.packages = with pkgs; [
     kitty
-    # Power management TUIs
     powertop brightnessctl playerctl
-    
-    # Network/Bluetooth TUIs
     bluetuith netop
-    
-    # Wayland utilities
     wl-clipboard grim slurp swappy
     dunst rofi-wayland hyprpaper
-    
-    # GUI Applications
-    librewolf thunderbird vscodium signal-desktop
+    librewolf brave thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
     tutanota-desktop yubioath-flutter prismlauncher
-    
-    # Cloud sync and iCloud alternatives
-    nextcloud-client         # Cloud file sync (iCloud alternative)
-    davmail                  # Exchange/iCloud calendar and contacts bridge
-    gnome-online-accounts    # Calendar and contacts sync
-    
-    # Theming
+    nextcloud-client
+    davmail
+    gnome-online-accounts
     bibata-cursors
     papirus-icon-theme
     everforest-gtk-theme
   ];
 
-  # NixOS-specific shell aliases
   programs.zsh.shellAliases = {
+    rb = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
     nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
     nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop --impure";
   };
 
-  # NixOS-specific update function
   programs.zsh.initContent = lib.mkOrder 600 ''
+    eval "$(zoxide init zsh)"
+    eval "$(thefuck --alias)"
+    export PATH="$HOME/.npm-global/bin:$PATH"
+
     update-all() {
         echo "Updating Nix flake..."
         cd /etc/nixos
@@ -60,7 +51,6 @@
     }
   '';
 
-  # Cursor theme configuration
   home.pointerCursor = {
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
@@ -69,7 +59,6 @@
     x11.enable = true;
   };
 
-  # GTK theme and icon configuration
   gtk = {
     enable = true;
     cursorTheme = {
@@ -93,7 +82,6 @@
     };
   };
 
-  # Rofi - Everforest theme
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
@@ -176,7 +164,6 @@
     };
   };
 
-  # Hyprpaper for wallpaper
   services.hyprpaper = {
     enable = true;
     settings = {
@@ -191,7 +178,6 @@
     };
   };
 
-  # Hyprland configuration
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
@@ -206,7 +192,6 @@
       env = [
         "XCURSOR_SIZE,24"
         "XCURSOR_THEME,Bibata-Modern-Classic"
-        "QT_QPA_PLATFORMTHEME,qt5ct"
       ];
 
       input = {
@@ -292,26 +277,25 @@
 
       "$mod" = "SUPER";
       bind = [
-        "$mod, T, exec, kitty"
-        "$mod, B, exec, librewolf"
-        "$mod, I, exec, VSCodium"
-        "$mod, M, exec, lollypop"
+        "$mod, code:28, exec, kitty"
+        "$mod, code:56, exec, librewolf"
+        "$mod, code:31, exec, VSCodium"
+        "$mod, code:58, exec, lollypop"
         "$mod, Return, exec, nemo"
         "$mod, Space, exec, rofi -show drun"
-        "$mod, Q, killactive,"
-        "$mod SHIFT, E, exit,"
-        "$mod, F, togglefloating,"
-        "$mod, P, pseudo,"
-        "$mod, J, togglesplit,"
+        "$mod, code:24, killactive,"
+        "$mod SHIFT, code:26, exit,"
+        "$mod, code:41, togglefloating,"
+        "$mod, code:33, exec, pseudo,"
+        "$mod, code:44, togglesplit,"
 
         "$mod, left, movefocus, l"
         "$mod, right, movefocus, r"
         "$mod, up, movefocus, u"
         "$mod, down, movefocus, d"
-        "$mod, h, movefocus, l"
-        "$mod, l, movefocus, r"
-        "$mod, k, movefocus, u"
-        "$mod, j, movefocus, d"
+        "$mod, code:43, movefocus, l"
+        "$mod, code:46, movefocus, r"
+        "$mod, code:45, movefocus, u"
 
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
@@ -363,7 +347,6 @@
     };
   };
 
-  # Waybar configuration
   programs.waybar = {
     enable = true;
     settings = {

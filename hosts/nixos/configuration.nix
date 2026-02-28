@@ -221,9 +221,6 @@
     openFirewall = true;
   };
 
-  # Nemo
-  services.udisks2.enable = true;  # For automatic mounting of removable media
-
   # Define user account
   users.users.tundra = {
     isNormalUser = true;
