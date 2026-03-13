@@ -17,18 +17,18 @@ bind h select-pane -L
 bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
-set -g status-style "bg=#2d353b,fg=#d3c6aa"
-set -g window-status-current-style "bg=#a7c080,fg=#2d353b,bold"
-set -g pane-active-border-style "fg=#a7c080"
+set -g status-style "bg=#0d1b2a,fg=#cdd9e5"
+set -g window-status-current-style "bg=#5ba3c9,fg=#0d1b2a,bold"
+set -g pane-active-border-style "fg=#5ba3c9"
     '';
   };
   programs.lazygit = {
     enable = true;
     settings = {
       gui.theme = {
-        activeBorderColor = [ "#a7c080" "bold" ];
-        inactiveBorderColor = [ "#475258" ];
-        selectedLineBgColor = [ "#343f44" ];
+        activeBorderColor = [ "#5ba3c9" "bold" ];
+        inactiveBorderColor = [ "#1b2d42" ];
+        selectedLineBgColor = [ "#1b2d42" ];
       };
     };
   };

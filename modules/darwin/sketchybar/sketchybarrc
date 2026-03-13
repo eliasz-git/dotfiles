@@ -65,8 +65,6 @@ source $ITEM_DIR/calendar.sh
 source $ITEM_DIR/volume.sh
 source $ITEM_DIR/battery.sh
 source $ITEM_DIR/cpu.sh
-source $ITEM_DIR/printer.sh
-source $ITEM_DIR/icloud.sh
 
 
 ##### Finalizing Setup #####

@@ -39,8 +39,8 @@
       "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
-      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "grayjay"
-      "claude" "chatgpt" "librewolf" "musicbrainz-picard" "prismlauncher" "brave-browser"
+      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden"
+      "claude" "musicbrainz-picard" "prismlauncher" "brave-browser" "helium-browser"
     ];
   };
 
@@ -115,12 +115,12 @@ yabai -m config active_window_opacity        0.95
 yabai -m config normal_window_opacity        0.85
 yabai -m config window_animation_duration    0.2
 
-# Window borders - Everforest theme
+# Window borders - Deep Ocean theme
 yabai -m config window_border                on
 yabai -m config window_border_width          3
-yabai -m config active_window_border_color   0xffa7c080
-yabai -m config normal_window_border_color   0xff475258
-yabai -m config insert_feedback_color        0xff83c092
+yabai -m config active_window_border_color   0xff5ba3c9
+yabai -m config normal_window_border_color   0xff1b2d42
+yabai -m config insert_feedback_color        0xff6ec6c6
 
 # ===== LAYOUT =====
 
@@ -167,7 +167,7 @@ yabai -m signal --add event=window_destroyed action="sketchybar --trigger window
 yabai -m signal --add event=window_title_changed action="sketchybar --trigger title_change"
 yabai -m signal --add event=space_changed action="sketchybar --trigger space_change"
 
-borders active_color=0xffa7c080 inactive_color=0xff475258 width=5.0 &
+borders active_color=0xff5ba3c9 inactive_color=0xff1b2d42 width=5.0 &
 sketchybar &
 echo "yabai configuration loaded.."
     '';

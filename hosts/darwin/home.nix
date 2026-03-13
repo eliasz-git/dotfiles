@@ -18,6 +18,12 @@
     moonlight-qt
   ];
 
+  # Symlink sketchybar config so changes in nix-config are live immediately
+  xdg.configFile."sketchybar" = {
+    source = ../../modules/darwin/sketchybar;
+    recursive = true;
+  };
+
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {
     darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
