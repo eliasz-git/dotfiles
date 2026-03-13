@@ -18,11 +18,10 @@
     moonlight-qt
   ];
 
-  # Symlink sketchybar config so changes in nix-config are live immediately
-  xdg.configFile."sketchybar" = {
-    source = ../../modules/darwin/sketchybar;
-    recursive = true;
-  };
+  # Symlink sketchybar config directly to nix-config source (live, no rebuild needed)
+  home.file.".config/sketchybar".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "/Users/elias/.config/nix-config/modules/darwin/sketchybar";
 
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {
