@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home.packages = with pkgs; [
@@ -7,5 +7,7 @@
     gh lazygit python312 nodejs_22 go rustup
     wakeonlan wireguard-tools nmap tcpdump mtr speedtest-cli
     ffmpeg mediainfo p7zip unzip unrar gzip bzip2 xz zip syncthing
+  ] ++ lib.optionals stdenv.isLinux [
+    veracrypt
   ];
 }

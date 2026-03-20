@@ -36,11 +36,10 @@
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal"
-      "microsoft-auto-update" "microsoft-powerpoint" "microsoft-teams"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden"
-      "claude" "musicbrainz-picard" "prismlauncher" "brave-browser" "helium-browser"
+      "claude" "musicbrainz-picard" "prismlauncher" "helium-browser"
     ];
   };
 
@@ -187,4 +186,18 @@ echo "yabai configuration loaded.."
   programs.zsh.enable = true;
   
   home-manager.backupFileExtension = "backup";
+
+  # Ollama launchd agent — starts on boot, bound to all interfaces for Docker access
+  launchd.user.agents.ollama = {
+    serviceConfig = {
+      ProgramArguments = [ "/etc/profiles/per-user/elias/bin/ollama" "serve" ];
+      EnvironmentVariables = {
+        OLLAMA_HOST = "0.0.0.0:11434";
+      };
+      RunAtLoad = true;
+      KeepAlive = true;
+      StandardOutPath = "/tmp/ollama.log";
+      StandardErrorPath = "/tmp/ollama.log";
+    };
+  };
 }
