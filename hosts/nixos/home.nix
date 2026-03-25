@@ -18,7 +18,7 @@
     powertop brightnessctl playerctl
     bluetuith netop
     wl-clipboard grim slurp swappy
-    dunst rofi-wayland hyprpaper
+    dunst rofi-wayland swaybg
     librewolf brave thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc lollypop
     tutanota-desktop yubioath-flutter prismlauncher
@@ -165,187 +165,131 @@
     };
   };
 
-  services.hyprpaper = {
-    enable = true;
+  programs.niri = {
     settings = {
-      preload = [
-        "~/.config/nix-config/wallpapers/wallpaper.jpg"
-      ];
-      wallpaper = [
-        ",~/.config/nix-config/wallpapers/wallpaper.jpg"
-      ];
-      splash = false;
-      ipc = "on";
-    };
-  };
-
-  wayland.windowManager.hyprland = {
-    enable = true;
-    settings = {
-      monitor = ",preferred,auto,1";
-
-      exec-once = [
-        "waybar"
-        "dunst"
-        "hyprpaper"
-        "signal-desktop"
-      ];
-
-      env = [
-        "XCURSOR_SIZE,24"
-        "XCURSOR_THEME,Bibata-Modern-Classic"
-      ];
-
       input = {
-        kb_layout = "us,us";
-        kb_variant = "colemak,";
-        kb_options = "grp:alt_shift_toggle";
-        follow_mouse = 1;
+        keyboard = {
+          xkb = {
+            layout = "us,us";
+            variant = "colemak,";
+            options = "grp:alt_shift_toggle";
+          };
+        };
         touchpad = {
-          natural_scroll = false;
-        };
-        sensitivity = 0;
-      };
-
-      general = {
-        gaps_in = 5;
-        gaps_out = 10;
-        border_size = 3;
-        "col.active_border" = "rgba(a7c080ee) rgba(83c092ee) 45deg";
-        "col.inactive_border" = "rgba(475258aa)";
-        layout = "dwindle";
-        allow_tearing = false;
-      };
-
-      decoration = {
-        rounding = 8;
-        blur = {
-          enabled = true;
-          size = 3;
-          passes = 1;
-          vibrancy = 0.1696;
-        };
-        shadow = {
-          enabled = true;
-          range = 4;
-          render_power = 3;
-          color = "rgba(1a1a1aee)";
+          natural-scroll = false;
+          click-method = "clickfinger";
         };
       };
 
-      animations = {
-        enabled = true;
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-        animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
-          "border, 1, 10, default"
-          "borderangle, 1, 8, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
-        ];
+      layout = {
+        gaps = 10;
+        center-focused-column = "never";
+        focus-ring = {
+          width = 3;
+          active-color = "#a7c080ff";
+          inactive-color = "#475258aa";
+        };
+        border.enable = false;
       };
 
-      dwindle = {
-        pseudotile = true;
-        preserve_split = true;
+      cursor = {
+        theme = "Bibata-Modern-Classic";
+        size = 24;
       };
 
-      master = {
-        new_status = "master";
+      environment = {
+        XCURSOR_SIZE = "24";
+        XCURSOR_THEME = "Bibata-Modern-Classic";
       };
 
-      gestures = {
-        workspace_swipe = true;
-      };
+      prefer-no-csd = true;
 
-      misc = {
-        force_default_wallpaper = 0;
-      };
-
-      windowrulev2 = [
-        "opacity 0.85 0.75,class:^(kitty)$"
-        "opacity 0.88 0.78,class:^(VSCodium)$"
-        "opacity 0.92 0.85,class:^(librewolf)$"
-        "opacity 0.85 0.75,class:^(thunar)$"
-        "opacity 0.88 0.78,class:^(obsidian)$"
-        "opacity 0.85 0.75,class:^(nemo)$"
+      spawn-at-startup = [
+        { command = [ "waybar" ]; }
+        { command = [ "dunst" ]; }
+        { command = [ "sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/wallpaper.jpg -m fill" ]; }
+        { command = [ "signal-desktop" ]; }
       ];
 
-      layerrule = [
-        "blur,waybar"
-        "ignorezero,waybar"
+      window-rules = [
+        { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.85; }
+        { matches = [ { app-id = "^VSCodium$"; } ]; opacity = 0.88; }
+        { matches = [ { app-id = "^librewolf$"; } ]; opacity = 0.92; }
+        { matches = [ { app-id = "^thunar$"; } ]; opacity = 0.85; }
+        { matches = [ { app-id = "^obsidian$"; } ]; opacity = 0.88; }
       ];
 
-      "$mod" = "SUPER";
-      bind = [
-        "$mod, code:28, exec, kitty"
-        "$mod, code:56, exec, brave"
-        "$mod, code:31, exec, vscodium"
-        "$mod, code:58, exec, lollypop"
-        "$mod, Return, exec, thunar"
-        "$mod, Space, exec, rofi -show drun"
-        "$mod, code:24, killactive,"
-        "$mod SHIFT, code:26, exit,"
-        "$mod, code:41, togglefloating,"
-        "$mod, code:33, exec, pseudo,"
-        "$mod, code:44, togglesplit,"
+      # Keybindings use colemak logical key names so physical positions match
+      # the original hyprland code: bindings (e.g. physical T = colemak G).
+      binds = with config.lib.niri.actions; {
+        # App launchers
+        "Mod+G".action = spawn "kitty";           # physical T key
+        "Mod+B".action = spawn "brave";
+        "Mod+U".action = spawn "vscodium";         # physical I key
+        "Mod+M".action = spawn "lollypop";
+        "Mod+Return".action = spawn "thunar";
+        "Mod+Space".action = spawn "rofi" [ "-show" "drun" ];
 
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
-        "$mod, code:43, movefocus, l"
-        "$mod, code:46, movefocus, r"
-        "$mod, code:45, movefocus, u"
+        # Window / session management
+        "Mod+Q".action = close-window;
+        "Mod+Shift+F".action = quit;               # physical E key, colemak F
+        "Mod+T".action = toggle-window-floating;   # physical F key, colemak T
+        "Mod+Shift+Return".action = fullscreen-window;
 
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 8, workspace, 8"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 10"
+        # Focus movement (arrow keys + colemak home-row)
+        "Mod+Left".action = focus-column-left;
+        "Mod+Right".action = focus-column-right;
+        "Mod+Up".action = focus-window-up;
+        "Mod+Down".action = focus-window-down;
+        "Mod+H".action = focus-column-left;
+        "Mod+I".action = focus-column-right;       # physical L key, colemak I
+        "Mod+E".action = focus-window-up;          # physical K key, colemak E
+        "Mod+N".action = focus-window-down;        # physical J key, colemak N
 
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
-        "$mod SHIFT, 5, movetoworkspace, 5"
-        "$mod SHIFT, 6, movetoworkspace, 6"
-        "$mod SHIFT, 7, movetoworkspace, 7"
-        "$mod SHIFT, 8, movetoworkspace, 8"
-        "$mod SHIFT, 9, movetoworkspace, 9"
-        "$mod SHIFT, 0, movetoworkspace, 10"
+        # Move windows
+        "Mod+Shift+H".action = move-column-left;
+        "Mod+Shift+I".action = move-column-right;
+        "Mod+Shift+Up".action = move-window-up-or-to-workspace-up;
+        "Mod+Shift+Down".action = move-window-down-or-to-workspace-down;
 
-        "$mod, S, togglespecialworkspace, magic"
-        "$mod SHIFT, S, movetoworkspace, special:magic"
+        # Workspaces
+        "Mod+1".action = focus-workspace 1;
+        "Mod+2".action = focus-workspace 2;
+        "Mod+3".action = focus-workspace 3;
+        "Mod+4".action = focus-workspace 4;
+        "Mod+5".action = focus-workspace 5;
+        "Mod+6".action = focus-workspace 6;
+        "Mod+7".action = focus-workspace 7;
+        "Mod+8".action = focus-workspace 8;
+        "Mod+9".action = focus-workspace 9;
 
-        "$mod, mouse_down, workspace, e+1"
-        "$mod, mouse_up, workspace, e-1"
+        "Mod+Shift+1".action = move-window-to-workspace 1;
+        "Mod+Shift+2".action = move-window-to-workspace 2;
+        "Mod+Shift+3".action = move-window-to-workspace 3;
+        "Mod+Shift+4".action = move-window-to-workspace 4;
+        "Mod+Shift+5".action = move-window-to-workspace 5;
+        "Mod+Shift+6".action = move-window-to-workspace 6;
+        "Mod+Shift+7".action = move-window-to-workspace 7;
+        "Mod+Shift+8".action = move-window-to-workspace 8;
+        "Mod+Shift+9".action = move-window-to-workspace 9;
 
-        ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
-        ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+        # Brightness
+        "XF86MonBrightnessUp".action = spawn "brightnessctl" [ "set" "+5%" ];
+        "XF86MonBrightnessDown".action = spawn "brightnessctl" [ "set" "5%-" ];
 
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+        # Volume
+        "XF86AudioRaiseVolume".action = spawn "wpctl" [ "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+" ];
+        "XF86AudioLowerVolume".action = spawn "wpctl" [ "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ];
+        "XF86AudioMute".action = spawn "wpctl" [ "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ];
+        "XF86AudioMicMute".action = spawn "wpctl" [ "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle" ];
 
-        ", XF86AudioPlay, exec, playerctl play-pause"
-        ", XF86AudioPause, exec, playerctl play-pause"
-        ", XF86AudioNext, exec, playerctl next"
-        ", XF86AudioPrev, exec, playerctl previous"
-        ", XF86AudioStop, exec, playerctl stop"
-      ];
-
-      bindm = [
-        "$mod, mouse:272, movewindow"
-        "$mod, mouse:273, resizewindow"
-      ];
+        # Media
+        "XF86AudioPlay".action = spawn "playerctl" [ "play-pause" ];
+        "XF86AudioPause".action = spawn "playerctl" [ "play-pause" ];
+        "XF86AudioNext".action = spawn "playerctl" [ "next" ];
+        "XF86AudioPrev".action = spawn "playerctl" [ "previous" ];
+        "XF86AudioStop".action = spawn "playerctl" [ "stop" ];
+      };
     };
   };
 
@@ -357,16 +301,16 @@
         position = "top";
         height = 40;
         margin = "5px 10px 0px 10px";
-        modules-left = [ "hyprland/workspaces" "hyprland/window" ];
+        modules-left = [ "niri/workspaces" "niri/window" ];
         modules-center = [ "clock" ];
         modules-right = [ "mpris" "custom/printer" "pulseaudio" "network" "cpu" "memory" "battery" "tray" ];
 
-        "hyprland/workspaces" = {
+        "niri/workspaces" = {
           format = "{name}";
           on-click = "activate";
         };
 
-        "hyprland/window" = {
+        "niri/window" = {
           max-length = 50;
         };
 

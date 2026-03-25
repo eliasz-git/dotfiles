@@ -1,6 +1,6 @@
 # 🌲 Nix Configuration
 
-Multi-system Nix configuration with Everforest Dark theme for macOS (M2) and NixOS (Intel laptop).
+Multi-system Nix configuration with Everforest Dark theme for macOS (M2), NixOS (Intel laptop), and Artix Linux (OpenRC).
 
 [![NixOS 25.05](https://img.shields.io/badge/NixOS-25.05-blue.svg)](https://nixos.org)
 [![Built with Nix](https://img.shields.io/badge/Built_With-Nix-5277C3.svg)](https://nixos.org)
@@ -15,10 +15,11 @@ Multi-system Nix configuration with Everforest Dark theme for macOS (M2) and Nix
 
 ## 💻 Systems
 
-| System | Architecture | WM/DE | Status |
-|--------|--------------|-------|--------|
-| **MacBook M2** | aarch64-darwin | yabai + SketchyBar | ✅ Active |
-| **HP ProBook 450 G8** | x86_64-linux | Hyprland + Waybar | ✅ Active |
+| System | Architecture | WM/DE | Init | Status |
+|--------|--------------|-------|------|--------|
+| **MacBook M2** | aarch64-darwin | yabai + SketchyBar | launchd | ✅ Active |
+| **HP ProBook 450 G8** | x86_64-linux | Niri + Waybar | systemd | ✅ Active |
+| **HP ProBook 450 G8** | x86_64-linux | Niri + Waybar | **OpenRC** (Artix) | ✅ Active |
 
 **Shared Features:**
 - 🎨 Everforest Dark Medium theme
@@ -46,6 +47,11 @@ The setup script will:
 4. Show you the next steps
 
 ### Manual Setup
+
+**Artix Linux (OpenRC):**
+```bash
+bash hosts/artix/install.sh
+```
 
 **macOS:**
 ```bash
@@ -87,8 +93,19 @@ sudo nixos-rebuild switch --flake .#laptop
   - Transparent background with subtle shadows for depth
 - **Package Manager**: Nix + Homebrew for GUI apps
 
-### NixOS (Hyprland + Waybar)
-- **Compositor**: Hyprland with blur and transparency
+### Artix Linux / OpenRC (Niri + Waybar)
+- **Init system**: OpenRC — no systemd
+- **Compositor**: Niri scrollable tiling Wayland compositor
+- **Session management**: elogind + seatd (logind-compatible, no systemd dependency)
+- **Status Bar**: Waybar with Everforest theme
+- **Login**: SDDM with Chili theme
+- **Audio**: PipeWire + WirePlumber
+- **Power**: TLP + thermald (configured for HP ProBook 450 G8 / Intel)
+- **Extras**: Dunst, rofi-wayland, swaybg, screenshot tools
+- **User env**: Fully managed by Home Manager (standalone, via Nix)
+
+### NixOS (Niri + Waybar)
+- **Compositor**: Niri scrollable tiling Wayland compositor
 - **Status Bar**: Enhanced Waybar with full transparency and modern design
   - **Printing**: CUPS support with printer status indicator and multi-driver support
   - **Cloud Sync**: Nextcloud/DavMail integration with live sync status
@@ -119,10 +136,90 @@ Editors:    VSCodium, Neovim (via packages)
 - nix-darwin ([install](https://github.com/LnL7/nix-darwin))
 - Command Line Tools: `xcode-select --install`
 
+**Artix Only:**
+- Fresh [Artix Linux](https://artixlinux.org/download.php) installation (basestrap with OpenRC)
+- User account with sudo/wheel access
+
 **NixOS Only:**
 - Fresh NixOS installation
 
 ### Step-by-Step
+
+<details>
+<summary><b>Artix Linux (OpenRC) Installation</b></summary>
+
+### Pre-requisites
+
+1. Install Artix from the [OpenRC ISO](https://artixlinux.org/download.php) using
+   the standard `basestrap` + `fstabgen` + `artix-chroot` flow.
+2. After rebooting into the new system, log in as your user (default: `tundra`).
+3. Make sure the user is in the `wheel` group and `sudo` is installed.
+
+### One-command setup
+
+```bash
+# Clone the repo
+git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
+
+# Run the Artix setup script (installs pacman packages, OpenRC services,
+# Nix, Home Manager, and applies the full configuration)
+bash ~/.config/nix-config/hosts/artix/install.sh
+```
+
+The script will:
+1. Update the system and install all pacman packages
+2. Install the `yay` AUR helper and AUR packages
+3. Add your user to the required groups (`seat`, `video`, `input`, `docker`, …)
+4. Enable all OpenRC services (NetworkManager, sddm, bluetooth, tlp, cups, docker, …)
+5. Configure SDDM with the Chili theme
+6. Write `/etc/tlp.conf` (tuned for HP ProBook 450 G8 + Intel GPU)
+7. Download and install the Nix daemon (multi-user, you confirm before it runs)
+8. Enable Nix flakes
+9. Install Home Manager
+10. Apply `homeConfigurations.artix` — writing all dotfiles, niri config, waybar, etc.
+
+### After the script finishes
+
+```bash
+# Enroll YubiKey (optional)
+mkdir -p ~/.config/Yubico
+pamu2fcfg > ~/.config/Yubico/u2f_keys
+
+# Copy your wallpaper
+cp /path/to/wallpaper.jpg ~/.config/nix-config/wallpapers/wallpaper.jpg
+
+# Reboot into SDDM / niri
+sudo reboot
+```
+
+At the SDDM login screen, select **Niri** as the session.
+
+### Updating the config later
+
+```bash
+hms   # home-manager switch --flake ~/.config/nix-config#artix
+hmu   # nix flake update + home-manager switch (alias in shell)
+```
+
+### Architecture overview
+
+| Layer | Managed by | Examples |
+|-------|-----------|---------|
+| Init system | OpenRC | NetworkManager, sddm, docker, tlp |
+| Compositor | pacman `niri` | provides SDDM session file |
+| Audio | pacman `pipewire` + `wireplumber` | PipeWire daemon |
+| Niri config | Home Manager `programs.niri.settings` | `~/.config/niri/config.kdl` |
+| Waybar / rofi / dunst | Home Manager (from Nix) | `~/.config/waybar/` etc. |
+| CLI tools & dev env | Home Manager (from Nix) | zsh, git, bat, eza, Go, Rust … |
+| GUI apps | Home Manager (from Nix) | librewolf, vscodium, obsidian … |
+
+> **Note on OpenGL apps via Nix:** GPU-accelerated apps installed through Nix
+> (e.g. `kitty`) may fail with an OpenGL error on non-NixOS because the Nix store
+> does not include the host GPU driver. If this happens, wrap the binary with
+> [nixGL](https://github.com/nix-community/nixGL) or install that app via pacman/AUR
+> instead.
+
+</details>
 
 <details>
 <summary><b>macOS Installation</b></summary>
@@ -206,8 +303,8 @@ Editors:    VSCodium, Neovim (via packages)
    ```
 
 7. **First login:**
-   - Select "Hyprland" session at SDDM
-   - `Super + T` → Terminal
+   - Select "Niri" session at SDDM
+   - `Super + G` → Terminal (physical T key on Colemak)
    - `Super + Space` → App launcher
 
 </details>
@@ -259,18 +356,28 @@ code ~/.config/nix-config/hosts/nixos/
 ### Keybindings
 
 <details>
-<summary><b>NixOS (Hyprland)</b></summary>
+<summary><b>NixOS (Niri)</b></summary>
+
+Keybindings are **colemak-aware** — they match the same physical key positions as the
+original Hyprland config (e.g. the physical `T` key, which is `G` in Colemak, opens the terminal).
 
 | Key | Action |
 |-----|--------|
-| `Super + T` | Kitty terminal |
-| `Super + B` | Librewolf browser |
-| `Super + Space` | App launcher |
+| `Super + G` | Kitty terminal (physical T key) |
+| `Super + B` | Brave browser |
+| `Super + U` | VSCodium (physical I key) |
+| `Super + M` | Lollypop music player |
+| `Super + Return` | Thunar file manager |
+| `Super + Space` | App launcher (rofi) |
 | `Super + Q` | Close window |
-| `Super + F` | Toggle float |
-| `Super + H/J/K/L` | Navigate windows |
+| `Super + Shift + F` | Quit niri (physical E key) |
+| `Super + T` | Toggle floating (physical F key) |
+| `Super + Shift + Return` | Toggle fullscreen |
+| `Super + H / I / E / N` | Focus left / right / up / down |
+| `Super + Left/Right/Up/Down` | Focus left / right / up / down |
+| `Super + Shift + H / I` | Move column left / right |
 | `Super + 1-9` | Switch workspace |
-| `Super + Shift + 1-9` | Move to workspace |
+| `Super + Shift + 1-9` | Move window to workspace |
 
 **Media keys work out of the box** (brightness, volume, play/pause)
 
@@ -327,11 +434,11 @@ foreground = "#d3c6aa";
 
 ### Adjust Transparency (NixOS)
 
-In `hosts/nixos/home.nix`, modify opacity values:
+In `hosts/nixos/home.nix`, modify opacity values in the `window-rules` list:
 ```nix
-windowrulev2 = [
-  "opacity 0.90 0.80,class:^(kitty)$"  # More opaque
-  "opacity 0.75 0.65,class:^(kitty)$"  # More transparent
+window-rules = [
+  { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.90; }  # More opaque
+  { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.75; }  # More transparent
 ];
 ```
 
@@ -462,11 +569,11 @@ ls -la /etc/nixos
 </details>
 
 <details>
-<summary><b>NixOS: Hyprland won't start</b></summary>
+<summary><b>NixOS: Niri won't start</b></summary>
 
 1. Switch to TTY: `Ctrl + Alt + F2`
 2. Check logs: `journalctl -u display-manager.service`
-3. Try manual start: `Hyprland`
+3. Try manual start: `niri`
 
 </details>
 
@@ -478,6 +585,60 @@ Check SIP status: `csrutil status`
 Should say "disabled". If not, disable in Recovery Mode.
 
 </details>
+
+<details>
+<summary><b>Artix: niri session not appearing in SDDM</b></summary>
+
+SDDM reads Wayland sessions from `/usr/share/wayland-sessions/`. The `niri` pacman
+package installs `niri.desktop` there automatically. If it's missing:
+```bash
+sudo pacman -S niri        # reinstall
+ls /usr/share/wayland-sessions/   # should show niri.desktop
+```
+
+</details>
+
+<details>
+<summary><b>Artix: Wayland/niri won't start (seat permission error)</b></summary>
+
+Make sure `elogind` and `seatd` are running and your user is in the `seat` group:
+```bash
+sudo rc-service elogind start
+sudo rc-service seatd start
+sudo usermod -aG seat $USER
+# Log out and back in, then try niri again
+```
+
+</details>
+
+<details>
+<summary><b>Artix: kitty (or other GPU app) fails with OpenGL error</b></summary>
+
+Nix-installed apps that use GPU acceleration need the host's GPU driver, which Nix
+doesn't bundle. Use [nixGL](https://github.com/nix-community/nixGL) as a wrapper,
+or install the affected app via pacman/AUR:
+```bash
+sudo pacman -S kitty   # system kitty picks up host libGL
+```
+Home Manager's `programs.kitty` will still write the theme config — only the
+binary comes from pacman instead of Nix.
+
+</details>
+
+## 🔄 OpenRC — Why NixOS Can't Use It (Artix Is Now Configured)
+
+NixOS is architecturally inseparable from **systemd**. The module system generates
+systemd units at build time. There is no supported path to swap in OpenRC.
+
+**This repository now includes a full Artix Linux (OpenRC) configuration.**
+See `hosts/artix/` and the [Artix Installation](#artix-linux-openrc-installation)
+section above.
+
+| Distro | Init | This repo | Managed by |
+|--------|------|-----------|-----------|
+| NixOS | systemd | `nixosConfigurations.laptop` | Full NixOS modules |
+| Artix | **OpenRC** | `homeConfigurations.artix` | Home Manager (standalone) |
+| macOS | launchd | `darwinConfigurations.macbook` | nix-darwin + HM |
 
 ## 🤝 Contributing
 
@@ -495,7 +656,7 @@ MIT License - Use freely!
 - [NixOS](https://nixos.org/) & [nix-darwin](https://github.com/LnL7/nix-darwin)
 - [home-manager](https://github.com/nix-community/home-manager)
 - [Everforest](https://github.com/sainnhe/everforest) theme
-- [Hyprland](https://hyprland.org/) & [yabai](https://github.com/koekeishiya/yabai)
+- [Niri](https://github.com/YaLTeR/niri) & [yabai](https://github.com/koekeishiya/yabai)
 
 ---
 
