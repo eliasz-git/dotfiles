@@ -158,8 +158,6 @@ install_pacman_packages() {
     # YubiKey / smart card
     local yubikey=(
         pcsclite
-        ccid
-        yubikey-manager
         libfido2
     )
 
@@ -206,6 +204,8 @@ install_aur_packages() {
         sddm-theme-chili     # SDDM login theme matching the NixOS setup
         pam-u2f              # YubiKey PAM module
         mullvad-vpn-bin      # Mullvad VPN
+        ccid
+        yubikey-manager
     )
 
     if [[ $EUID -eq 0 ]]; then
