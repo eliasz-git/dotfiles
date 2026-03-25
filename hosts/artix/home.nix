@@ -295,7 +295,7 @@
         "XF86AudioPrev".action = { spawn = [ "playerctl" "previous" ]; };
         "XF86AudioStop".action = { spawn = [ "playerctl" "stop" ]; };
       };
-
+    };
   programs.waybar = {
     enable = true;
     settings = {
@@ -428,4 +428,4 @@
       }
     '';
   };
-};
+}
