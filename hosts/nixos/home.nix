@@ -23,6 +23,7 @@
     bitwarden obsidian libreoffice vlc lollypop
     tutanota-desktop yubioath-flutter prismlauncher
     nextcloud-client
+    jetbrains-toolbox
     davmail
     gnome-online-accounts
     bibata-cursors
