@@ -24,11 +24,8 @@
   time.timeZone = "America/New_York";  # Change to your timezone
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Hyprland
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
+  # Niri
+  programs.niri.enable = true;
 
   # Enable SDDM for Wayland login with proper theme
   services.displayManager.sddm = {

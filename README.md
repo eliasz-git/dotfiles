@@ -18,7 +18,7 @@ Multi-system Nix configuration with Everforest Dark theme for macOS (M2) and Nix
 | System | Architecture | WM/DE | Status |
 |--------|--------------|-------|--------|
 | **MacBook M2** | aarch64-darwin | yabai + SketchyBar | ✅ Active |
-| **HP ProBook 450 G8** | x86_64-linux | Hyprland + Waybar | ✅ Active |
+| **HP ProBook 450 G8** | x86_64-linux | Niri + Waybar | ✅ Active |
 
 **Shared Features:**
 - 🎨 Everforest Dark Medium theme
@@ -87,8 +87,8 @@ sudo nixos-rebuild switch --flake .#laptop
   - Transparent background with subtle shadows for depth
 - **Package Manager**: Nix + Homebrew for GUI apps
 
-### NixOS (Hyprland + Waybar)
-- **Compositor**: Hyprland with blur and transparency
+### NixOS (Niri + Waybar)
+- **Compositor**: Niri scrollable tiling Wayland compositor
 - **Status Bar**: Enhanced Waybar with full transparency and modern design
   - **Printing**: CUPS support with printer status indicator and multi-driver support
   - **Cloud Sync**: Nextcloud/DavMail integration with live sync status
@@ -206,8 +206,8 @@ Editors:    VSCodium, Neovim (via packages)
    ```
 
 7. **First login:**
-   - Select "Hyprland" session at SDDM
-   - `Super + T` → Terminal
+   - Select "Niri" session at SDDM
+   - `Super + G` → Terminal (physical T key on Colemak)
    - `Super + Space` → App launcher
 
 </details>
@@ -259,18 +259,28 @@ code ~/.config/nix-config/hosts/nixos/
 ### Keybindings
 
 <details>
-<summary><b>NixOS (Hyprland)</b></summary>
+<summary><b>NixOS (Niri)</b></summary>
+
+Keybindings are **colemak-aware** — they match the same physical key positions as the
+original Hyprland config (e.g. the physical `T` key, which is `G` in Colemak, opens the terminal).
 
 | Key | Action |
 |-----|--------|
-| `Super + T` | Kitty terminal |
-| `Super + B` | Librewolf browser |
-| `Super + Space` | App launcher |
+| `Super + G` | Kitty terminal (physical T key) |
+| `Super + B` | Brave browser |
+| `Super + U` | VSCodium (physical I key) |
+| `Super + M` | Lollypop music player |
+| `Super + Return` | Thunar file manager |
+| `Super + Space` | App launcher (rofi) |
 | `Super + Q` | Close window |
-| `Super + F` | Toggle float |
-| `Super + H/J/K/L` | Navigate windows |
+| `Super + Shift + F` | Quit niri (physical E key) |
+| `Super + T` | Toggle floating (physical F key) |
+| `Super + Shift + Return` | Toggle fullscreen |
+| `Super + H / I / E / N` | Focus left / right / up / down |
+| `Super + Left/Right/Up/Down` | Focus left / right / up / down |
+| `Super + Shift + H / I` | Move column left / right |
 | `Super + 1-9` | Switch workspace |
-| `Super + Shift + 1-9` | Move to workspace |
+| `Super + Shift + 1-9` | Move window to workspace |
 
 **Media keys work out of the box** (brightness, volume, play/pause)
 
@@ -327,11 +337,11 @@ foreground = "#d3c6aa";
 
 ### Adjust Transparency (NixOS)
 
-In `hosts/nixos/home.nix`, modify opacity values:
+In `hosts/nixos/home.nix`, modify opacity values in the `window-rules` list:
 ```nix
-windowrulev2 = [
-  "opacity 0.90 0.80,class:^(kitty)$"  # More opaque
-  "opacity 0.75 0.65,class:^(kitty)$"  # More transparent
+window-rules = [
+  { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.90; }  # More opaque
+  { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.75; }  # More transparent
 ];
 ```
 
@@ -462,11 +472,11 @@ ls -la /etc/nixos
 </details>
 
 <details>
-<summary><b>NixOS: Hyprland won't start</b></summary>
+<summary><b>NixOS: Niri won't start</b></summary>
 
 1. Switch to TTY: `Ctrl + Alt + F2`
 2. Check logs: `journalctl -u display-manager.service`
-3. Try manual start: `Hyprland`
+3. Try manual start: `niri`
 
 </details>
 
@@ -478,6 +488,70 @@ Check SIP status: `csrutil status`
 Should say "disabled". If not, disable in Recovery Mode.
 
 </details>
+
+## 🔄 OpenRC — Why It Isn't in the NixOS Config (and Your Options)
+
+NixOS is architecturally inseparable from **systemd**. The entire module system
+(`services.*`, `systemd.services`, `boot.loader.systemd-boot`, etc.) generates
+systemd units at build time. There is no supported NixOS option to swap systemd for
+OpenRC — attempting it would require patching the core of nixpkgs and would break
+essentially every service module.
+
+### Your Options
+
+#### Option A — Stay on NixOS (recommended)
+Keep using systemd on NixOS. You get the full declarative power of NixOS, niri works
+great, and you lose nothing in day-to-day use. Systemd on NixOS is silent and
+stays out of your way.
+
+#### Option B — Artix Linux + Nix package manager
+[Artix Linux](https://artixlinux.org/) is an Arch-based distribution that ships
+**without** systemd and officially supports OpenRC (as well as runit and s6).
+
+1. Install Artix with the OpenRC ISO from <https://artixlinux.org/download.php>
+2. Install the Nix package manager on top for declarative user-land packages:
+   ```bash
+   # Download the installer, inspect it, then run it
+   curl -Lo /tmp/nix-install.sh https://nixos.org/nix/install
+   less /tmp/nix-install.sh   # review before executing
+   sh /tmp/nix-install.sh --no-daemon
+   ```
+3. Use Home Manager (standalone mode) to manage your dotfiles declaratively:
+   ```bash
+   nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+   nix-channel --update
+   nix-shell '<home-manager>' -A install
+   ```
+4. Install niri via pacman or the Nix package manager:
+   ```bash
+   sudo pacman -S niri   # or: nix profile install nixpkgs#niri
+   ```
+5. Enable niri as a session by creating `/etc/X11/Sessions/niri` or using a display
+   manager that supports Wayland sessions (SDDM works well on Artix).
+
+#### Option C — Alpine Linux + Nix
+[Alpine Linux](https://alpinelinux.org/) uses OpenRC natively and has a very small
+footprint. The process is similar to Option B:
+1. Install Alpine Linux (standard edition).
+2. Install Nix: follow <https://nixos.org/download.html> (multi-user install).
+3. Install niri via `apk add niri` (edge repository) or via Nix.
+
+#### Option D — Gentoo
+Gentoo uses OpenRC by default and gives you full control. Install niri from the
+`gui-wm/niri` ebuild in the GURU overlay. You can add the Nix package manager on
+top for reproducible user environments if desired.
+
+### Summary
+
+| Distro | Init | Niri | Nix packages | Declarative OS config |
+|--------|------|------|--------------|-----------------------|
+| NixOS | systemd | ✅ | ✅ Native | ✅ Best-in-class |
+| Artix | **OpenRC** | ✅ pacman | ✅ via Nix | ⚠️ Home Manager only |
+| Alpine | **OpenRC** | ✅ apk/edge | ✅ via Nix | ⚠️ Home Manager only |
+| Gentoo | **OpenRC** | ✅ GURU overlay | ✅ via Nix | ⚠️ Portage + Nix |
+
+If the primary goal is running niri on an OpenRC system, **Artix** is the easiest
+path. If the priority is a fully declarative configuration, **stay on NixOS**.
 
 ## 🤝 Contributing
 
@@ -495,7 +569,7 @@ MIT License - Use freely!
 - [NixOS](https://nixos.org/) & [nix-darwin](https://github.com/LnL7/nix-darwin)
 - [home-manager](https://github.com/nix-community/home-manager)
 - [Everforest](https://github.com/sainnhe/everforest) theme
-- [Hyprland](https://hyprland.org/) & [yabai](https://github.com/koekeishiya/yabai)
+- [Niri](https://github.com/YaLTeR/niri) & [yabai](https://github.com/koekeishiya/yabai)
 
 ---
 
