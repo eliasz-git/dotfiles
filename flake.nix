@@ -18,7 +18,7 @@
       config.allowUnfree = true;
     };
     
-    # NixOS Intel
+    # NixOS / Artix Intel
     linuxSystem = "x86_64-linux";
     linuxPkgs = import nixpkgs { 
       system = linuxSystem;
@@ -54,6 +54,12 @@
           home-manager.users.tundra = import ./hosts/nixos/home.nix;
         }
       ];
+    };
+
+    # Artix Linux (OpenRC) — standalone Home Manager
+    homeConfigurations.artix = home-manager.lib.homeManagerConfiguration {
+      pkgs = linuxPkgs;
+      modules = [ ./hosts/artix/home.nix ];
     };
   };
 }
