@@ -27,279 +27,63 @@ require_root() {
     [[ $EUID -eq 0 ]] || die "This section must run as root. Use: sudo $0"
 }
 
-# ── config ───────────────────────────────────────────────────────────────────
-USERNAME="${1:-tundra}"
-CONFIG_DIR="/home/$USERNAME/.config/nix-config"
-CONFIG_REPO="https://github.com/tundra-node/nix-config"
-
-[[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] \
-    || die "Invalid username: $USERNAME"
-
-info "Setting up Artix for user: $USERNAME"
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 
 # =============================================================================
-# 1. UPDATE SYSTEM
+# ROOT SETUP MODE — called internally via: sudo bash "$SCRIPT_PATH" --root-setup "$USERNAME"
+# Runs all root-only functions then exits. Never recurses into main.
 # =============================================================================
-setup_system() {
-    info "Updating package database and system…"
-    sudo pacman -Syu --noconfirm
-    success "System updated"
-}
+if [[ "${1:-}" == "--root-setup" ]]; then
+    USERNAME="${2:-tundra}"
 
-# =============================================================================
-# 2. INSTALL YAY (AUR helper)
-# =============================================================================
-install_yay() {
-    if command -v yay &>/dev/null; then
-        success "yay already installed"
-        return
-    fi
-    info "Installing yay AUR helper…"
-    sudo pacman -S --noconfirm --needed base-devel git
-    tmpdir=$(mktemp -d)
-    git clone https://aur.archlinux.org/yay.git "$tmpdir/yay"
-    (cd "$tmpdir/yay" && makepkg -si --noconfirm)
-    rm -rf "$tmpdir"
-    success "yay installed"
-}
+    # ── helpers need to be re-declared in this bash invocation ───────────────
+    require_root() { [[ $EUID -eq 0 ]] || { echo "[ERR] Must be root" >&2; exit 1; }; }
 
-# =============================================================================
-# 3. PACMAN PACKAGES
-# =============================================================================
-install_pacman_packages() {
-    info "Installing system packages via pacman…"
+    setup_user_groups() {
+        require_root
+        info "Adding $USERNAME to system groups…"
+        local groups=(wheel networkmanager video input seat audio docker bluetooth lp)
+        for group in "${groups[@]}"; do
+            getent group "$group" &>/dev/null || groupadd "$group"
+            usermod -aG "$group" "$USERNAME"
+        done
+        getent group seat &>/dev/null || groupadd seat
+        success "User groups configured"
+    }
 
-    # Base
-    local base=(
-        base-devel git wget curl nano
-    )
+    enable_openrc_services() {
+        require_root
+        info "Enabling OpenRC services…"
+        local services=(
+            NetworkManager bluetooth elogind seatd sddm
+            tlp thermald cupsd avahi-daemon docker pcscd sshd
+        )
+        for svc in "${services[@]}"; do
+            rc-update add "$svc" default 2>/dev/null \
+                && info "  enabled: $svc" \
+                || warn "  skipped (not found): $svc"
+        done
+        success "OpenRC services configured"
+    }
 
-    # Init / Session
-    local init=(
-        elogind              # logind replacement for OpenRC
-        seatd                # seat management for Wayland
-        polkit polkit-gnome  # privilege escalation
-    )
+    configure_mdns() {
+        require_root
+        info "Configuring mDNS (avahi) in nsswitch…"
+        if ! grep -q 'mdns_minimal' /etc/nsswitch.conf; then
+            sed -i 's/^\(hosts:.*\)\(dns\)/\1mdns_minimal \2/' /etc/nsswitch.conf
+            success "mDNS configured in nsswitch.conf"
+        else
+            success "mDNS already present in nsswitch.conf"
+        fi
+    }
 
-    # Shell
-    local shell=(
-        zsh
-    )
-
-    # Wayland / compositor / display manager
-    local wayland=(
-        niri
-        sddm
-        xdg-desktop-portal
-        xdg-desktop-portal-gtk
-        xdg-desktop-portal-gnome
-        qt5-wayland
-        qt6-wayland
-    )
-
-    # Audio
-    local audio=(
-        pipewire
-        pipewire-alsa
-        pipewire-pulse
-        wireplumber
-        rtkit
-    )
-
-    # Network
-    local network=(
-        networkmanager
-        network-manager-applet
-        networkmanager-openvpn
-    )
-
-    # Bluetooth
-    local bluetooth=(
-        bluez
-        bluez-utils
-        blueman
-    )
-
-    # Power management
-    local power=(
-        tlp
-        thermald
-        powertop
-    )
-
-    # Intel graphics
-    local graphics=(
-        mesa
-        vulkan-intel
-        intel-media-driver
-        libva-intel-driver
-    )
-
-    # Printing
-    local printing=(
-        cups
-        cups-pdf
-        hplip
-        gutenprint
-        foomatic-db
-        foomatic-db-engine
-        avahi
-        nss-mdns
-        system-config-printer
-    )
-
-    # File manager and desktop apps
-    local desktop=(
-        thunar
-        thunar-archive-plugin
-        xfce4-terminal          # lightweight fallback terminal
-    )
-
-    # YubiKey / smart card
-    local yubikey=(
-        pcsclite
-        libfido2
-#        pam-u2f
-#        yubikey-manager
-#        ccid
-    )
-
-    # Container / virtualisation
-    local containers=(
-        docker
-        docker-compose
-    )
-
-    # Fonts (system-wide, needed by SDDM and apps before Nix profile loads)
-    local fonts=(
-        ttf-jetbrains-mono-nerd
-        noto-fonts
-        noto-fonts-emoji
-    )
-
-    # Input
-    local input=(
-        libinput
-    )
-
-    # SSH
-    local misc=(
-        openssh
-    )
-
-    sudo pacman -S --noconfirm --needed \
-        "${base[@]}" "${init[@]}" "${shell[@]}" "${wayland[@]}" \
-        "${audio[@]}" "${network[@]}" "${bluetooth[@]}" "${power[@]}" \
-        "${graphics[@]}" "${printing[@]}" "${desktop[@]}" "${yubikey[@]}" \
-        "${containers[@]}" "${fonts[@]}" "${input[@]}" "${misc[@]}"
-
-    success "Pacman packages installed"
-}
-
-# =============================================================================
-# 4. AUR PACKAGES
-# =============================================================================
-install_aur_packages() {
-    info "Installing AUR packages…"
-
-    # Run as the regular user (yay must not run as root)
-    local aur_packages=(
-        mullvad-vpn-bin      # Mullvad VPN
-    )
-
-    if [[ $EUID -eq 0 ]]; then
-        su -c "yay -S --noconfirm --needed ${aur_packages[*]}" "$USERNAME"
-    else
-        yay -S --noconfirm --needed "${aur_packages[@]}"
-    fi
-
-    success "AUR packages installed"
-}
-
-# =============================================================================
-# 5. USER GROUPS
-# =============================================================================
-setup_user_groups() {
-    require_root
-    info "Adding $USERNAME to system groups…"
-
-    local groups=(
-        # wheel membership is a pre-requisite (set during Artix install);
-        # we list it here so subsequent group additions work if running as root.
-        wheel networkmanager video input seat audio docker bluetooth lp
-    )
-    for group in "${groups[@]}"; do
-        # Create the group if it doesn't exist
-        getent group "$group" &>/dev/null || groupadd "$group"
-        usermod -aG "$group" "$USERNAME"
-    done
-
-    # seatd requires the seat group
-    getent group seat &>/dev/null || groupadd seat
-
-    success "User groups configured"
-}
-
-# =============================================================================
-# 6. OPENRC SERVICES
-# =============================================================================
-enable_openrc_services() {
-    require_root
-    info "Enabling OpenRC services…"
-
-    local services=(
-        NetworkManager     # networking
-        bluetooth          # Bluetooth
-        elogind            # logind API (needed by polkit, many Wayland compositors)
-        seatd              # seat management for Wayland
-        sddm               # display manager
-        tlp                # power management
-        thermald           # thermal management
-        cupsd              # printing
-        avahi-daemon       # network printer discovery
-        docker             # container runtime
-        pcscd              # smart card / YubiKey
-        sshd               # SSH server
-    )
-
-    for svc in "${services[@]}"; do
-        rc-update add "$svc" default 2>/dev/null \
-            && info "  enabled: $svc" \
-            || warn "  skipped (not found): $svc"
-    done
-
-    success "OpenRC services configured"
-}
-
-# =============================================================================
-# 7. AVAHI / mDNS (printer discovery)
-# =============================================================================
-configure_mdns() {
-    require_root
-    info "Configuring mDNS (avahi) in nsswitch…"
-
-    # Insert mdns_minimal before dns in the hosts line so local .local names
-    # resolve without needing a full DNS lookup.
-    if ! grep -q 'mdns_minimal' /etc/nsswitch.conf; then
-        sed -i 's/^\(hosts:.*\)\(dns\)/\1mdns_minimal \2/' /etc/nsswitch.conf
-        success "mDNS configured in nsswitch.conf"
-    else
-        success "mDNS already present in nsswitch.conf"
-    fi
-}
-
-# =============================================================================
-# 8. SDDM CONFIGURATION
-# =============================================================================
-configure_sddm() {
-    require_root
-    info "Configuring SDDM…"
-
-    mkdir -p /etc/sddm.conf.d
-    cat > /etc/sddm.conf.d/artix.conf <<'EOF'
+    configure_sddm() {
+        require_root
+        info "Configuring SDDM…"
+        mkdir -p /etc/sddm.conf.d
+        cat > /etc/sddm.conf.d/artix.conf <<'EOF'
 [Theme]
-Current=chili
+Current=
 
 [Wayland]
 SessionDir=/usr/share/wayland-sessions
@@ -308,41 +92,27 @@ SessionDir=/usr/share/wayland-sessions
 DisplayServer=wayland
 GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
 EOF
+        success "SDDM configured"
+    }
 
-    success "SDDM configured"
-}
-
-# =============================================================================
-# 9. KEYBOARD CONSOLE (Colemak)
-# =============================================================================
-configure_keyboard() {
-    require_root
-    info "Setting console keyboard to Colemak…"
-
-    # /etc/vconsole.conf (OpenRC / Artix equivalent)
-    if [[ ! -f /etc/vconsole.conf ]] || ! grep -q 'KEYMAP=colemak' /etc/vconsole.conf; then
-        cat > /etc/vconsole.conf <<'EOF'
+    configure_keyboard() {
+        require_root
+        info "Setting console keyboard to Colemak…"
+        if [[ ! -f /etc/vconsole.conf ]] || ! grep -q 'KEYMAP=colemak' /etc/vconsole.conf; then
+            cat > /etc/vconsole.conf <<'EOF'
 KEYMAP=colemak
 FONT=default8x16
 EOF
-    fi
+        fi
+        loadkeys colemak 2>/dev/null || warn "loadkeys not available (will apply after reboot)"
+        success "Console keyboard configured"
+    }
 
-    # loadkeys at runtime
-    loadkeys colemak 2>/dev/null || warn "loadkeys not available (will apply after reboot)"
-
-    success "Console keyboard configured"
-}
-
-# =============================================================================
-# 10. TLP CONFIGURATION
-# =============================================================================
-configure_tlp() {
-    require_root
-    info "Writing TLP configuration (HP ProBook 450 G8 / Intel)…"
-
-    cat > /etc/tlp.conf <<'EOF'
-# TLP config generated by nix-config install.sh
-# HP ProBook 450 G8 - Intel CPU/GPU
+    configure_tlp() {
+        require_root
+        info "Writing TLP configuration (HP ProBook 450 G8 / Intel)…"
+        cat > /etc/tlp.conf <<'EOF'
+# TLP config — HP ProBook 450 G8 / Intel
 
 CPU_SCALING_GOVERNOR_ON_AC=performance
 CPU_SCALING_GOVERNOR_ON_BAT=powersave
@@ -366,9 +136,7 @@ INTEL_GPU_BOOST_FREQ_ON_AC=1300
 INTEL_GPU_BOOST_FREQ_ON_BAT=600
 
 # NOTE: HP ProBook 450 G8 doesn't support charge thresholds via TLP/hp-wmi.
-# Use BIOS "HP Battery Health Manager" -> "Maximum battery health" for the
-# 80% charge limit instead. These values are kept as documentation and as a
-# fallback in case thresholds are supported on other hardware.
+# Use BIOS "HP Battery Health Manager" -> "Maximum battery health" for 80% limit.
 START_CHARGE_THRESH_BAT0=40
 STOP_CHARGE_THRESH_BAT0=80
 
@@ -404,34 +172,155 @@ NMI_WATCHDOG=0
 RUNTIME_PM_DRIVER_DENYLIST=""
 USB_ALLOWLIST=""
 EOF
+        success "TLP configuration written"
+    }
 
-    success "TLP configuration written"
+    configure_pam_u2f() {
+        require_root
+        info "Setting up PAM U2F for YubiKey…"
+        warn "Enroll your YubiKey after setup:"
+        warn "  mkdir -p ~/.config/Yubico && pamu2fcfg > ~/.config/Yubico/u2f_keys"
+        for pam_file in /etc/pam.d/sudo /etc/pam.d/login; do
+            if [[ -f "$pam_file" ]] && ! grep -q 'pam_u2f' "$pam_file"; then
+                sed -i '0,/^auth/s//auth\tsufficient\tpam_u2f.so\nauth/' "$pam_file"
+                info "  PAM U2F added to $pam_file"
+            fi
+        done
+        success "PAM U2F configured"
+    }
+
+    # Run all root functions in order
+    setup_user_groups
+    enable_openrc_services
+    configure_mdns
+    configure_sddm
+    configure_keyboard
+    configure_tlp
+    configure_pam_u2f
+    exit 0
+fi
+
+# =============================================================================
+# Normal (user) execution starts here — only reached when NOT --root-setup
+# =============================================================================
+
+USERNAME="${1:-tundra}"
+CONFIG_DIR="/home/$USERNAME/.config/nix-config"
+CONFIG_REPO="https://github.com/tundra-node/nix-config"
+
+[[ "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]] \
+    || die "Invalid username: $USERNAME"
+
+# =============================================================================
+# 1. UPDATE SYSTEM
+# =============================================================================
+setup_system() {
+    info "Updating package database and system…"
+    sudo pacman -Syu --noconfirm
+    success "System updated"
 }
 
 # =============================================================================
-# 11. PAM U2F (YubiKey — optional)
+# 2. INSTALL YAY (AUR helper)
 # =============================================================================
-configure_pam_u2f() {
-    require_root
-    info "Setting up PAM U2F for YubiKey…"
-    warn "You must enroll your YubiKey first (run as the regular user):"
-    warn "  mkdir -p ~/.config/Yubico"
-    warn "  pamu2fcfg > ~/.config/Yubico/u2f_keys"
-
-    # Prepend 'sufficient' u2f line to sudo and login PAM stacks
-    for pam_file in /etc/pam.d/sudo /etc/pam.d/login; do
-        if [[ -f "$pam_file" ]] && ! grep -q 'pam_u2f' "$pam_file"; then
-            # Insert after the first 'auth' line
-            sed -i '0,/^auth/s//auth\tsufficient\tpam_u2f.so\nauth/' "$pam_file"
-            info "  PAM U2F added to $pam_file"
-        fi
-    done
-
-    success "PAM U2F configured (enroll YubiKey before logging out!)"
+install_yay() {
+    if command -v yay &>/dev/null; then
+        success "yay already installed"
+        return
+    fi
+    info "Installing yay AUR helper…"
+    sudo pacman -S --noconfirm --needed base-devel git
+    tmpdir=$(mktemp -d)
+    git clone https://aur.archlinux.org/yay.git "$tmpdir/yay"
+    (cd "$tmpdir/yay" && makepkg -si --noconfirm)
+    rm -rf "$tmpdir"
+    success "yay installed"
 }
 
 # =============================================================================
-# 12. INSTALL NIX (multi-user)
+# 3. PACMAN PACKAGES
+# =============================================================================
+install_pacman_packages() {
+    info "Installing system packages via pacman…"
+
+    local base=(base-devel git wget curl nano)
+
+    local init=(
+        elogind              # logind replacement for OpenRC
+        seatd                # seat management for Wayland
+        polkit polkit-gnome  # privilege escalation
+    )
+
+    local shell=(zsh)
+
+    local wayland=(
+        niri
+        sddm
+        xdg-desktop-portal
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-gnome
+        qt5-wayland
+        qt6-wayland
+    )
+
+    local audio=(pipewire pipewire-alsa pipewire-pulse wireplumber rtkit)
+
+    local network=(networkmanager network-manager-applet networkmanager-openvpn)
+
+    local bluetooth=(bluez bluez-utils blueman)
+
+    local power=(tlp thermald powertop)
+
+    local graphics=(mesa vulkan-intel intel-media-driver libva-intel-driver)
+
+    local printing=(
+        cups cups-pdf hplip gutenprint
+        foomatic-db foomatic-db-engine
+        avahi nss-mdns system-config-printer
+    )
+
+    local desktop=(thunar thunar-archive-plugin xfce4-terminal)
+
+    local yubikey=(pcsclite libfido2)
+
+    local containers=(docker docker-compose)
+
+    local fonts=(ttf-jetbrains-mono-nerd noto-fonts noto-fonts-emoji)
+
+    local input=(libinput)
+
+    local misc=(openssh)
+
+    sudo pacman -S --noconfirm --needed \
+        "${base[@]}" "${init[@]}" "${shell[@]}" "${wayland[@]}" \
+        "${audio[@]}" "${network[@]}" "${bluetooth[@]}" "${power[@]}" \
+        "${graphics[@]}" "${printing[@]}" "${desktop[@]}" "${yubikey[@]}" \
+        "${containers[@]}" "${fonts[@]}" "${input[@]}" "${misc[@]}"
+
+    success "Pacman packages installed"
+}
+
+# =============================================================================
+# 4. AUR PACKAGES
+# =============================================================================
+install_aur_packages() {
+    info "Installing AUR packages…"
+
+    local aur_packages=(
+        mullvad-vpn-bin
+    )
+
+    if [[ $EUID -eq 0 ]]; then
+        su -c "yay -S --noconfirm --needed ${aur_packages[*]}" "$USERNAME"
+    else
+        yay -S --noconfirm --needed "${aur_packages[@]}"
+    fi
+
+    success "AUR packages installed"
+}
+
+# =============================================================================
+# 5. INSTALL NIX (multi-user)
 # =============================================================================
 install_nix() {
     if command -v nix &>/dev/null; then
@@ -450,7 +339,6 @@ install_nix() {
     sudo sh "$installer" --daemon
     rm -f "$installer"
 
-    # Source the Nix profile
     # shellcheck source=/dev/null
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
@@ -458,7 +346,7 @@ install_nix() {
 }
 
 # =============================================================================
-# 13. ENABLE NIX FLAKES
+# 6. ENABLE NIX FLAKES
 # =============================================================================
 enable_nix_flakes() {
     info "Enabling Nix experimental features (flakes + nix-command)…"
@@ -469,7 +357,6 @@ enable_nix_flakes() {
             | sudo tee -a /etc/nix/nix.conf > /dev/null
     fi
 
-    # Also set in user config for non-daemon invocations
     mkdir -p "$HOME/.config/nix"
     if ! grep -q 'experimental-features' "$HOME/.config/nix/nix.conf" 2>/dev/null; then
         echo 'experimental-features = nix-command flakes' \
@@ -480,7 +367,7 @@ enable_nix_flakes() {
 }
 
 # =============================================================================
-# 14. INSTALL HOME MANAGER
+# 7. INSTALL HOME MANAGER
 # =============================================================================
 install_home_manager() {
     if command -v home-manager &>/dev/null; then
@@ -499,7 +386,7 @@ install_home_manager() {
 }
 
 # =============================================================================
-# 15. CLONE CONFIG AND APPLY HOME MANAGER
+# 8. CLONE CONFIG AND APPLY HOME MANAGER
 # =============================================================================
 apply_config() {
     info "Setting up nix-config…"
@@ -510,11 +397,9 @@ apply_config() {
         git clone "$CONFIG_REPO" "$CONFIG_DIR"
     fi
 
-    # Ensure flake is tracked by git (required for flakes to see all files)
     git -C "$CONFIG_DIR" add . 2>/dev/null || true
 
     info "Applying Home Manager configuration…"
-    # Source nix profile in case it was just installed
     # shellcheck source=/dev/null
     [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]] \
         && . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
@@ -532,26 +417,19 @@ main() {
     echo -e "║  Artix Linux (OpenRC) + Niri setup       ║"
     echo -e "╚══════════════════════════════════════════╝${RESET}\n"
 
-    # System steps require root; run with sudo
+    info "Setting up Artix for user: $USERNAME"
+
+    # Pacman + AUR (run as user)
     setup_system
     install_pacman_packages
-
-    # AUR helper and packages (run as user)
     install_yay
     install_aur_packages
 
-    # Root-only configuration
-    sudo bash -c "
-        source '$SCRIPT_PATH'
-        USERNAME='$USERNAME'
-        setup_user_groups
-        enable_openrc_services
-        configure_mdns
-        configure_sddm
-        configure_keyboard
-        configure_tlp
-        configure_pam_u2f
-    "
+    # Root-only configuration — re-invokes this script with --root-setup flag.
+    # The flag branch runs root functions then exits; main() never fires again.
+    info "Running root configuration…"
+    sudo bash "$SCRIPT_PATH" --root-setup "$USERNAME"
+    success "Root configuration done"
 
     # User-level: Nix + Home Manager
     install_nix
@@ -565,6 +443,7 @@ main() {
     echo -e "═══════════════════════════════════════════${RESET}"
     echo ""
     echo -e "  1. ${BOLD}Enroll YubiKey${RESET} (if using U2F):"
+    echo "       mkdir -p ~/.config/Yubico"
     echo "       pamu2fcfg > ~/.config/Yubico/u2f_keys"
     echo ""
     echo -e "  2. ${BOLD}Copy your wallpaper${RESET}:"
@@ -576,8 +455,8 @@ main() {
     echo -e "  4. At the SDDM login screen, select ${BOLD}Niri${RESET} as the session."
     echo ""
     echo -e "  5. ${BOLD}Update config later${RESET}:"
-    echo "       hms   # home-manager switch (alias set by HM)"
-    echo "       hmu   # update flake + switch"
+    echo "       hms   # home-manager switch --flake ~/.config/nix-config#artix"
+    echo "       hmu   # nix flake update + home-manager switch"
     echo ""
     echo -e "${YELLOW}NOTE: GPU-accelerated apps (kitty, etc.) installed via Nix may"
     echo -e "need nixGL wrappers on non-NixOS if they fail with OpenGL errors:"
@@ -585,4 +464,4 @@ main() {
     echo ""
 }
 
-[[ "${BASH_SOURCE[0]}" == "${0}" ]] && main "$@"
+main "$@"
