@@ -168,6 +168,7 @@
   };
 
   programs.niri = {
+    programs.niri.enable = true;
     settings = {
       input = {
         keyboard = {

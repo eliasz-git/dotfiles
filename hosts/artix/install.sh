@@ -36,6 +36,7 @@ CONFIG_REPO="https://github.com/tundra-node/nix-config"
     || die "Invalid username: $USERNAME"
 
 info "Setting up Artix for user: $USERNAME"
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 
 # =============================================================================
 # 1. UPDATE SYSTEM
@@ -159,6 +160,9 @@ install_pacman_packages() {
     local yubikey=(
         pcsclite
         libfido2
+        pam-u2f
+        yubikey-manager
+        ccid
     )
 
     # Container / virtualisation
@@ -201,11 +205,7 @@ install_aur_packages() {
 
     # Run as the regular user (yay must not run as root)
     local aur_packages=(
-        sddm-theme-chili     # SDDM login theme matching the NixOS setup
-        pam-u2f              # YubiKey PAM module
         mullvad-vpn-bin      # Mullvad VPN
-        ccid
-        yubikey-manager
     )
 
     if [[ $EUID -eq 0 ]]; then
@@ -542,7 +542,7 @@ main() {
 
     # Root-only configuration
     sudo bash -c "
-        source '$(realpath "$0")'
+        source '$SCRIPT_PATH'
         USERNAME='$USERNAME'
         setup_user_groups
         enable_openrc_services
@@ -585,4 +585,4 @@ main() {
     echo ""
 }
 
-main "$@"
+[[ "${BASH_SOURCE[0]}" == "${0}" ]] && main "$@"
