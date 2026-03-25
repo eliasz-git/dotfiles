@@ -13,17 +13,6 @@
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
 
-  # macOS-specific packages only
-  home.packages = with pkgs; [
-    moonlight-qt
-    ollama
-  ];
-
-  # OLLAMA_HOST env var so CLI tools and Docker containers can reach native Ollama
-  home.sessionVariables = {
-    OLLAMA_HOST = "http://0.0.0.0:11434";
-  };
-
   # Symlink sketchybar config directly to nix-config source (live, no rebuild needed)
   home.file.".config/sketchybar".source =
     config.lib.file.mkOutOfStoreSymlink
