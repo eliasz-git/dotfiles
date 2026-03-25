@@ -160,9 +160,9 @@ install_pacman_packages() {
     local yubikey=(
         pcsclite
         libfido2
-        pam-u2f
-        yubikey-manager
-        ccid
+#        pam-u2f
+#        yubikey-manager
+#        ccid
     )
 
     # Container / virtualisation
