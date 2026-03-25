@@ -10,7 +10,6 @@
     ../../modules/nixos/terminal.nix
   ];
 
-  # Required for standalone Home Manager (not set by a NixOS module)
   home.username = "tundra";
   home.homeDirectory = "/home/tundra";
   home.stateVersion = "25.05";
@@ -33,7 +32,6 @@
     everforest-gtk-theme
   ];
 
-  # Artix-specific shell aliases
   programs.zsh.shellAliases = {
     hms = "home-manager switch --flake ~/.config/nix-config#artix";
     hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#artix";
@@ -222,10 +220,7 @@
         { matches = [ { app-id = "^obsidian$"; } ]; opacity = 0.88; }
       ];
 
-      # Keybindings use colemak logical key names so physical positions match
-      # the original hyprland config (e.g. physical T key = colemak G).
       binds = {
-        # App launchers
         "Mod+G".action = { spawn = [ "kitty" ]; };
         "Mod+B".action = { spawn = [ "brave" ]; };
         "Mod+U".action = { spawn = [ "vscodium" ]; };
@@ -233,30 +228,25 @@
         "Mod+Return".action = { spawn = [ "thunar" ]; };
         "Mod+Space".action = { spawn = [ "rofi" "-show" "drun" ]; };
 
-        # Window / session management
         "Mod+Q".action = "close-window";
         "Mod+Shift+F".action = "quit";
         "Mod+T".action = "toggle-window-floating";
         "Mod+Shift+Return".action = "fullscreen-window";
 
-        # Focus movement (arrows + home-row)
         "Mod+Left".action = "focus-column-left";
         "Mod+Right".action = "focus-column-right";
         "Mod+Up".action = "focus-window-up";
         "Mod+Down".action = "focus-window-down";
-
         "Mod+H".action = "focus-column-left";
         "Mod+I".action = "focus-column-right";
         "Mod+E".action = "focus-window-up";
         "Mod+N".action = "focus-window-down";
 
-        # Move windows
         "Mod+Shift+H".action = "move-column-left";
         "Mod+Shift+I".action = "move-column-right";
         "Mod+Shift+Up".action = "move-window-up-or-to-workspace-up";
         "Mod+Shift+Down".action = "move-window-down-or-to-workspace-down";
 
-        # Workspaces: focus
         "Mod+1".action = { focus-workspace = 1; };
         "Mod+2".action = { focus-workspace = 2; };
         "Mod+3".action = { focus-workspace = 3; };
@@ -267,7 +257,6 @@
         "Mod+8".action = { focus-workspace = 8; };
         "Mod+9".action = { focus-workspace = 9; };
 
-        # Workspaces: move focused window to workspace
         "Mod+Shift+1".action = { move-window-to-workspace = 1; };
         "Mod+Shift+2".action = { move-window-to-workspace = 2; };
         "Mod+Shift+3".action = { move-window-to-workspace = 3; };
@@ -278,17 +267,14 @@
         "Mod+Shift+8".action = { move-window-to-workspace = 8; };
         "Mod+Shift+9".action = { move-window-to-workspace = 9; };
 
-        # Brightness
         "XF86MonBrightnessUp".action = { spawn = [ "brightnessctl" "set" "+5%" ]; };
         "XF86MonBrightnessDown".action = { spawn = [ "brightnessctl" "set" "5%-" ]; };
 
-        # Volume
         "XF86AudioRaiseVolume".action = { spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+" ]; };
         "XF86AudioLowerVolume".action = { spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ]; };
         "XF86AudioMute".action = { spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ]; };
         "XF86AudioMicMute".action = { spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle" ]; };
 
-        # Media
         "XF86AudioPlay".action = { spawn = [ "playerctl" "play-pause" ]; };
         "XF86AudioPause".action = { spawn = [ "playerctl" "play-pause" ]; };
         "XF86AudioNext".action = { spawn = [ "playerctl" "next" ]; };
@@ -296,6 +282,8 @@
         "XF86AudioStop".action = { spawn = [ "playerctl" "stop" ]; };
       };
     };
+  };
+
   programs.waybar = {
     enable = true;
     settings = {
@@ -332,7 +320,7 @@
 
         battery = {
           format = "{icon} {capacity}%";
-          format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+          format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "���" "󰂂" "󰁹" ];
         };
 
         network = {
@@ -367,6 +355,7 @@
         };
       };
     };
+
     style = ''
       * {
         font-family: JetBrainsMono Nerd Font;
@@ -409,6 +398,7 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(131, 192, 146, 0.4);
       }
+
       #battery.charging {
         background-color: rgba(167, 192, 128, 0.9);
         color: #2d353b;
@@ -428,4 +418,4 @@
       }
     '';
   };
-};
+}
