@@ -24,7 +24,7 @@ warn()    { echo -e "${YELLOW}${BOLD}[WARN]${RESET} $*"; }
 die()     { echo -e "${RED}${BOLD}[ERR]${RESET}  $*" >&2; exit 1; }
 
 require_root() {
-    [[ $EUID -eq 0 ]] || die "This section must run as root. Use: sudo $0"
+    [[ $EUID -eq 0 ]] || { echo "[ERR] Must be root" >&2; exit 1; }
 }
 
 SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
@@ -35,9 +35,6 @@ SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
 # =============================================================================
 if [[ "${1:-}" == "--root-setup" ]]; then
     USERNAME="${2:-tundra}"
-
-    # ── helpers need to be re-declared in this bash invocation ───────────────
-    require_root() { [[ $EUID -eq 0 ]] || { echo "[ERR] Must be root" >&2; exit 1; }; }
 
     setup_user_groups() {
         require_root
@@ -54,9 +51,32 @@ if [[ "${1:-}" == "--root-setup" ]]; then
     enable_openrc_services() {
         require_root
         info "Enabling OpenRC services…"
+
+        # Write nix-daemon OpenRC service file so it survives reboot
+        if [[ ! -f /etc/init.d/nix-daemon ]]; then
+            info "  creating nix-daemon OpenRC service…"
+            cat > /etc/init.d/nix-daemon <<'EOF'
+#!/sbin/openrc-run
+description="Nix daemon"
+command=/nix/var/nix/profiles/default/bin/nix-daemon
+command_background=true
+pidfile=/run/nix-daemon.pid
+output_log=/var/log/nix-daemon.log
+error_log=/var/log/nix-daemon.log
+
+depend() {
+    need net
+    use logger
+}
+EOF
+            chmod +x /etc/init.d/nix-daemon
+            success "  nix-daemon service file created"
+        fi
+
         local services=(
             NetworkManager bluetooth elogind seatd sddm
             tlp thermald cupsd avahi-daemon docker pcscd sshd
+            nix-daemon
         )
         for svc in "${services[@]}"; do
             rc-update add "$svc" default 2>/dev/null \
@@ -306,9 +326,7 @@ install_pacman_packages() {
 install_aur_packages() {
     info "Installing AUR packages…"
 
-    local aur_packages=(
-        mullvad-vpn-bin
-    )
+    local aur_packages=(mullvad-vpn-bin)
 
     if [[ $EUID -eq 0 ]]; then
         su -c "yay -S --noconfirm --needed ${aur_packages[*]}" "$USERNAME"
@@ -325,6 +343,8 @@ install_aur_packages() {
 install_nix() {
     if command -v nix &>/dev/null; then
         success "Nix already installed"
+        # Daemon may not be running even if nix binary exists — ensure it is
+        _ensure_nix_daemon
         return
     fi
 
@@ -339,10 +359,44 @@ install_nix() {
     sudo sh "$installer" --daemon
     rm -f "$installer"
 
+    # Source nix profile so nix commands are available in this shell
     # shellcheck source=/dev/null
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
+    # Nix installer doesn't support OpenRC so daemon won't be running yet.
+    # Start it now and rely on the OpenRC service written by --root-setup for persistence.
+    _ensure_nix_daemon
+
     success "Nix installed"
+}
+
+# Start nix-daemon if it isn't already running.
+_ensure_nix_daemon() {
+    if pgrep -x nix-daemon &>/dev/null; then
+        success "nix-daemon already running"
+        return
+    fi
+
+    info "Starting nix-daemon (OpenRC does not auto-start it after install)…"
+
+    if [[ -f /etc/init.d/nix-daemon ]]; then
+        sudo rc-service nix-daemon start 2>/dev/null || true
+    else
+        # Fallback: launch directly in background
+        sudo /nix/var/nix/profiles/default/bin/nix-daemon &>/dev/null &
+    fi
+
+    # Wait up to 10 seconds for the daemon to be ready
+    local retries=10
+    while ! pgrep -x nix-daemon &>/dev/null && (( retries-- > 0 )); do
+        sleep 1
+    done
+
+    if pgrep -x nix-daemon &>/dev/null; then
+        success "nix-daemon started"
+    else
+        die "nix-daemon failed to start. Try manually: sudo nix-daemon &"
+    fi
 }
 
 # =============================================================================
@@ -400,6 +454,7 @@ apply_config() {
     git -C "$CONFIG_DIR" add . 2>/dev/null || true
 
     info "Applying Home Manager configuration…"
+    # Re-source nix profile in case it dropped out of scope
     # shellcheck source=/dev/null
     [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]] \
         && . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
@@ -426,7 +481,7 @@ main() {
     install_aur_packages
 
     # Root-only configuration — re-invokes this script with --root-setup flag.
-    # The flag branch runs root functions then exits; main() never fires again.
+    # That branch runs root functions then exits; main() never fires again.
     info "Running root configuration…"
     sudo bash "$SCRIPT_PATH" --root-setup "$USERNAME"
     success "Root configuration done"
