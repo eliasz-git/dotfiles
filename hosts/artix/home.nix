@@ -10,10 +10,14 @@
     ../../modules/nixos/terminal.nix
   ];
 
+  # Required for standalone Home Manager (not set by a NixOS module)
   home.username = "tundra";
   home.homeDirectory = "/home/tundra";
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
+
+  # Needed for xdg.configFile below
+  xdg.enable = true;
 
   home.packages = with pkgs; [
     kitty
@@ -30,11 +34,14 @@
     bibata-cursors
     papirus-icon-theme
     everforest-gtk-theme
+    waybar
   ];
 
+  # Artix-specific shell aliases
   programs.zsh.shellAliases = {
-    hms = "home-manager switch --flake ~/.config/nix-config#artix";
-    hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#artix";
+    # Use flake HM reliably (don’t depend on channel home-manager)
+    hms = "cd ~/.config/nix-config && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#artix";
+    hmu = "cd ~/.config/nix-config && nix flake update && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#artix";
   };
 
   programs.zsh.initContent = lib.mkOrder 600 ''
@@ -48,7 +55,7 @@
         nix flake update
 
         echo "Switching Home Manager..."
-        home-manager switch --flake ~/.config/nix-config#artix
+        nix run github:nix-community/home-manager/release-25.05 -- switch --flake ~/.config/nix-config#artix
     }
   '';
 
@@ -165,124 +172,139 @@
     };
   };
 
-  programs.niri = {
-    enable = true;
-    settings = {
-      input = {
-        keyboard = {
-          xkb = {
-            layout = "us,us";
-            variant = "colemak,";
-            options = "grp:alt_shift_toggle";
-          };
-        };
-        touchpad = {
-          natural-scroll = false;
-          click-method = "clickfinger";
-        };
-      };
+  # Write Niri config directly (works even when Home Manager has no programs.niri module)
+  xdg.configFile."niri/config.kdl".text = ''
+    input {
+      keyboard {
+        xkb {
+          // QWERTY:
+          layout "us"
+          // If you want the old toggle back, use:
+          // layout "us,us"
+          // variant ",colemak"
+          // options "grp:alt_shift_toggle"
+        }
+      }
 
-      layout = {
-        gaps = 10;
-        center-focused-column = "never";
-        focus-ring = {
-          width = 3;
-          active-color = "#a7c080ff";
-          inactive-color = "#475258aa";
-        };
-        border.enable = false;
-      };
+      touchpad {
+        natural-scroll false
+        click-method "clickfinger"
+      }
+    }
 
-      cursor = {
-        theme = "Bibata-Modern-Classic";
-        size = 24;
-      };
+    layout {
+      gaps 10
+      center-focused-column "never"
 
-      environment = {
-        XCURSOR_SIZE = "24";
-        XCURSOR_THEME = "Bibata-Modern-Classic";
-      };
+      focus-ring {
+        width 3
+        active-color "#a7c080ff"
+        inactive-color "#475258aa"
+      }
 
-      prefer-no-csd = true;
+      border {
+        enable false
+      }
+    }
 
-      spawn-at-startup = [
-        { command = [ "waybar" ]; }
-        { command = [ "dunst" ]; }
-        { command = [ "sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/wallpaper.jpg -m fill" ]; }
-        { command = [ "signal-desktop" ]; }
-      ];
+    cursor {
+      theme "Bibata-Modern-Classic"
+      size 24
+    }
 
-      window-rules = [
-        { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.85; }
-        { matches = [ { app-id = "^VSCodium$"; } ]; opacity = 0.88; }
-        { matches = [ { app-id = "^librewolf$"; } ]; opacity = 0.92; }
-        { matches = [ { app-id = "^thunar$"; } ]; opacity = 0.85; }
-        { matches = [ { app-id = "^obsidian$"; } ]; opacity = 0.88; }
-      ];
+    environment {
+      XCURSOR_SIZE "24"
+      XCURSOR_THEME "Bibata-Modern-Classic"
+    }
 
-      binds = {
-        "Mod+G".action = { spawn = [ "kitty" ]; };
-        "Mod+B".action = { spawn = [ "brave" ]; };
-        "Mod+U".action = { spawn = [ "vscodium" ]; };
-        "Mod+M".action = { spawn = [ "lollypop" ]; };
-        "Mod+Return".action = { spawn = [ "thunar" ]; };
-        "Mod+Space".action = { spawn = [ "rofi" "-show" "drun" ]; };
+    prefer-no-csd true
 
-        "Mod+Q".action = "close-window";
-        "Mod+Shift+F".action = "quit";
-        "Mod+T".action = "toggle-window-floating";
-        "Mod+Shift+Return".action = "fullscreen-window";
+    spawn-at-startup [
+      { command ["waybar"] }
+      { command ["dunst"] }
+      { command ["sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/wallpaper.jpg -m fill"] }
+      { command ["signal-desktop"] }
+    ]
 
-        "Mod+Left".action = "focus-column-left";
-        "Mod+Right".action = "focus-column-right";
-        "Mod+Up".action = "focus-window-up";
-        "Mod+Down".action = "focus-window-down";
-        "Mod+H".action = "focus-column-left";
-        "Mod+I".action = "focus-column-right";
-        "Mod+E".action = "focus-window-up";
-        "Mod+N".action = "focus-window-down";
+    window-rules [
+      { matches [{ app-id "^kitty$" }], opacity 0.85 }
+      { matches [{ app-id "^VSCodium$" }], opacity 0.88 }
+      { matches [{ app-id "^librewolf$" }], opacity 0.92 }
+      { matches [{ app-id "^thunar$" }], opacity 0.85 }
+      { matches [{ app-id "^obsidian$" }], opacity 0.88 }
+    ]
 
-        "Mod+Shift+H".action = "move-column-left";
-        "Mod+Shift+I".action = "move-column-right";
-        "Mod+Shift+Up".action = "move-window-up-or-to-workspace-up";
-        "Mod+Shift+Down".action = "move-window-down-or-to-workspace-down";
+    binds {
+      // App launchers
+      "Mod+G" { spawn "kitty" }
+      "Mod+B" { spawn "brave" }
+      "Mod+U" { spawn "vscodium" }
+      "Mod+M" { spawn "lollypop" }
+      "Mod+Return" { spawn "thunar" }
+      "Mod+Space" { spawn "rofi" "-show" "drun" }
 
-        "Mod+1".action = { focus-workspace = 1; };
-        "Mod+2".action = { focus-workspace = 2; };
-        "Mod+3".action = { focus-workspace = 3; };
-        "Mod+4".action = { focus-workspace = 4; };
-        "Mod+5".action = { focus-workspace = 5; };
-        "Mod+6".action = { focus-workspace = 6; };
-        "Mod+7".action = { focus-workspace = 7; };
-        "Mod+8".action = { focus-workspace = 8; };
-        "Mod+9".action = { focus-workspace = 9; };
+      // Window / session management
+      "Mod+Q" { close-window }
+      "Mod+Shift+F" { quit }
+      "Mod+T" { toggle-window-floating }
+      "Mod+Shift+Return" { fullscreen-window }
 
-        "Mod+Shift+1".action = { move-window-to-workspace = 1; };
-        "Mod+Shift+2".action = { move-window-to-workspace = 2; };
-        "Mod+Shift+3".action = { move-window-to-workspace = 3; };
-        "Mod+Shift+4".action = { move-window-to-workspace = 4; };
-        "Mod+Shift+5".action = { move-window-to-workspace = 5; };
-        "Mod+Shift+6".action = { move-window-to-workspace = 6; };
-        "Mod+Shift+7".action = { move-window-to-workspace = 7; };
-        "Mod+Shift+8".action = { move-window-to-workspace = 8; };
-        "Mod+Shift+9".action = { move-window-to-workspace = 9; };
+      // Focus movement
+      "Mod+Left" { focus-column-left }
+      "Mod+Right" { focus-column-right }
+      "Mod+Up" { focus-window-up }
+      "Mod+Down" { focus-window-down }
 
-        "XF86MonBrightnessUp".action = { spawn = [ "brightnessctl" "set" "+5%" ]; };
-        "XF86MonBrightnessDown".action = { spawn = [ "brightnessctl" "set" "5%-" ]; };
+      "Mod+H" { focus-column-left }
+      "Mod+I" { focus-column-right }
+      "Mod+E" { focus-window-up }
+      "Mod+N" { focus-window-down }
 
-        "XF86AudioRaiseVolume".action = { spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+" ]; };
-        "XF86AudioLowerVolume".action = { spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ]; };
-        "XF86AudioMute".action = { spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ]; };
-        "XF86AudioMicMute".action = { spawn = [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle" ]; };
+      // Move windows
+      "Mod+Shift+H" { move-column-left }
+      "Mod+Shift+I" { move-column-right }
+      "Mod+Shift+Up" { move-window-up-or-to-workspace-up }
+      "Mod+Shift+Down" { move-window-down-or-to-workspace-down }
 
-        "XF86AudioPlay".action = { spawn = [ "playerctl" "play-pause" ]; };
-        "XF86AudioPause".action = { spawn = [ "playerctl" "play-pause" ]; };
-        "XF86AudioNext".action = { spawn = [ "playerctl" "next" ]; };
-        "XF86AudioPrev".action = { spawn = [ "playerctl" "previous" ]; };
-        "XF86AudioStop".action = { spawn = [ "playerctl" "stop" ]; };
-      };
-    };
-  };
+      // Workspaces
+      "Mod+1" { focus-workspace 1 }
+      "Mod+2" { focus-workspace 2 }
+      "Mod+3" { focus-workspace 3 }
+      "Mod+4" { focus-workspace 4 }
+      "Mod+5" { focus-workspace 5 }
+      "Mod+6" { focus-workspace 6 }
+      "Mod+7" { focus-workspace 7 }
+      "Mod+8" { focus-workspace 8 }
+      "Mod+9" { focus-workspace 9 }
+
+      "Mod+Shift+1" { move-window-to-workspace 1 }
+      "Mod+Shift+2" { move-window-to-workspace 2 }
+      "Mod+Shift+3" { move-window-to-workspace 3 }
+      "Mod+Shift+4" { move-window-to-workspace 4 }
+      "Mod+Shift+5" { move-window-to-workspace 5 }
+      "Mod+Shift+6" { move-window-to-workspace 6 }
+      "Mod+Shift+7" { move-window-to-workspace 7 }
+      "Mod+Shift+8" { move-window-to-workspace 8 }
+      "Mod+Shift+9" { move-window-to-workspace 9 }
+
+      // Brightness
+      "XF86MonBrightnessUp" { spawn "brightnessctl" "set" "+5%" }
+      "XF86MonBrightnessDown" { spawn "brightnessctl" "set" "5%-" }
+
+      // Volume
+      "XF86AudioRaiseVolume" { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+" }
+      "XF86AudioLowerVolume" { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" }
+      "XF86AudioMute" { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" }
+      "XF86AudioMicMute" { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle" }
+
+      // Media
+      "XF86AudioPlay" { spawn "playerctl" "play-pause" }
+      "XF86AudioPause" { spawn "playerctl" "play-pause" }
+      "XF86AudioNext" { spawn "playerctl" "next" }
+      "XF86AudioPrev" { spawn "playerctl" "previous" }
+      "XF86AudioStop" { spawn "playerctl" "stop" }
+    }
+  '';
 
   programs.waybar = {
     enable = true;
@@ -320,7 +342,7 @@
 
         battery = {
           format = "{icon} {capacity}%";
-          format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "���" "󰂂" "󰁹" ];
+          format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
         };
 
         network = {
@@ -335,7 +357,7 @@
           player-icons = {
             default = "󰐊";
             mpv = "󰝚";
-            spotify = "󰓇";
+            spotify = "����";
           };
           status-icons = {
             paused = "󰏤";
