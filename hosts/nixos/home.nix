@@ -187,6 +187,7 @@
         "waybar"
         "dunst"
         "hyprpaper"
+        "signal-desktop"
       ];
 
       env = [
@@ -278,10 +279,10 @@
       "$mod" = "SUPER";
       bind = [
         "$mod, code:28, exec, kitty"
-        "$mod, code:56, exec, librewolf"
-        "$mod, code:31, exec, VSCodium"
+        "$mod, code:56, exec, brave"
+        "$mod, code:31, exec, vscodium"
         "$mod, code:58, exec, lollypop"
-        "$mod, Return, exec, nemo"
+        "$mod, Return, exec, thunar"
         "$mod, Space, exec, rofi -show drun"
         "$mod, code:24, killactive,"
         "$mod SHIFT, code:26, exit,"
@@ -416,25 +417,6 @@
             default = [ "󰕿" "󰖀" "󰕾" ];
           };
         };
-
-        "custom/printer" = {
-          format = "󰐪 {}";
-          interval = 30;
-          exec = ''
-            if command -v lpstat &>/dev/null; then
-              jobs=$(lpstat -o 2>/dev/null | wc -l)
-              if [ "$jobs" -gt 0 ]; then
-                echo "$jobs"
-              else
-                echo ""
-              fi
-            else
-              echo ""
-            fi
-          '';
-          on-click = "system-config-printer";
-          tooltip-format = "Click to manage printers";
-        };
       };
     };
     style = ''
@@ -472,15 +454,6 @@
       #pulseaudio,
       #mpris,
       #tray,
-      #custom-printer {
-        padding: 0 12px;
-        margin: 3px;
-        background-color: rgba(71, 82, 88, 0.5);
-        color: #d3c6aa;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      }
-
       #mpris {
         padding: 0 12px;
         margin: 3px;
@@ -489,12 +462,6 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(131, 192, 146, 0.4);
       }
-
-      #custom-printer {
-        background-color: rgba(127, 187, 179, 0.6);
-        color: #d3c6aa;
-      }
-
       #battery.charging {
         background-color: rgba(167, 192, 128, 0.9);
         color: #2d353b;
