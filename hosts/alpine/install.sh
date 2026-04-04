@@ -26,7 +26,9 @@ warn()    { echo -e "${YEL}${BLD}[WARN]${RST} $*"; }
 die()     { echo -e "${RED}${BLD}[ERR ]${RST} $*" >&2; exit 1; }
 
 # ── Privilege helper — doas only, no sudo ────────────────────────────────────
-# (sudo is installed purely as a shim for the Nix multi-user installer)
+# NOTE: The Nix multi-user installer calls sudo internally.
+# We do NOT install sudo as a system package. Instead we create a minimal
+# doas-based shim before running the installer, then remove it after.
 need_root() { doas "$@"; }
 
 USERNAME="${USER}"
@@ -48,7 +50,7 @@ install_apk_packages() {
   # Core / shell
   need_root apk add \
     bash zsh git curl wget rsync openssh \
-    doas sudo \
+    doas \
     util-linux pciutils usbutils \
     man-db man-pages less which
 
@@ -81,7 +83,7 @@ install_apk_packages() {
   need_root apk add \
     mesa-dri-gallium \
     intel-media-driver \
-    linux-firmware-itlwifi \
+    linux-firmware \
     brightnessctl \
     acpid zzz tlp
 
@@ -259,7 +261,17 @@ install_nix() {
   fi
 
   info "Installing Nix (Determinate Systems, --init openrc)..."
-  info "NOTE: The Nix installer uses sudo internally. sudo is installed as a shim."
+  # The Determinate Systems installer calls sudo internally.
+  # Create a temporary doas-backed shim at /usr/local/bin/sudo.
+  if ! command -v sudo >/dev/null 2>&1; then
+    info "Creating temporary sudo shim (doas wrapper) for Nix installer..."
+    need_root tee /usr/local/bin/sudo > /dev/null << 'SHIM'
+#!/bin/sh
+exec doas "$@"
+SHIM
+    need_root chmod +x /usr/local/bin/sudo
+    SUDO_SHIM_CREATED=1
+  fi
 
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
     | sh -s -- install linux \
@@ -268,6 +280,13 @@ install_nix() {
         --extra-conf "experimental-features = nix-command flakes"
 
   _source_nix
+
+  # Remove temporary sudo shim now that Nix is installed
+  if [ "${SUDO_SHIM_CREATED:-0}" = "1" ]; then
+    need_root rm -f /usr/local/bin/sudo
+    ok "Temporary sudo shim removed"
+  fi
+
   ok "Nix installed"
 }
 

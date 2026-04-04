@@ -171,8 +171,8 @@ in {
       lt  = "eza --tree --icons --level=2";
       # ---- replacements
       cat = "bat";
-      vim = "nvim";
-      vi  = "nvim";
+      vim = "nano";
+      vi  = "nano";
       grep = "grep --color=auto";
       # ---- safe ops
       cp  = "cp -iv";
@@ -389,7 +389,7 @@ in {
     extraConfig = {
       init.defaultBranch = "main";
       pull.rebase        = false;
-      core.editor        = "nvim";
+      core.editor        = "nano";
       diff.colorMoved    = "default";
     };
   };
