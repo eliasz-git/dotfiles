@@ -98,7 +98,7 @@ install_apk_packages() {
 
   # Ly display manager (APK 0.6.0 — newer version is in nixpkgs but cannot
   # be used here: Ly runs as root before any user nix profile is mounted)
-  need_root apk add ly ly-openrc
+#  need_root apk add ly ly-openrc
 
   ok "APK packages installed"
 }
