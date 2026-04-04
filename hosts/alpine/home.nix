@@ -53,7 +53,7 @@ in {
   home.packages = with pkgs; [
     # ---- TUI: daily tools
     nano
-    lf              # terminal file manager
+    #lf              # terminal file manager
     btop            # system monitor (gruvbox theme built-in)
     zathura         # pdf viewer, keyboard-driven
     imv             # image viewer, minimal
@@ -88,6 +88,7 @@ in {
     # ---- GUI (minimal — terminal is primary)
     librewolf       # browser with sync
     keepassxc       # password vault GUI
+    xfce.thunar
 
     # ---- Fonts  (apk has jetbrains-mono-nerd for Sway/Waybar boot;
     #              Nix provides it for apps launched after HM activates)
@@ -845,66 +846,6 @@ in {
     [dmenu]
     exit-immediately-if-one-item=false
   '';
-
-  # ── Mako notifications — compact terminal-style ───────────────────
-  home.file.".config/mako/config".text = ''
-    background-color=${gb.bg0h}
-    text-color=${gb.fg}
-    border-color=${gb.yel}
-    progress-color=over ${gb.bg1}
-    border-radius=0
-    border-size=1
-    font=JetBrainsMono Nerd Font 10
-    width=360
-    height=120
-    margin=6
-    padding=8
-    # Format like terminal output: [app] message
-    format=[%a] %s\n%b
-    # Stack notifications
-    max-visible=3
-    sort=-time
-
-    [urgency=high]
-    border-color=${gb.bred}
-    text-color=${gb.bred}
-  '';
-
-  # ── LF file manager ───────────────────────────────────────────────
-#  home.file.".config/lf/lfrc".text = ''
-#    set preview  true
-#    set hidden   false
-#    set drawbox  true
-#    set icons    true
-#    set ignorecase true
-#    set period   1
-#
-#    # Commands
-#    cmd open  $xdg-open "$f" &
-#    cmd mkdir $mkdir -p "$@"
-#    cmd delete ${{
-#        set -f
-#        printf '%s\n' "$fx" | wc -l
-#        printf 'delete? [y/n] '
-#        read -r ans
-#        [ "$ans" = "y" ] && rm -rf "$fx"
-#    }}
-#
-#    # Keybindings (vim-style)
-#    map <enter> open
-#    map D       delete
-#    map .       set hidden!
-#    map p       paste
-#    map x       cut
-#    map y       copy
-#    map r       rename
-#    map <c-r>   reload
-#    map gh      cd ~
-#    map g/      cd /
-#    map gd      cd ~/Downloads
-#    map gp      cd ~/Projects
-#    map gc      cd ~/.config
-#  '';
 
   # ── Librewolf userChrome — hide tab bar ───────────────────────────
   # Run librewolf once first to create the profile, then hms will write this.
