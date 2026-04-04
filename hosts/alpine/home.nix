@@ -871,40 +871,40 @@ in {
   '';
 
   # ── LF file manager ───────────────────────────────────────────────
-  home.file.".config/lf/lfrc".text = ''
-    set preview  true
-    set hidden   false
-    set drawbox  true
-    set icons    true
-    set ignorecase true
-    set period   1
-
-    # Commands
-    cmd open  $xdg-open "$f" &
-    cmd mkdir $mkdir -p "$@"
-    #cmd delete ${{
-    #    set -f
-    #    printf '%s\n' "$fx" | wc -l
-    #    printf 'delete? [y/n] '
-    #    read -r ans
-    #    [ "$ans" = "y" ] && rm -rf "$fx"
-    #}}
-
-    # Keybindings (vim-style)
-    map <enter> open
-    map D       delete
-    map .       set hidden!
-    map p       paste
-    map x       cut
-    map y       copy
-    map r       rename
-    map <c-r>   reload
-    map gh      cd ~
-    map g/      cd /
-    map gd      cd ~/Downloads
-    map gp      cd ~/Projects
-    map gc      cd ~/.config
-  '';
+#  home.file.".config/lf/lfrc".text = ''
+#    set preview  true
+#    set hidden   false
+#    set drawbox  true
+#    set icons    true
+#    set ignorecase true
+#    set period   1
+#
+#    # Commands
+#    cmd open  $xdg-open "$f" &
+#    cmd mkdir $mkdir -p "$@"
+#    cmd delete ${{
+#        set -f
+#        printf '%s\n' "$fx" | wc -l
+#        printf 'delete? [y/n] '
+#        read -r ans
+#        [ "$ans" = "y" ] && rm -rf "$fx"
+#    }}
+#
+#    # Keybindings (vim-style)
+#    map <enter> open
+#    map D       delete
+#    map .       set hidden!
+#    map p       paste
+#    map x       cut
+#    map y       copy
+#    map r       rename
+#    map <c-r>   reload
+#    map gh      cd ~
+#    map g/      cd /
+#    map gd      cd ~/Downloads
+#    map gp      cd ~/Projects
+#    map gc      cd ~/.config
+#  '';
 
   # ── Librewolf userChrome — hide tab bar ───────────────────────────
   # Run librewolf once first to create the profile, then hms will write this.
