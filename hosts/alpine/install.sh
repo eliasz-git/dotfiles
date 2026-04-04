@@ -161,7 +161,7 @@ setup_groups() {
 # =============================================================================
 #  PHASE 4 — doas -u wind config
 # =============================================================================
-setup_doas -u wind() {
+setup_doas() {
   info "Configuring doas -u wind..."
 
   # Create /etc/doas -u wind.d if it doesn't exist
