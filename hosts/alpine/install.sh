@@ -81,7 +81,7 @@ install_apk_packages() {
   need_root apk add \
     mesa-dri-gallium \
     intel-media-driver \
-    linux-firmware-iwlwifi \
+    linux-firmware-intel \
     brightnessctl \
     acpid zzz tlp
 
