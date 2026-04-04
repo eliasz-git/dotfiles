@@ -29,17 +29,19 @@
       "FelixKratz/formulae"
       "koekeishiya/formulae"
       "TheBoredTeam/boring-notch"
+      "pear-devs/pear"
     ];
     brews = [
       "sketchybar" "borders" "yabai" "i2pd"
       "cups"  # Additional CUPS support for printing
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "signal"
+      "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "librewolf"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
-      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden"
-      "claude" "musicbrainz-picard" "prismlauncher" "helium-browser"
+      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
+      "claude" "musicbrainz-picard" "prismlauncher" "helium-browser" "keepassxc"
+      "pear-desktop"
     ];
   };
 
