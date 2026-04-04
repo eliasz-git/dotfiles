@@ -258,10 +258,10 @@ install_nix() {
     return
   fi
 
-  info "Installing Nix (Determinate Systems, --init openrc)..."
-  info "NOTE: The Nix installer uses sudo internally. sudo is installed as a shim."
+  info "Installing Nix (Determinate Systems, single-user --init none)..."
+  info "Run the installer as the user that should own Nix (no doas)."
 
-  doas curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
     | sh -s -- install linux \
         --init none \
         --no-confirm \
@@ -272,11 +272,11 @@ install_nix() {
 }
 
 _source_nix() {
-  # single-user profile
-  if [ -e "/home/wind/.nix-profile/etc/profile.d/nix.sh" ]; then
+  # single-user profile (preferred for single-user systems)
+  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
     # shellcheck source=/dev/null
-    . "/home/wind/.nix-profile/etc/profile.d/nix.sh"
-    ok "Sourced /home/wind/.nix-profile/etc/profile.d/nix.sh"
+    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+    ok "Sourced $HOME/.nix-profile/etc/profile.d/nix.sh"
     return
   fi
 
