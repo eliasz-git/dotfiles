@@ -27,7 +27,7 @@ die()     { echo -e "${RED}${BLD}[ERR ]${RST} $*" >&2; exit 1; }
 
 # ── Privilege helper — doas only, no sudo ────────────────────────────────────
 # (sudo is installed purely as a shim for the Nix multi-user installer)
-need_root() { doas "$@"; }
+need_root() { doas "wind"; }
 
 USERNAME="wind"
 CONFIG_DIR="$HOME/.config/nix-config"
