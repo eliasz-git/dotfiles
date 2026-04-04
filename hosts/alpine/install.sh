@@ -3,7 +3,7 @@
 #  Alpine Linux (OpenRC) setup script
 #  HP ProBook 450 G8 — Gruvbox Dark / Sway / Nix + home-manager
 #
-#  Usage (as your user, with doas -u wind access):
+#  Usage (as your user, with doas access):
 #    chmod +x ~/.config/nix-config/hosts/alpine/install.sh
 #    bash ~/.config/nix-config/hosts/alpine/install.sh
 #
@@ -25,9 +25,9 @@ ok()      { echo -e "${GRN}${BLD}[ OK ]${RST} $*"; }
 warn()    { echo -e "${YEL}${BLD}[WARN]${RST} $*"; }
 die()     { echo -e "${RED}${BLD}[ERR ]${RST} $*" >&2; exit 1; }
 
-# ── Privilege helper — doas -u wind only, no sudo ────────────────────────────────────
+# ── Privilege helper — doas only, no sudo ────────────────────────────────────
 # (sudo is installed purely as a shim for the Nix multi-user installer)
-#need_root() { doas -u wind "wind"; }
+#need_root() { doas "wind"; }
 
 USERNAME="wind"
 CONFIG_DIR="$HOME/.config/nix-config"
@@ -40,20 +40,20 @@ CONFIG_REPO="https://github.com/tundra-node/nix-config"
 # =============================================================================
 install_apk_packages() {
   info "Updating APK..."
-  doas -u wind apk update
-  doas -u wind apk upgrade
+  doas apk update
+  doas apk upgrade
 
   info "Installing system packages..."
 
   # Core / shell
-  doas -u wind apk add \
+  doas apk add \
     bash zsh git curl wget rsync openssh \
-    doas -u wind sudo \
+    doas sudo \
     util-linux pciutils usbutils \
     man-db man-pages less which
 
   # Wayland / Sway (system compositor — NOT managed by Nix)
-  doas -u wind apk add \
+  doas apk add \
     seatd dbus dbus-openrc \
     sway swaybg swaylock swayidle \
     xwayland \
@@ -67,18 +67,18 @@ install_apk_packages() {
     polkit polkit-elogind
 
   # Audio (PipeWire stack — OpenRC services, not systemd units)
-  doas -u wind apk add \
+  doas apk add \
     pipewire pipewire-alsa pipewire-pulse \
     wireplumber \
     alsa-utils
 
   # Network
-  doas -u wind apk add \
+  doas apk add \
     iwd wpa_supplicant \
     networkmanager networkmanager-tui networkmanager-wifi
 
   # Intel hardware (ProBook 450 G8: i7-1165G7, Iris Xe)
-  doas -u wind apk add \
+  doas apk add \
     mesa-dri-gallium \
     intel-media-driver \
     linux-firmware-intel \
@@ -86,19 +86,19 @@ install_apk_packages() {
     acpid zzz tlp
 
   # YubiKey (udev rules + PAM at system level)
-  doas -u wind apk add \
+  doas apk add \
     yubikey-manager libfido2 pam-u2f \
     ccid pcsc-lite pcsc-lite-libs \
     gnupg gnupg-scdaemon
 
   # Fonts available before Nix activates (Sway/Waybar need them at boot)
-  doas -u wind apk add \
+  doas apk add \
     font-jetbrains-mono-nerd font-noto-emoji \
     adwaita-icon-theme gtk-murrine-engine
 
   # Ly display manager (APK 0.6.0 — newer version is in nixpkgs but cannot
   # be used here: Ly runs as root before any user nix profile is mounted)
-#  doas -u wind apk add ly ly-openrc
+#  doas apk add ly ly-openrc
 
   ok "APK packages installed"
 }
@@ -110,39 +110,39 @@ enable_services() {
   info "Enabling OpenRC services..."
 
   # udev — required for input devices to be visible to Sway
-  doas -u wind rc-update add udev         sysinit || true
-  doas -u wind rc-update add udev-trigger sysinit || true
-  doas -u wind rc-update add udev-settle  sysinit || true
+  doas rc-update add udev         sysinit || true
+  doas rc-update add udev-trigger sysinit || true
+  doas rc-update add udev-settle  sysinit || true
 
   # seatd — Wayland seat manager
-  doas -u wind rc-update add seatd        default || true
+  doas rc-update add seatd        default || true
 
   # dbus — required by polkit and desktop portals
-  doas -u wind rc-update add dbus         default || true
+  doas rc-update add dbus         default || true
 
   # Network
-  doas -u wind rc-update add iwd          default || true
-  doas -u wind rc-update add networkmanager default || true
+  doas rc-update add iwd          default || true
+  doas rc-update add networkmanager default || true
 
   # Hardware / power
-  doas -u wind rc-update add acpid        default || true
-  doas -u wind rc-update add tlp          default || true
+  doas rc-update add acpid        default || true
+  doas rc-update add tlp          default || true
 
   # YubiKey smartcard daemon
-  doas -u wind rc-update add pcscd        default || true
+  doas rc-update add pcscd        default || true
 
   # Ly display manager (replaces agetty on tty2)
-  doas -u wind rc-update add ly           default || true
+  doas rc-update add ly           default || true
   # Disable the getty that owns tty2 so Ly can take it
-  doas -u wind rc-update del agetty.tty2  default 2>/dev/null || \
+  doas rc-update del agetty.tty2  default 2>/dev/null || \
     warn "agetty.tty2 not in runlevel — check /etc/inittab manually"
 
   # Start services now so we don't need to reboot before testing
-  doas -u wind rc-service udev         start || true
-  doas -u wind rc-service udev-trigger start || true
-  doas -u wind rc-service seatd        start || true
-  doas -u wind rc-service dbus         start || true
-  doas -u wind rc-service pcscd        start || true
+  doas rc-service udev         start || true
+  doas rc-service udev-trigger start || true
+  doas rc-service seatd        start || true
+  doas rc-service dbus         start || true
+  doas rc-service pcscd        start || true
 
   ok "Services enabled"
 }
@@ -153,46 +153,46 @@ enable_services() {
 setup_groups() {
   info "Adding $USERNAME to required groups..."
   for grp in wheel video audio input seat; do
-    doas -u wind addgroup "$USERNAME" "$grp" 2>/dev/null || true
+    doas addgroup "$USERNAME" "$grp" 2>/dev/null || true
   done
   ok "Groups configured"
 }
 
 # =============================================================================
-#  PHASE 4 — doas -u wind config
+#  PHASE 4 — doas config
 # =============================================================================
 setup_doas() {
-  info "Configuring doas -u wind..."
+  info "Configuring doas..."
 
-  # Create /etc/doas -u wind.d if it doesn't exist
-  doas -u wind mkdir -p /etc/doas -u wind.d
+  # Create /etc/doas.d if it doesn't exist
+  doas mkdir -p /etc/doas.d
 
-  # Wheel group gets full doas -u wind access (prompts for password)
-  if ! grep -q 'permit.*wheel' /etc/doas -u wind.conf 2>/dev/null; then
-    doas -u wind tee /etc/doas -u wind.conf > /dev/null << 'EOF'
-# /etc/doas -u wind.conf
+  # Wheel group gets full doas access (prompts for password)
+  if ! grep -q 'permit.*wheel' /etc/doas.conf 2>/dev/null; then
+    doas tee /etc/doas.conf > /dev/null << 'EOF'
+# /etc/doas.conf
 permit keepenv :wheel
 EOF
-    ok "doas -u wind.conf written"
+    ok "doas.conf written"
   else
-    ok "doas -u wind.conf already configured"
+    ok "doas.conf already configured"
   fi
 
   # Passwordless suspend — zzz (replaces sudo-based solution)
-  doas -u wind tee /etc/doas -u wind.d/zzz.conf > /dev/null << 'EOF'
+  doas tee /etc/doas.d/zzz.conf > /dev/null << 'EOF'
 permit nopass :wheel cmd /usr/sbin/zzz
 EOF
-  doas -u wind chmod 400 /etc/doas -u wind.d/zzz.conf
+  doas chmod 400 /etc/doas.d/zzz.conf
 
   # Passwordless /run/user creation — needed in ~/.profile
-  doas -u wind tee /etc/doas -u wind.d/run-user.conf > /dev/null << 'EOF'
+  doas tee /etc/doas.d/run-user.conf > /dev/null << 'EOF'
 permit nopass :wheel cmd /bin/mkdir args -p /run/user
 permit nopass :wheel cmd /bin/chown
 permit nopass :wheel cmd /bin/chmod
 EOF
-  doas -u wind chmod 400 /etc/doas -u wind.d/run-user.conf
+  doas chmod 400 /etc/doas.d/run-user.conf
 
-  ok "doas -u wind configured"
+  ok "doas configured"
 }
 
 # =============================================================================
@@ -201,9 +201,9 @@ EOF
 setup_runtime_dir() {
   info "Creating /run/user/$UID..."
   RUN_DIR="/run/user/$(id -u)"
-  doas -u wind mkdir -p "$RUN_DIR"
-  doas -u wind chown "$(id -un):$(id -gn)" "$RUN_DIR"
-  doas -u wind chmod 0700 "$RUN_DIR"
+  doas mkdir -p "$RUN_DIR"
+  doas chown "$(id -un):$(id -gn)" "$RUN_DIR"
+  doas chmod 0700 "$RUN_DIR"
   export XDG_RUNTIME_DIR="$RUN_DIR"
   ok "/run/user/$(id -u) ready"
 }
@@ -213,14 +213,14 @@ setup_runtime_dir() {
 # =============================================================================
 setup_yubikey() {
   info "Writing YubiKey udev rules..."
-  doas -u wind tee /etc/udev/rules.d/70-yubikey.rules > /dev/null << 'UDEV'
+  doas tee /etc/udev/rules.d/70-yubikey.rules > /dev/null << 'UDEV'
 # YubiKey OTP + FIDO (HID)
 KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", MODE="0660", GROUP="input"
 # YubiKey CCID (smartcard / GPG)
 SUBSYSTEM=="usb", ATTRS{idVendor}=="1050", MODE="0660", GROUP="input"
 UDEV
-  doas -u wind udevadm control --reload-rules || true
-  doas -u wind udevadm trigger               || true
+  doas udevadm control --reload-rules || true
+  doas udevadm trigger               || true
 
   info "Registering YubiKey U2F (plug it in and touch it when prompted)..."
   mkdir -p "$HOME/.config/Yubico"
@@ -239,7 +239,7 @@ download_wallpaper() {
   mkdir -p "$HOME/Pictures/wallpapers"
   WALL="$HOME/Pictures/wallpapers/gruvbox.png"
   if curl -fsSL \
-    "https://raw.githubusercontent.com/AngelJumbo/gruvbox-wallpapers/bf3562b8b76f4a35a4012e19858995ba29512545/wallpapers/minimalistic/gruv-portal-cake.png" \
+    "https://raw.githubusercontent.com/AngelJumbo/gruvbox-wallpapers/main/wallpapers/minimalistic/gruvbox-triangles.png" \
     -o "$WALL" 2>/dev/null; then
     ok "Wallpaper saved to $WALL"
   else
@@ -337,10 +337,10 @@ build_ly() {
 setup_ly() {
   info "Configuring Ly..."
 
-  doas -u wind mkdir -p /etc/ly
+  doas mkdir -p /etc/ly
 
   # Write Ly config — Gruvbox Dark colours where supported
-  doas -u wind tee /etc/ly/config.ini > /dev/null << 'LYCONF'
+  doas tee /etc/ly/config.ini > /dev/null << 'LYCONF'
 # Ly display manager config
 # /etc/ly/config.ini
 
@@ -392,7 +392,7 @@ LYCONF
   # Disable the agetty that normally owns tty2 in /etc/inittab
   # Alpine uses /etc/inittab for getty spawning
   if grep -q "^tty2::" /etc/inittab 2>/dev/null; then
-    doas -u wind sed -i 's|^tty2::|#tty2::|' /etc/inittab
+    doas sed -i 's|^tty2::|#tty2::|' /etc/inittab
     ok "tty2 getty disabled in /etc/inittab"
   else
     warn "tty2 line not found in /etc/inittab — it may already be disabled"
@@ -427,7 +427,7 @@ main() {
   install_apk_packages
   enable_services
   setup_groups
-  setup_doas -u wind
+  setup_doas
   setup_runtime_dir
   setup_yubikey
   download_wallpaper
@@ -439,8 +439,8 @@ main() {
 
   # Set zsh as default shell (home-manager enables it, but shell must be set)
   if ! grep -q "$(which zsh)" /etc/passwd 2>/dev/null; then
-    doas -u wind chsh -s /bin/zsh "$USERNAME" || \
-      warn "chsh failed — run: doas -u wind chsh -s /bin/zsh $USERNAME"
+    doas chsh -s /bin/zsh "$USERNAME" || \
+      warn "chsh failed — run: doas chsh -s /bin/zsh $USERNAME"
   fi
 
   echo ""
@@ -471,7 +471,7 @@ main() {
   echo "  then run hms to apply."
   echo ""
   echo -e "${YEL}  YubiKey GPG/SSH:  gpg --card-edit${RST}"
-  echo -e "${YEL}  PAM U2F doas -u wind:     add to /etc/pam.d/doas -u wind:${RST}"
+  echo -e "${YEL}  PAM U2F doas:     add to /etc/pam.d/doas:${RST}"
   echo "    auth sufficient pam_u2f.so authfile=~/.config/Yubico/u2f_keys cue"
   echo ""
   echo -e "${YEL}  Librewolf tab bar: copy ~/.librewolf/userChrome-template.css${RST}"
