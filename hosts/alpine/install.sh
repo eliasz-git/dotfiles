@@ -30,7 +30,7 @@ die()     { echo -e "${RED}${BLD}[ERR ]${RST} $*" >&2; exit 1; }
 #need_root() { doas "wind"; }
 
 USERNAME="wind"
-CONFIG_DIR="$HOME/.config/nix-config"
+CONFIG_DIR="/home/wind/.config/nix-config"
 CONFIG_REPO="https://github.com/tundra-node/nix-config"
 
 # =============================================================================
@@ -223,8 +223,8 @@ UDEV
   doas udevadm trigger               || true
 
   info "Registering YubiKey U2F (plug it in and touch it when prompted)..."
-  mkdir -p "$HOME/.config/Yubico"
-  pamu2fcfg > "$HOME/.config/Yubico/u2f_keys" \
+  mkdir -p "/home/wind/.config/Yubico"
+  pamu2fcfg > "/home/wind/.config/Yubico/u2f_keys" \
     && ok  "U2F key registered at ~/.config/Yubico/u2f_keys" \
     || warn "pamu2fcfg failed — run later: pamu2fcfg > ~/.config/Yubico/u2f_keys"
 
@@ -236,8 +236,8 @@ UDEV
 # =============================================================================
 download_wallpaper() {
   info "Downloading Gruvbox wallpaper..."
-  mkdir -p "$HOME/Pictures/wallpapers"
-  WALL="$HOME/Pictures/wallpapers/gruvbox.png"
+  mkdir -p "/home/wind/Pictures/wallpapers"
+  WALL="/home/wind/Pictures/wallpapers/gruvbox.png"
   if curl -fsSL \
     "https://raw.githubusercontent.com/AngelJumbo/gruvbox-wallpapers/main/wallpapers/minimalistic/gruvbox-triangles.png" \
     -o "$WALL" 2>/dev/null; then
@@ -273,10 +273,10 @@ install_nix() {
 
 _source_nix() {
   # single-user profile
-  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  if [ -e "/home/wind/.nix-profile/etc/profile.d/nix.sh" ]; then
     # shellcheck source=/dev/null
-    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-    ok "Sourced $HOME/.nix-profile/etc/profile.d/nix.sh"
+    . "/home/wind/.nix-profile/etc/profile.d/nix.sh"
+    ok "Sourced /home/wind/.nix-profile/etc/profile.d/nix.sh"
     return
   fi
 
@@ -401,8 +401,8 @@ LYCONF
 
   # Remove ~/.profile auto-start of Sway (Ly launches it via .desktop)
   # Ly reads /usr/share/wayland-sessions/sway.desktop — no profile hack needed
-  if grep -q "exec sway" "$HOME/.profile" 2>/dev/null; then
-    sed -i '/# Auto-start Sway on tty1 login/,/^fi$/d' "$HOME/.profile" || true
+  if grep -q "exec sway" "/home/wind/.profile" 2>/dev/null; then
+    sed -i '/# Auto-start Sway on tty1 login/,/^fi$/d' "/home/wind/.profile" || true
     ok "Removed tty1 auto-start from ~/.profile (Ly handles session launch now)"
   fi
 
