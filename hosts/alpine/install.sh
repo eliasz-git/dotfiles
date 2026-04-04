@@ -27,7 +27,7 @@ die()     { echo -e "${RED}${BLD}[ERR ]${RST} $*" >&2; exit 1; }
 
 # ── Privilege helper — doas only, no sudo ────────────────────────────────────
 # (sudo is installed purely as a shim for the Nix multi-user installer)
-need_root() { doas "wind"; }
+#need_root() { doas "wind"; }
 
 USERNAME="wind"
 CONFIG_DIR="$HOME/.config/nix-config"
@@ -40,20 +40,20 @@ CONFIG_REPO="https://github.com/tundra-node/nix-config"
 # =============================================================================
 install_apk_packages() {
   info "Updating APK..."
-  need_root apk update
-  need_root apk upgrade
+  doas apk update
+  doas apk upgrade
 
   info "Installing system packages..."
 
   # Core / shell
-  need_root apk add \
+  doas apk add \
     bash zsh git curl wget rsync openssh \
     doas sudo \
     util-linux pciutils usbutils \
     man-db man-pages less which
 
   # Wayland / Sway (system compositor — NOT managed by Nix)
-  need_root apk add \
+  doas apk add \
     seatd dbus dbus-openrc \
     sway swaybg swaylock swayidle \
     xwayland \
@@ -67,18 +67,18 @@ install_apk_packages() {
     polkit polkit-elogind
 
   # Audio (PipeWire stack — OpenRC services, not systemd units)
-  need_root apk add \
+  doas apk add \
     pipewire pipewire-alsa pipewire-pulse \
     wireplumber \
     alsa-utils
 
   # Network
-  need_root apk add \
+  doas apk add \
     iwd wpa_supplicant \
     networkmanager networkmanager-tui networkmanager-wifi
 
   # Intel hardware (ProBook 450 G8: i7-1165G7, Iris Xe)
-  need_root apk add \
+  doas apk add \
     mesa-dri-gallium \
     intel-media-driver \
     linux-firmware-intel \
@@ -86,19 +86,19 @@ install_apk_packages() {
     acpid zzz tlp
 
   # YubiKey (udev rules + PAM at system level)
-  need_root apk add \
+  doas apk add \
     yubikey-manager libfido2 pam-u2f \
     ccid pcsc-lite pcsc-lite-libs \
     gnupg gnupg-scdaemon
 
   # Fonts available before Nix activates (Sway/Waybar need them at boot)
-  need_root apk add \
+  doas apk add \
     font-jetbrains-mono-nerd font-noto-emoji \
     adwaita-icon-theme gtk-murrine-engine
 
   # Ly display manager (APK 0.6.0 — newer version is in nixpkgs but cannot
   # be used here: Ly runs as root before any user nix profile is mounted)
-#  need_root apk add ly ly-openrc
+#  doas apk add ly ly-openrc
 
   ok "APK packages installed"
 }
@@ -110,39 +110,39 @@ enable_services() {
   info "Enabling OpenRC services..."
 
   # udev — required for input devices to be visible to Sway
-  need_root rc-update add udev         sysinit || true
-  need_root rc-update add udev-trigger sysinit || true
-  need_root rc-update add udev-settle  sysinit || true
+  doas rc-update add udev         sysinit || true
+  doas rc-update add udev-trigger sysinit || true
+  doas rc-update add udev-settle  sysinit || true
 
   # seatd — Wayland seat manager
-  need_root rc-update add seatd        default || true
+  doas rc-update add seatd        default || true
 
   # dbus — required by polkit and desktop portals
-  need_root rc-update add dbus         default || true
+  doas rc-update add dbus         default || true
 
   # Network
-  need_root rc-update add iwd          default || true
-  need_root rc-update add networkmanager default || true
+  doas rc-update add iwd          default || true
+  doas rc-update add networkmanager default || true
 
   # Hardware / power
-  need_root rc-update add acpid        default || true
-  need_root rc-update add tlp          default || true
+  doas rc-update add acpid        default || true
+  doas rc-update add tlp          default || true
 
   # YubiKey smartcard daemon
-  need_root rc-update add pcscd        default || true
+  doas rc-update add pcscd        default || true
 
   # Ly display manager (replaces agetty on tty2)
-  need_root rc-update add ly           default || true
+  doas rc-update add ly           default || true
   # Disable the getty that owns tty2 so Ly can take it
-  need_root rc-update del agetty.tty2  default 2>/dev/null || \
+  doas rc-update del agetty.tty2  default 2>/dev/null || \
     warn "agetty.tty2 not in runlevel — check /etc/inittab manually"
 
   # Start services now so we don't need to reboot before testing
-  need_root rc-service udev         start || true
-  need_root rc-service udev-trigger start || true
-  need_root rc-service seatd        start || true
-  need_root rc-service dbus         start || true
-  need_root rc-service pcscd        start || true
+  doas rc-service udev         start || true
+  doas rc-service udev-trigger start || true
+  doas rc-service seatd        start || true
+  doas rc-service dbus         start || true
+  doas rc-service pcscd        start || true
 
   ok "Services enabled"
 }
@@ -153,7 +153,7 @@ enable_services() {
 setup_groups() {
   info "Adding $USERNAME to required groups..."
   for grp in wheel video audio input seat; do
-    need_root addgroup "$USERNAME" "$grp" 2>/dev/null || true
+    doas addgroup "$USERNAME" "$grp" 2>/dev/null || true
   done
   ok "Groups configured"
 }
@@ -165,11 +165,11 @@ setup_doas() {
   info "Configuring doas..."
 
   # Create /etc/doas.d if it doesn't exist
-  need_root mkdir -p /etc/doas.d
+  doas mkdir -p /etc/doas.d
 
   # Wheel group gets full doas access (prompts for password)
   if ! grep -q 'permit.*wheel' /etc/doas.conf 2>/dev/null; then
-    need_root tee /etc/doas.conf > /dev/null << 'EOF'
+    doas tee /etc/doas.conf > /dev/null << 'EOF'
 # /etc/doas.conf
 permit keepenv :wheel
 EOF
@@ -179,18 +179,18 @@ EOF
   fi
 
   # Passwordless suspend — zzz (replaces sudo-based solution)
-  need_root tee /etc/doas.d/zzz.conf > /dev/null << 'EOF'
+  doas tee /etc/doas.d/zzz.conf > /dev/null << 'EOF'
 permit nopass :wheel cmd /usr/sbin/zzz
 EOF
-  need_root chmod 400 /etc/doas.d/zzz.conf
+  doas chmod 400 /etc/doas.d/zzz.conf
 
   # Passwordless /run/user creation — needed in ~/.profile
-  need_root tee /etc/doas.d/run-user.conf > /dev/null << 'EOF'
+  doas tee /etc/doas.d/run-user.conf > /dev/null << 'EOF'
 permit nopass :wheel cmd /bin/mkdir args -p /run/user
 permit nopass :wheel cmd /bin/chown
 permit nopass :wheel cmd /bin/chmod
 EOF
-  need_root chmod 400 /etc/doas.d/run-user.conf
+  doas chmod 400 /etc/doas.d/run-user.conf
 
   ok "doas configured"
 }
@@ -201,9 +201,9 @@ EOF
 setup_runtime_dir() {
   info "Creating /run/user/$UID..."
   RUN_DIR="/run/user/$(id -u)"
-  need_root mkdir -p "$RUN_DIR"
-  need_root chown "$(id -un):$(id -gn)" "$RUN_DIR"
-  need_root chmod 0700 "$RUN_DIR"
+  doas mkdir -p "$RUN_DIR"
+  doas chown "$(id -un):$(id -gn)" "$RUN_DIR"
+  doas chmod 0700 "$RUN_DIR"
   export XDG_RUNTIME_DIR="$RUN_DIR"
   ok "/run/user/$(id -u) ready"
 }
@@ -213,14 +213,14 @@ setup_runtime_dir() {
 # =============================================================================
 setup_yubikey() {
   info "Writing YubiKey udev rules..."
-  need_root tee /etc/udev/rules.d/70-yubikey.rules > /dev/null << 'UDEV'
+  doas tee /etc/udev/rules.d/70-yubikey.rules > /dev/null << 'UDEV'
 # YubiKey OTP + FIDO (HID)
 KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", MODE="0660", GROUP="input"
 # YubiKey CCID (smartcard / GPG)
 SUBSYSTEM=="usb", ATTRS{idVendor}=="1050", MODE="0660", GROUP="input"
 UDEV
-  need_root udevadm control --reload-rules || true
-  need_root udevadm trigger               || true
+  doas udevadm control --reload-rules || true
+  doas udevadm trigger               || true
 
   info "Registering YubiKey U2F (plug it in and touch it when prompted)..."
   mkdir -p "$HOME/.config/Yubico"
@@ -337,10 +337,10 @@ build_ly() {
 setup_ly() {
   info "Configuring Ly..."
 
-  need_root mkdir -p /etc/ly
+  doas mkdir -p /etc/ly
 
   # Write Ly config — Gruvbox Dark colours where supported
-  need_root tee /etc/ly/config.ini > /dev/null << 'LYCONF'
+  doas tee /etc/ly/config.ini > /dev/null << 'LYCONF'
 # Ly display manager config
 # /etc/ly/config.ini
 
@@ -392,7 +392,7 @@ LYCONF
   # Disable the agetty that normally owns tty2 in /etc/inittab
   # Alpine uses /etc/inittab for getty spawning
   if grep -q "^tty2::" /etc/inittab 2>/dev/null; then
-    need_root sed -i 's|^tty2::|#tty2::|' /etc/inittab
+    doas sed -i 's|^tty2::|#tty2::|' /etc/inittab
     ok "tty2 getty disabled in /etc/inittab"
   else
     warn "tty2 line not found in /etc/inittab — it may already be disabled"
@@ -439,7 +439,7 @@ main() {
 
   # Set zsh as default shell (home-manager enables it, but shell must be set)
   if ! grep -q "$(which zsh)" /etc/passwd 2>/dev/null; then
-    need_root chsh -s /bin/zsh "$USERNAME" || \
+    doas chsh -s /bin/zsh "$USERNAME" || \
       warn "chsh failed — run: doas chsh -s /bin/zsh $USERNAME"
   fi
 
