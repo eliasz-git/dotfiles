@@ -261,13 +261,13 @@ install_nix() {
   info "Installing Nix (Determinate Systems, --init openrc)..."
   info "NOTE: The Nix installer uses sudo internally. sudo is installed as a shim."
 
-  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+  doas url --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
     | sh -s -- install linux \
         --init none \
         --no-confirm \
         --extra-conf "experimental-features = nix-command flakes"
 
-  _source_nix
+  doas _source_nix
   ok "Nix installed"
 }
 
