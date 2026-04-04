@@ -882,13 +882,13 @@ in {
     # Commands
     cmd open  $xdg-open "$f" &
     cmd mkdir $mkdir -p "$@"
-    cmd delete ${{
-        set -f
-        printf '%s\n' "$fx" | wc -l
-        printf 'delete? [y/n] '
-        read -r ans
-        [ "$ans" = "y" ] && rm -rf "$fx"
-    }}
+    #cmd delete ${{
+    #    set -f
+    #    printf '%s\n' "$fx" | wc -l
+    #    printf 'delete? [y/n] '
+    #    read -r ans
+    #    [ "$ans" = "y" ] && rm -rf "$fx"
+    #}}
 
     # Keybindings (vim-style)
     map <enter> open
