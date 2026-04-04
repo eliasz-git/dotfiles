@@ -263,7 +263,7 @@ install_nix() {
 
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
     | sh -s -- install linux \
-        --init openrc \
+        --init none \
         --no-confirm \
         --extra-conf "experimental-features = nix-command flakes"
 
@@ -272,13 +272,23 @@ install_nix() {
 }
 
 _source_nix() {
+  # single-user profile
+  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+    ok "Sourced $HOME/.nix-profile/etc/profile.d/nix.sh"
+    return
+  fi
+
+  # multi-user (daemon) profile (fallback)
   if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
     # shellcheck source=/dev/null
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-    ok "Nix profile sourced"
-  else
-    warn "Could not source nix-daemon.sh — you may need to re-login"
+    ok "Sourced /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+    return
   fi
+
+  warn "No nix profile found to source — you may need to re-login or run the installer manually"
 }
 
 # =============================================================================
