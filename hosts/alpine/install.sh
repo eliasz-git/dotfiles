@@ -29,7 +29,7 @@ die()     { echo -e "${RED}${BLD}[ERR ]${RST} $*" >&2; exit 1; }
 # (sudo is installed purely as a shim for the Nix multi-user installer)
 need_root() { doas "$@"; }
 
-USERNAME="${USER}"
+USERNAME="wind"
 CONFIG_DIR="$HOME/.config/nix-config"
 CONFIG_REPO="https://github.com/tundra-node/nix-config"
 
