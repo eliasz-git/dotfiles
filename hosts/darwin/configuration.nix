@@ -30,18 +30,16 @@
       "koekeishiya/formulae"
       "TheBoredTeam/boring-notch"
       "pear-devs/pear"
+      "anomalyco/tap"
     ];
     brews = [
-      "sketchybar" "borders" "yabai" "i2pd"
-      "cups"  # Additional CUPS support for printing
+      "sketchybar" "borders" "yabai" "i2pd" "cups" "opencode"
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "librewolf"
+      "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
-      "cyberduck" "vscodium" "iina" "keka" "karabiner-elements" "sf-symbols"
+      "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
-      "claude" "musicbrainz-picard" "prismlauncher" "helium-browser" "keepassxc"
-      "pear-desktop"
     ];
   };
 
@@ -188,18 +186,4 @@ echo "yabai configuration loaded.."
   programs.zsh.enable = true;
   
   home-manager.backupFileExtension = "backup";
-
-  # Ollama launchd agent — starts on boot, bound to all interfaces for Docker access
-  launchd.user.agents.ollama = {
-    serviceConfig = {
-      ProgramArguments = [ "/etc/profiles/per-user/elias/bin/ollama" "serve" ];
-      EnvironmentVariables = {
-        OLLAMA_HOST = "0.0.0.0:11434";
-      };
-      RunAtLoad = true;
-      KeepAlive = true;
-      StandardOutPath = "/tmp/ollama.log";
-      StandardErrorPath = "/tmp/ollama.log";
-    };
-  };
 }

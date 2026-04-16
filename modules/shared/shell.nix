@@ -27,6 +27,7 @@
       export PATH="$HOME/.npm-global/bin:$PATH"
       export PATH="$HOME/Developer/abyssal/.venv/bin:$PATH"
       export PATH="$HOME/Developer/i2p-easy-manager/venv/bin:$PATH"
+      export PATH="$HOME/.local/bin:$PATH"
     '';
   };
   programs.zoxide = {
