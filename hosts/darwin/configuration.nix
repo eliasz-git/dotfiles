@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, hermes-agent, ... }:
 
 {
   system.stateVersion = 6;
@@ -13,9 +13,9 @@
 
   # System-wide packages (only essential system tools)
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.isLinux then [ gutenprint ] else []; in [
-    # Printing utilities
     cups
     ghostscript
+    hermes-agent
   ] ++ extraPrinting;
 
   # Homebrew integration
@@ -34,12 +34,15 @@
     ];
     brews = [
       "sketchybar" "borders" "yabai" "i2pd" "cups" "opencode"
+      "pcre2" "ripgrep" "memo"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
+      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram"
+      "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "macfuse"
     ];
   };
 
