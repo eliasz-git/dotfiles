@@ -12,9 +12,11 @@
     # Unstable — used by the Alpine host for latest packages
     # (ly 1.3.2, neovim HEAD, etc.)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-agent.inputs.nixpkgs.follows = "nixpkgs-unstable";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, darwin, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, darwin, home-manager, hermes-agent, ... }:
   let
     darwinSystem   = "aarch64-darwin";
     linuxSystem    = "x86_64-linux";
@@ -28,6 +30,7 @@
     darwinConfigurations.macbook = darwin.lib.darwinSystem {
       system  = darwinSystem;
       pkgs    = darwinPkgs;
+      specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/darwin/configuration.nix
         home-manager.darwinModules.home-manager
