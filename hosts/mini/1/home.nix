@@ -97,6 +97,6 @@
   programs.git = {
     enable = true;
     userName = "elias";
-    userEmail = "you@example.com";
+    userEmail = "elias@example.com";
   };
 }
