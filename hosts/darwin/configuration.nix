@@ -33,31 +33,33 @@
       "anomalyco/tap"
     ];
     brews = [
-      "sketchybar" "borders" "yabai" "i2pd" "cups" "opencode"
-      "pcre2" "ripgrep" "memo"
+      "sketchybar" "borders" "i2pd" "cups" "opencode"
+      #"yabai"
+      "pcre2" "ripgrep"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
       "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
-      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram"
-      "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "macfuse"
+      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "loop"
+      "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "microsoft-teams"
+      "opencode-desktop"
     ];
   };
 
   system.defaults = {
     dock = {
-      autohide = true; 
-      autohide-delay = 0.0; 
+      autohide = true;
+      autohide-delay = 0.0;
       autohide-time-modifier = 0.5;
-      mru-spaces = false; 
-      show-recents = false; 
+      mru-spaces = false;
+      show-recents = false;
       static-only = true;
-      tilesize = 48; 
-      largesize = 64; 
+      tilesize = 48;
+      largesize = 64;
       magnification = true;
-      orientation = "bottom"; 
+      orientation = "bottom";
       showhidden = true;
     };
     finder = {
@@ -91,88 +93,7 @@
   ];
 
   services.yabai = {
-    enable = true;
-    enableScriptingAddition = true;
-    extraConfig = ''
-#!/usr/bin/env sh
-
-# Load scripting addition (requires SIP disabled)
-sudo yabai --load-sa
-yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
-
-# ===== GLOBAL SETTINGS =====
-
-yabai -m config mouse_follows_focus          off
-yabai -m config focus_follows_mouse          off
-yabai -m config window_origin_display        default
-yabai -m config window_placement             second_child
-yabai -m config window_topmost               off
-yabai -m config window_shadow                float
-
-# ===== TRANSPARENCY & BORDERS (Everforest) =====
-
-yabai -m config window_opacity               on
-yabai -m config window_opacity_duration      0.2
-yabai -m config active_window_opacity        0.95
-yabai -m config normal_window_opacity        0.85
-yabai -m config window_animation_duration    0.2
-
-# Window borders - Deep Ocean theme
-yabai -m config window_border                on
-yabai -m config window_border_width          3
-yabai -m config active_window_border_color   0xff5ba3c9
-yabai -m config normal_window_border_color   0xff1b2d42
-yabai -m config insert_feedback_color        0xff6ec6c6
-
-# ===== LAYOUT =====
-
-yabai -m config layout                       bsp
-yabai -m config split_ratio                  0.50
-yabai -m config auto_balance                 off
-
-# Padding and gaps (Everforest spacing)
-yabai -m config top_padding                  15
-yabai -m config bottom_padding               10
-yabai -m config left_padding                 10
-yabai -m config right_padding                10
-yabai -m config window_gap                   10
-
-# ===== MOUSE =====
-
-yabai -m config mouse_modifier               fn
-yabai -m config mouse_action1                move
-yabai -m config mouse_action2                resize
-yabai -m config mouse_drop_action            swap
-
-# ===== WINDOW RULES =====
-
-# Floating windows
-yabai -m rule --add app="^System Settings$" manage=off
-yabai -m rule --add app="^System Preferences$" manage=off
-yabai -m rule --add app="^Archive Utility$" manage=off
-yabai -m rule --add app="^Raycast$" manage=off
-yabai -m rule --add app="^Calculator$" manage=off
-yabai -m rule --add app="^Activity Monitor$" manage=off
-yabai -m rule --add app="^Finder$" manage=off
-yabai -m rule --add app="^Installer$" manage=off
-yabai -m rule --add app="^Lulu$" manage=off
-yabai -m rule --add app="^PearCleaner$" manage=off
-yabai -m rule --add app="^Facetime$" manage=off
-yabai -m rule --add app="^Photos$" manage=on
-yabai -m rule --add app="^Alacritty$" manage=on
-
-# ===== SIGNALS (SketchyBar Integration) =====
-
-yabai -m signal --add event=window_focused action="sketchybar --trigger window_focus"
-yabai -m signal --add event=window_created action="sketchybar --trigger windows_on_spaces"
-yabai -m signal --add event=window_destroyed action="sketchybar --trigger windows_on_spaces"
-yabai -m signal --add event=window_title_changed action="sketchybar --trigger title_change"
-yabai -m signal --add event=space_changed action="sketchybar --trigger space_change"
-
-borders active_color=0xff5ba3c9 inactive_color=0xff1b2d42 width=5.0 &
-sketchybar &
-echo "yabai configuration loaded.."
-    '';
+    enable = false;
   };
 
   # User
@@ -187,6 +108,6 @@ echo "yabai configuration loaded.."
 
   # Enable zsh at system level
   programs.zsh.enable = true;
-  
+
   home-manager.backupFileExtension = "backup";
 }
