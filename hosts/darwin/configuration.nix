@@ -33,7 +33,7 @@
       "anomalyco/tap"
     ];
     brews = [
-      "sketchybar" "borders" "i2pd" "cups" "opencode"
+      "sketchybar" "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
     ];
@@ -45,6 +45,8 @@
       "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "loop"
       "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "microsoft-teams"
       "opencode-desktop"
+      # Added during macOS 27→26 downgrade prep
+      "calibre" "discord" "gramps" "openwork" "protonvpn"
     ];
   };
 
