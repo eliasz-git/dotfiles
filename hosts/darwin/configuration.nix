@@ -36,6 +36,8 @@
       "sketchybar" "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
+      # Added during macOS 27→26 downgrade prep
+      "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
