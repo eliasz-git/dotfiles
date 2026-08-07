@@ -2,8 +2,8 @@
 
 {
   imports = [
-    ../../modules/shared/programs.nix
-    ../../modules/shared/fastfetch.nix
+    ../../../modules/shared/programs.nix
+    ../../../modules/shared/fastfetch.nix
   ];
 
   home.username = "elias";

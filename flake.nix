@@ -82,11 +82,5 @@
       modules = [ ./hosts/mini/1/home.nix ];
     };
 
-    # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
-    homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {
-      pkgs = linuxPkgs;
-      modules = [ ./hosts/mini/2/home.nix ];
-    };
-
   };
 }

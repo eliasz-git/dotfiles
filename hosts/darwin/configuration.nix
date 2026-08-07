@@ -31,13 +31,16 @@
       "TheBoredTeam/boring-notch"
       "pear-devs/pear"
       "anomalyco/tap"
+      "steipete/tap"
     ];
     brews = [
       "sketchybar" "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
       # Added during macOS 27→26 downgrade prep
-      "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp"
+      "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
+      # Apple Reminders CLI + iMessage CLI (steipete/tap)
+      "imsg" "remindctl"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
@@ -49,6 +52,11 @@
       "opencode-desktop"
       # Added during macOS 27→26 downgrade prep
       "calibre" "discord" "gramps" "openwork" "protonvpn"
+      "copilot-cli"
+      # Apps installed manually (DMG) that have brew casks — catch-up so a
+      # rebuild can restore them without re-downloading DMGs
+      "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
+      "termius" "zed" "zen" "balenaetcher" "tinymediamanager"
     ];
   };
 
@@ -60,7 +68,7 @@
       mru-spaces = false;
       show-recents = false;
       static-only = true;
-      tilesize = 48;
+      tilesize = 74;
       largesize = 64;
       magnification = true;
       orientation = "bottom";
@@ -81,6 +89,9 @@
       KeyRepeat = 2;
       "com.apple.mouse.tapBehavior" = 1;
       "com.apple.trackpad.enableSecondaryClick" = true;
+      "com.apple.trackpad.forceClick" = true;
+      # Natural scrolling OFF (live value: 0)
+      "com.apple.swipescrolldirection" = false;
     };
     screencapture.location = "/Users/elias/Pictures/Screenshots";
     loginwindow.GuestEnabled = false;

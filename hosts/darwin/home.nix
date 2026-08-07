@@ -18,6 +18,11 @@
     config.lib.file.mkOutOfStoreSymlink
       "/Users/elias/.config/nix-config/modules/darwin/sketchybar";
 
+  # Same for karabiner — keeps keyboard remaps under version control
+  home.file.".config/karabiner".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "/Users/elias/.config/nix-config/modules/darwin/karabiner";
+
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {
     darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";

@@ -2,12 +2,12 @@
 
 {
   imports = [
-    ../../modules/shared/programs.nix
-    ../../modules/shared/shell.nix
-    ../../modules/shared/git.nix
-    ../../modules/shared/multiplexer.nix
-    ../../modules/shared/fastfetch.nix
-    ../../modules/nixos/terminal.nix
+    ../../../modules/shared/programs.nix
+    ../../../modules/shared/shell.nix
+    ../../../modules/shared/git.nix
+    ../../../modules/shared/multiplexer.nix
+    ../../../modules/shared/fastfetch.nix
+    ../../../modules/nixos/terminal.nix
   ];
 
   home.username = "elias";
