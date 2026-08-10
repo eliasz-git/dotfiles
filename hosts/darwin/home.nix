@@ -19,7 +19,7 @@
       "/Users/elias/.config/nix-config/modules/darwin/karabiner";
 
   # AeroSpace — i3-style tiling window manager
-  home.file."config/aerospace/aerospace.toml".text = ''
+  home.file.".config/aerospace/aerospace.toml".text = ''
     # AeroSpace — https://nikitabobko.github.io/AeroSpace/
     [general]
     start-at-login = true
