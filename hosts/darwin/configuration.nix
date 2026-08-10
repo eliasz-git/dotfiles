@@ -34,7 +34,7 @@
       "steipete/tap"
     ];
     brews = [
-      "sketchybar" "borders" "cups" "opencode"
+      "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
       # Added during macOS 27→26 downgrade prep

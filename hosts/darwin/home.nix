@@ -13,11 +13,6 @@
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
 
-  # Symlink sketchybar config directly to nix-config source (live, no rebuild needed)
-  home.file.".config/sketchybar".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "/Users/elias/.config/nix-config/modules/darwin/sketchybar";
-
   # Same for karabiner — keeps keyboard remaps under version control
   home.file.".config/karabiner".source =
     config.lib.file.mkOutOfStoreSymlink

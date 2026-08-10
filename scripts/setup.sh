@@ -111,14 +111,6 @@ if [[ "$OS" == "darwin" ]]; then
         fi
     fi
     
-    # Make sketchybar scripts executable
-    if [[ -d "$CONFIG_DIR/modules/darwin/sketchybar" ]]; then
-        chmod +x "$CONFIG_DIR/modules/darwin/sketchybar/"*.sh 2>/dev/null || true
-        chmod +x "$CONFIG_DIR/modules/darwin/sketchybar/items/"*.sh 2>/dev/null || true
-        chmod +x "$CONFIG_DIR/modules/darwin/sketchybar/plugins/"*.sh 2>/dev/null || true
-        print_success "SketchyBar scripts made executable"
-    fi
-    
     echo ""
     print_info "Next steps for macOS:"
     echo "  1. Update the flake: cd $CONFIG_DIR && nix flake update"

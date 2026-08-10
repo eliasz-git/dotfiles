@@ -163,7 +163,6 @@ if [[ "$BUILD_ACTION" == "switch" ]]; then
     elif [[ "$OS" == "darwin" ]]; then
         echo ""
         print_info "Hints:"
-        echo "  - Restart SketchyBar: brew services restart sketchybar"
         echo "  - Restart yabai: brew services restart yabai"
         echo "  - Restart borders: brew services restart borders"
     fi
