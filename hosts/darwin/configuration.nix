@@ -3,7 +3,6 @@
 {
   system.stateVersion = 6;
   system.primaryUser = "elias";
-  nixpkgs.config.allowUnfree = true;
 
   # Nix settings
   nix.enable = false;
@@ -37,11 +36,9 @@
       "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
-      # Added during macOS 27→26 downgrade prep
       "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       # Apple Reminders CLI + iMessage CLI (steipete/tap)
       "imsg" "remindctl"
-      # Added after downgrade rebuild
       "mole"
     ];
     casks = [
@@ -52,14 +49,13 @@
       "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "loop"
       "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "microsoft-teams"
       "opencode-desktop"
-      # Added during macOS 27→26 downgrade prep
-      "calibre" "discord" "gramps" "openwork" "protonvpn"
-      "copilot-cli"
       # Apps installed manually (DMG) that have brew casks — catch-up so a
       # rebuild can restore them without re-downloading DMGs
+      "calibre" "discord" "gramps" "openwork" "protonvpn"
+      "copilot-cli"
       "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
       "termius" "zed" "zen" "balenaetcher" "tinymediamanager"
-      # Added after downgrade rebuild
+      # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
     ];
   };

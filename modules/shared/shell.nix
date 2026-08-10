@@ -25,8 +25,6 @@
       eval "$(zoxide init zsh)"
       eval "$(thefuck --alias)"
       export PATH="$HOME/.npm-global/bin:$PATH"
-      export PATH="$HOME/Developer/abyssal/.venv/bin:$PATH"
-      export PATH="$HOME/Developer/i2p-easy-manager/venv/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
       FPATH="$HOME/.docker/completions:$FPATH"
       autoload -Uz compinit
