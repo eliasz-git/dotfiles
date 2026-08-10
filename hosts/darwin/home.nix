@@ -20,7 +20,7 @@
 
   # AeroSpace — i3-style tiling window manager
   home.file."config/aerospace/aerospace.toml".text = ''
-    # AeroSpace 0.21 — https://nikitabobko.github.io/AeroSpace/
+    # AeroSpace — https://nikitabobko.github.io/AeroSpace/
     [general]
     start-at-login = true
 
@@ -37,16 +37,16 @@
 
     [keybindings]
     # Focus
-    alt-h = "focus left"
-    alt-j = "focus down"
-    alt-k = "focus up"
-    alt-l = "focus right"
+    alt-left = "focus left"
+    alt-down = "focus down"
+    alt-up = "focus up"
+    alt-right = "focus right"
 
     # Move windows
-    alt-shift-h = "move left"
-    alt-shift-j = "move down"
-    alt-shift-k = "move up"
-    alt-shift-l = "move right"
+    alt-shift-left = "move left"
+    alt-shift-down = "move down"
+    alt-shift-up = "move up"
+    alt-shift-right = "move right"
 
     # Workspaces
     alt-1 = "workspace 1"
