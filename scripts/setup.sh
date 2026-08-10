@@ -94,6 +94,11 @@ fi
 if [[ "$OS" == "darwin" ]]; then
     print_info "Running macOS-specific setup..."
     
+    # Trust third-party Homebrew taps used in the config (Homebrew 6 refuses
+    # to load formulas/casks from untrusted taps during brew bundle)
+    print_info "Trusting third-party Homebrew taps..."
+    brew trust felixkratz/formulae koekeishiya/formulae theboredteam/boring-notch pear-devs/pear anomalyco/tap steipete/tap nikitabobko/tap 2>/dev/null || true
+    
     # Replace placeholders if needed
     if [[ "$SKIP_REPLACEMENT" == false ]]; then
         echo ""
