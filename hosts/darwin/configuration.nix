@@ -41,6 +41,8 @@
       "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       # Apple Reminders CLI + iMessage CLI (steipete/tap)
       "imsg" "remindctl"
+      # Added after downgrade rebuild
+      "mole"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
@@ -57,6 +59,8 @@
       # rebuild can restore them without re-downloading DMGs
       "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
       "termius" "zed" "zen" "balenaetcher" "tinymediamanager"
+      # Added after downgrade rebuild
+      "aerospace" "vorssaint"
     ];
   };
 
