@@ -45,7 +45,7 @@
         # 3 - Mail / news
         { if = 'test %{app-bundle-id} = org.mozilla.thunderbird || test %{app-bundle-id} = de.tutao.tutanota || test %{app-bundle-id} = com.ranchero.NetNewsWire-Evergreen', run = 'move-node-to-workspace 3-mail' },
         # 4 - Code / AI
-        { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.jetbrains.toolbox || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = jan.ai.app || test %{app-bundle-id} = ai.elementlabs.lmstudio', run = 'move-node-to-workspace 4-code' },
+        { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.jetbrains.toolbox || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = jan.ai.app || test %{app-bundle-id} = ai.elementlabs.lmstudio || test %{app-bundle-id} = com.nousresearch.hermes', run = 'move-node-to-workspace 4-code' },
         # 5 - Terminal
         { if = 'test %{app-bundle-id} = com.apple.Terminal', run = 'move-node-to-workspace 5-terminal' },
         # 6 - Docs / notes
