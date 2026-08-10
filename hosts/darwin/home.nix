@@ -19,68 +19,68 @@
       "/Users/elias/.config/nix-config/modules/darwin/karabiner";
 
   # AeroSpace — i3-style tiling window manager
-  home.file.".config/aerospace/aerospace.toml".text = ''
-    # AeroSpace — https://nikitabobko.github.io/AeroSpace/
-    [general]
-    start-at-login = true
+    home.file.".config/aerospace/aerospace.toml".text = ''
+      # AeroSpace — https://nikitabobko.github.io/AeroSpace/
+      config-version = 2
+      start-at-login = true
 
-    [gaps]
-    inner.gaps = 8
-    outer.gaps = 8
+      # 8px gaps between windows and at monitor edges
+      gaps.inner.horizontal = 8
+      gaps.inner.vertical = 8
+      gaps.outer.left = 8
+      gaps.outer.bottom = 8
+      gaps.outer.top = 8
+      gaps.outer.right = 8
 
-    [layouts]
-    default-layout = "tiles"
+      # Default layout for new workspaces
+      default-root-container-layout = 'tiles'
 
-    # Native borders off — felixkratz borders app handles them
-    [borders]
-    enable = false
+      [mode.main.binding]
+      # Focus
+      alt-left = 'focus left'
+      alt-down = 'focus down'
+      alt-up = 'focus up'
+      alt-right = 'focus right'
 
-    [keybindings]
-    # Focus
-    alt-left = "focus left"
-    alt-down = "focus down"
-    alt-up = "focus up"
-    alt-right = "focus right"
+      # Move windows
+      alt-shift-left = 'move left'
+      alt-shift-down = 'move down'
+      alt-shift-up = 'move up'
+      alt-shift-right = 'move right'
 
-    # Move windows
-    alt-shift-left = "move left"
-    alt-shift-down = "move down"
-    alt-shift-up = "move up"
-    alt-shift-right = "move right"
+      # Workspaces
+      alt-1 = 'workspace 1'
+      alt-2 = 'workspace 2'
+      alt-3 = 'workspace 3'
+      alt-4 = 'workspace 4'
+      alt-5 = 'workspace 5'
+      alt-6 = 'workspace 6'
+      alt-7 = 'workspace 7'
+      alt-8 = 'workspace 8'
+      alt-9 = 'workspace 9'
+      alt-0 = 'workspace 10'
 
-    # Workspaces
-    alt-1 = "workspace 1"
-    alt-2 = "workspace 2"
-    alt-3 = "workspace 3"
-    alt-4 = "workspace 4"
-    alt-5 = "workspace 5"
-    alt-6 = "workspace 6"
-    alt-7 = "workspace 7"
-    alt-8 = "workspace 8"
-    alt-9 = "workspace 9"
-    alt-0 = "workspace 10"
+      # Move window to workspace
+      alt-shift-1 = 'move-node-to-workspace 1'
+      alt-shift-2 = 'move-node-to-workspace 2'
+      alt-shift-3 = 'move-node-to-workspace 3'
+      alt-shift-4 = 'move-node-to-workspace 4'
+      alt-shift-5 = 'move-node-to-workspace 5'
+      alt-shift-6 = 'move-node-to-workspace 6'
+      alt-shift-7 = 'move-node-to-workspace 7'
+      alt-shift-8 = 'move-node-to-workspace 8'
+      alt-shift-9 = 'move-node-to-workspace 9'
+      alt-shift-0 = 'move-node-to-workspace 10'
 
-    # Move window to workspace
-    alt-shift-1 = "move-node-to-workspace 1"
-    alt-shift-2 = "move-node-to-workspace 2"
-    alt-shift-3 = "move-node-to-workspace 3"
-    alt-shift-4 = "move-node-to-workspace 4"
-    alt-shift-5 = "move-node-to-workspace 5"
-    alt-shift-6 = "move-node-to-workspace 6"
-    alt-shift-7 = "move-node-to-workspace 7"
-    alt-shift-8 = "move-node-to-workspace 8"
-    alt-shift-9 = "move-node-to-workspace 9"
-    alt-shift-0 = "move-node-to-workspace 10"
-
-    # Layouts / window ops
-    alt-t = "layout tiles"
-    alt-a = "layout accordion"
-    alt-f = "fullscreen"
-    alt-w = "close"
-    alt-enter = "exec-and-forget open -a Terminal"
-    alt-tab = "focus next"
-    alt-shift-tab = "focus prev"
-  '';
+      # Layouts / window ops
+      alt-t = 'layout tiles'
+      alt-a = 'layout accordion'
+      alt-f = 'fullscreen'
+      alt-w = 'close'
+      alt-enter = 'exec-and-forget open -a Terminal'
+      alt-tab = 'focus dfs-next'
+      alt-shift-tab = 'focus dfs-prev'
+    '';
 
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {
