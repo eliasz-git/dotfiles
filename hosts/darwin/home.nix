@@ -35,6 +35,32 @@
       # Default layout for new workspaces
       default-root-container-layout = 'tiles'
 
+      # Auto-assign apps to workspaces (alt+1..0)
+      on-window-detected = [
+        # 1 - Browsers
+        { if = 'test %{app-bundle-id} = org.mozilla.firefox || test %{app-bundle-id} = app.zen-browser.zen || test %{app-bundle-id} = org.torproject.torbrowser', run = 'move-node-to-workspace 1' },
+        # 2 - Chat
+        { if = 'test %{app-bundle-id} = org.whispersystems.signal-desktop || test %{app-bundle-id} = ru.keepcoder.Telegram || test %{app-bundle-id} = com.hnc.Discord || test %{app-bundle-id} = com.automattic.beeper.desktop || test %{app-bundle-id} = com.microsoft.teams2', run = 'move-node-to-workspace 2' },
+        # 3 - Mail / news
+        { if = 'test %{app-bundle-id} = org.mozilla.thunderbird || test %{app-bundle-id} = de.tutao.tutanota || test %{app-bundle-id} = com.ranchero.NetNewsWire-Evergreen', run = 'move-node-to-workspace 3' },
+        # 4 - Code / AI
+        { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.jetbrains.toolbox || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = jan.ai.app || test %{app-bundle-id} = ai.elementlabs.lmstudio', run = 'move-node-to-workspace 4' },
+        # 5 - Terminal
+        { if = 'test %{app-bundle-id} = com.apple.Terminal', run = 'move-node-to-workspace 5' },
+        # 6 - Docs / notes
+        { if = 'test %{app-bundle-id} = md.obsidian || test %{app-bundle-id} = org.libreoffice.script || test %{app-bundle-id} = net.kovidgoyal.calibre || test %{app-bundle-id} = org.gramps-project.gramps', run = 'move-node-to-workspace 6' },
+        # 7 - Media
+        { if = 'test %{app-bundle-id} = com.colliderli.iina || test %{app-bundle-id} = com.github.th-ch.youtube-music || test %{app-bundle-id} = com.futo.grayjay.desktop || test %{app-bundle-id} = org.tinyMediaManager.tinymediamanager', run = 'move-node-to-workspace 7' },
+        # 8 - Games
+        { if = 'test %{app-bundle-id} = com.valvesoftware.steam || test %{app-bundle-id} = org.prismlauncher.PrismLauncher || test %{app-bundle-id} = com.codeweavers.CrossOver', run = 'move-node-to-workspace 8' },
+        # 9 - Security / utilities
+        { if = 'test %{app-bundle-id} = org.keepassxc.keepassxc || test %{app-bundle-id} = com.bitwarden.desktop || test %{app-bundle-id} = org.idrix.VeraCrypt || test %{app-bundle-id} = com.yubico.yubioath || test %{app-bundle-id} = ch.protonvpn.mac || test %{app-bundle-id} = com.objective-see.lulu.app || test %{app-bundle-id} = com.objective-see.oversight || test %{app-bundle-id} = com.objective-see.KnockKnock || test %{app-bundle-id} = com.carriez.rustdesk || test %{app-bundle-id} = io.tailscale.ipn.macsys', run = 'move-node-to-workspace 9' },
+        # 10 - VMs
+        { if = 'test %{app-bundle-id} = com.utmapp.UTM || test %{app-bundle-id} = com.docker.docker', run = 'move-node-to-workspace 10' },
+        # Floating: system settings / launchers must never tile
+        { if = 'test %{app-bundle-id} = com.apple.systempreferences || test %{app-bundle-id} = com.raycast.macos || test %{app-bundle-id} = org.pqrs.Karabiner-Elements.Settings', run = ['layout floating'] },
+      ]
+
       [mode.main.binding]
       # Focus
       alt-left = 'focus left'
