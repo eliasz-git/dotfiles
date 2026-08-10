@@ -31,6 +31,7 @@
       "pear-devs/pear"
       "anomalyco/tap"
       "steipete/tap"
+      "nikitabobko/tap"
     ];
     brews = [
       "borders" "cups" "opencode"
