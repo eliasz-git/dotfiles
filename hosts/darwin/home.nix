@@ -45,9 +45,9 @@
         # 3 - Mail / news
         { if = 'test %{app-bundle-id} = org.mozilla.thunderbird || test %{app-bundle-id} = de.tutao.tutanota || test %{app-bundle-id} = com.ranchero.NetNewsWire-Evergreen', run = 'move-node-to-workspace 3-mail' },
         # 4 - Code / AI
-        { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.jetbrains.toolbox || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = jan.ai.app || test %{app-bundle-id} = ai.elementlabs.lmstudio || test %{app-bundle-id} = com.nousresearch.hermes || test %{app-bundle-id} = com.apple.SFSymbols-beta || test %{app-bundle-id} = com.differentai.openwork', run = 'move-node-to-workspace 4-code' },
-        # 5 - Terminal
-        { if = 'test %{app-bundle-id} = com.apple.Terminal', run = 'move-node-to-workspace 5-terminal' },
+        { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.jetbrains.toolbox || test %{app-bundle-id} = jan.ai.app || test %{app-bundle-id} = ai.elementlabs.lmstudio || test %{app-bundle-id} = com.nousresearch.hermes || test %{app-bundle-id} = com.apple.SFSymbols-beta || test %{app-bundle-id} = com.differentai.openwork', run = 'move-node-to-workspace 4-code' },
+        # 5 - Terminal / SSH
+        { if = 'test %{app-bundle-id} = com.apple.Terminal || test %{app-bundle-id} = com.termius-dmg.mac', run = 'move-node-to-workspace 5-terminal' },
         # 6 - Docs / notes
         { if = 'test %{app-bundle-id} = md.obsidian || test %{app-bundle-id} = org.libreoffice.script || test %{app-bundle-id} = net.kovidgoyal.calibre || test %{app-bundle-id} = org.gramps-project.gramps', run = 'move-node-to-workspace 6-docs' },
         # 7 - Media / playback
@@ -63,50 +63,50 @@
       ]
 
       [mode.main.binding]
-      # Focus
-      alt-left = 'focus left'
-      alt-down = 'focus down'
-      alt-up = 'focus up'
-      alt-right = 'focus right'
+      # Focus (caps lock = hyper = cmd+ctrl)
+      cmd-ctrl-left = 'focus left'
+      cmd-ctrl-down = 'focus down'
+      cmd-ctrl-up = 'focus up'
+      cmd-ctrl-right = 'focus right'
 
       # Move windows
-      alt-shift-left = 'move left'
-      alt-shift-down = 'move down'
-      alt-shift-up = 'move up'
-      alt-shift-right = 'move right'
+      cmd-ctrl-shift-left = 'move left'
+      cmd-ctrl-shift-down = 'move down'
+      cmd-ctrl-shift-up = 'move up'
+      cmd-ctrl-shift-right = 'move right'
 
       # Workspaces
-      alt-1 = 'workspace 1-browsers'
-      alt-2 = 'workspace 2-chat'
-      alt-3 = 'workspace 3-mail'
-      alt-4 = 'workspace 4-code'
-      alt-5 = 'workspace 5-terminal'
-      alt-6 = 'workspace 6-docs'
-      alt-7 = 'workspace 7-media'
-      alt-8 = 'workspace 8-games'
-      alt-9 = 'workspace 9-security'
-      alt-0 = 'workspace 10-vms'
+      cmd-ctrl-1 = 'workspace 1-browsers'
+      cmd-ctrl-2 = 'workspace 2-chat'
+      cmd-ctrl-3 = 'workspace 3-mail'
+      cmd-ctrl-4 = 'workspace 4-code'
+      cmd-ctrl-5 = 'workspace 5-terminal'
+      cmd-ctrl-6 = 'workspace 6-docs'
+      cmd-ctrl-7 = 'workspace 7-media'
+      cmd-ctrl-8 = 'workspace 8-games'
+      cmd-ctrl-9 = 'workspace 9-security'
+      cmd-ctrl-0 = 'workspace 10-vms'
 
       # Move window to workspace
-      alt-shift-1 = 'move-node-to-workspace 1-browsers'
-      alt-shift-2 = 'move-node-to-workspace 2-chat'
-      alt-shift-3 = 'move-node-to-workspace 3-mail'
-      alt-shift-4 = 'move-node-to-workspace 4-code'
-      alt-shift-5 = 'move-node-to-workspace 5-terminal'
-      alt-shift-6 = 'move-node-to-workspace 6-docs'
-      alt-shift-7 = 'move-node-to-workspace 7-media'
-      alt-shift-8 = 'move-node-to-workspace 8-games'
-      alt-shift-9 = 'move-node-to-workspace 9-security'
-      alt-shift-0 = 'move-node-to-workspace 10-vms'
+      cmd-ctrl-shift-1 = 'move-node-to-workspace 1-browsers'
+      cmd-ctrl-shift-2 = 'move-node-to-workspace 2-chat'
+      cmd-ctrl-shift-3 = 'move-node-to-workspace 3-mail'
+      cmd-ctrl-shift-4 = 'move-node-to-workspace 4-code'
+      cmd-ctrl-shift-5 = 'move-node-to-workspace 5-terminal'
+      cmd-ctrl-shift-6 = 'move-node-to-workspace 6-docs'
+      cmd-ctrl-shift-7 = 'move-node-to-workspace 7-media'
+      cmd-ctrl-shift-8 = 'move-node-to-workspace 8-games'
+      cmd-ctrl-shift-9 = 'move-node-to-workspace 9-security'
+      cmd-ctrl-shift-0 = 'move-node-to-workspace 10-vms'
 
       # Layouts / window ops
-      alt-t = 'layout tiles'
-      alt-a = 'layout accordion'
-      alt-f = 'fullscreen'
-      alt-w = 'close'
-      alt-enter = 'exec-and-forget open -a Terminal'
-      alt-tab = 'focus dfs-next'
-      alt-shift-tab = 'focus dfs-prev'
+      cmd-ctrl-t = 'layout tiles'
+      cmd-ctrl-a = 'layout accordion'
+      cmd-ctrl-f = 'fullscreen'
+      cmd-ctrl-w = 'close'
+      cmd-ctrl-enter = 'exec-and-forget open -a Terminal'
+      cmd-ctrl-tab = 'focus dfs-next'
+      cmd-ctrl-shift-tab = 'focus dfs-prev'
     '';
 
   # macOS-specific shell aliases
