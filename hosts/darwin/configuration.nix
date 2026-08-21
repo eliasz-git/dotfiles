@@ -24,15 +24,7 @@
       autoUpdate = true;
       cleanup = "zap";
     };
-    taps = [
-      "FelixKratz/formulae"
-      "koekeishiya/formulae"
-      "TheBoredTeam/boring-notch"
-      "pear-devs/pear"
-      "anomalyco/tap"
-      "steipete/tap"
-      "nikitabobko/tap"
-    ];
+    taps = [ ];  # declared in extraConfig below with `trusted: true`
     brews = [
       "borders" "cups" "opencode"
       #"yabai"
@@ -58,6 +50,19 @@
       # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
     ];
+    # Third-party taps. Declared with `trusted: true` so that `brew bundle
+    # cleanup` (run on activation via cleanup = "zap") restores the Homebrew
+    # trust store instead of resetting it to empty, which would abort the
+    # activation when it then runs `brew cleanup`.
+    extraConfig = ''
+      tap "FelixKratz/formulae", trusted: true
+      tap "koekeishiya/formulae", trusted: true
+      tap "TheBoredTeam/boring-notch", trusted: true
+      tap "pear-devs/pear", trusted: true
+      tap "anomalyco/tap", trusted: true
+      tap "steipete/tap", trusted: true
+      tap "nikitabobko/tap", trusted: true
+    '';
   };
 
   system.defaults = {
