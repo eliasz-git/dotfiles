@@ -37,25 +37,24 @@
       "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
-      "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
+      "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       # Apple Reminders CLI + iMessage CLI (steipete/tap)
       "imsg" "remindctl"
-      "mole"
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
-      "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
-      "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
-      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
-      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "loop"
-      "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "microsoft-teams"
+      "cloudflare-warp" "lulu" "firefox" "keepassxc"
+      "obsidian" "pearcleaner" "raycast" "steam" "yubico-authenticator"
+      "vscodium" "iina" "karabiner-elements" "claude" "prismlauncher"
+      "tuta-mail" "boring-notch" "pear-desktop"
+      "beeper" "netnewswire" "macfuse"
+      "veracrypt" "microsoft-teams"
       "opencode-desktop"
       # Apps installed manually (DMG) that have brew casks — catch-up so a
       # rebuild can restore them without re-downloading DMGs
-      "calibre" "discord" "gramps" "openwork" "protonvpn"
-      "copilot-cli"
+      "calibre" "discord" "gramps"
       "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
-      "termius" "zed" "zen" "balenaetcher" "tinymediamanager"
+      "termius" "zed" "balenaetcher" "tinymediamanager" "hermes-desktop"
+      "browseros" "wakatime"
       # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
     ];
