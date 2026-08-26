@@ -8,6 +8,7 @@
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
     ../../modules/darwin/terminal.nix
+    ../../modules/darwin/sketchybar.nix
   ];
 
   home.stateVersion = "25.05";
@@ -21,15 +22,17 @@
   # AeroSpace — i3-style tiling window manager
     home.file.".config/aerospace/aerospace.toml".text = ''
       # AeroSpace — https://nikitabobko.github.io/AeroSpace/
+      # Minimalist SketchyBar integration: trigger on workspace change
+      exec-on-workspace-change = ['/bin/bash', '-c', 'sketchybar --trigger aerospace_workspace_change FOCUSED=$AEROSPACE_FOCUSED_WORKSPACE']
       config-version = 2
       start-at-login = true
 
-      # 8px gaps between windows and at monitor edges
+      # Gaps — top is 44 to clear minimalist SketchyBar pill (32 + 4 y_offset + 8 margin)
       gaps.inner.horizontal = 8
       gaps.inner.vertical = 8
       gaps.outer.left = 8
       gaps.outer.bottom = 8
-      gaps.outer.top = 8
+      gaps.outer.top = 44
       gaps.outer.right = 8
 
       # Default layout for new workspaces
@@ -46,8 +49,8 @@
         { if = 'test %{app-bundle-id} = de.tutao.tutanota || test %{app-bundle-id} = com.ranchero.NetNewsWire-Evergreen || test %{app-bundle-id} = com.apple.mail || test %{app-bundle-id} = com.apple.news', run = 'move-node-to-workspace 3-mail' },
         # 4 - Code / AI
         { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.nousresearch.hermes || test %{app-bundle-id} = macos-wakatime.WakaTime', run = 'move-node-to-workspace 4-code' },
-        # 5 - Terminal / SSH
-        { if = 'test %{app-bundle-id} = com.apple.Terminal || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = org.alacritty', run = 'move-node-to-workspace 5-terminal' },
+        # 5 - Terminal / SSH — Ghostty is com.mitchellh.ghostty
+        { if = 'test %{app-bundle-id} = com.apple.Terminal || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = com.mitchellh.ghostty', run = 'move-node-to-workspace 5-terminal' },
         # 6 - Docs / notes
         { if = 'test %{app-bundle-id} = md.obsidian || test %{app-bundle-id} = net.kovidgoyal.calibre || test %{app-bundle-id} = org.gramps-project.gramps || test %{app-bundle-id} = md.obsidian.Obsidian-Web-Clipper || test %{app-bundle-id} = com.apple.Notes || test %{app-bundle-id} = com.apple.reminders || test %{app-bundle-id} = com.apple.iCal || test %{app-bundle-id} = com.apple.iBooksX || test %{app-bundle-id} = com.apple.Preview || test %{app-bundle-id} = com.apple.TextEdit || test %{app-bundle-id} = com.apple.freeform || test %{app-bundle-id} = com.apple.Stickies || test %{app-bundle-id} = com.apple.journal || test %{app-bundle-id} = com.apple.Dictionary', run = 'move-node-to-workspace 6-docs' },
         # 7 - Media / playback
@@ -58,8 +61,8 @@
         { if = 'test %{app-bundle-id} = org.keepassxc.keepassxc || test %{app-bundle-id} = org.idrix.VeraCrypt || test %{app-bundle-id} = com.yubico.yubioath || test %{app-bundle-id} = com.objective-see.lulu.app || test %{app-bundle-id} = com.carriez.rustdesk || test %{app-bundle-id} = io.tailscale.ipn.macsys || test %{app-bundle-id} = com.cloudflare.1dot1dot1dot1.macos || test %{app-bundle-id} = com.alienator88.Pearcleaner || test %{app-bundle-id} = com.vorssaint.utils || test %{app-bundle-id} = io.phonedeck.app.mac || test %{app-bundle-id} = com.apple.MobileSMS || test %{app-bundle-id} = com.apple.Passwords || test %{app-bundle-id} = com.apple.findmy || test %{app-bundle-id} = com.apple.ScreenContinuity || test %{app-bundle-id} = com.apple.Maps || test %{app-bundle-id} = com.apple.weather || test %{app-bundle-id} = com.apple.clock || test %{app-bundle-id} = com.apple.stocks || test %{app-bundle-id} = com.apple.calculator || test %{app-bundle-id} = com.apple.Home', run = 'move-node-to-workspace 9-security' },
         # 10 - VMs / imaging
         { if = 'test %{app-bundle-id} = com.docker.docker || test %{app-bundle-id} = io.balena.etcher', run = 'move-node-to-workspace 10-vms' },
-        # Floating: system settings / launchers / overlays must never tile
-        { if = 'test %{app-bundle-id} = com.apple.systempreferences || test %{app-bundle-id} = com.raycast.macos || test %{app-bundle-id} = org.pqrs.Karabiner-Elements.Settings || test %{app-bundle-id} = org.pqrs.Karabiner-EventViewer || test %{app-bundle-id} = theboringteam.boringnotch || test %{app-bundle-id} = bobko.aerospace || test %{app-bundle-id} = net.raymondhill.uBlock-Origin-Lite', run = ['layout floating'] },
+        # Floating: system settings / launchers / overlays must never tile — SketchyBar has no window but guard anyway
+        { if = 'test %{app-bundle-id} = com.apple.systempreferences || test %{app-bundle-id} = com.raycast.macos || test %{app-bundle-id} = org.pqrs.Karabiner-Elements.Settings || test %{app-bundle-id} = org.pqrs.Karabiner-EventViewer || test %{app-bundle-id} = theboringteam.boringnotch || test %{app-bundle-id} = bobko.aerospace || test %{app-bundle-id} = net.raymondhill.uBlock-Origin-Lite || test %{app-bundle-id} = com.github.FelixKratz.SketchyBar', run = ['layout floating'] },
       ]
 
       [mode.main.binding]
@@ -104,7 +107,7 @@
       cmd-ctrl-a = 'layout accordion'
       cmd-ctrl-f = 'fullscreen'
       cmd-ctrl-w = 'close'
-      cmd-ctrl-enter = 'exec-and-forget open -a Terminal'
+      cmd-ctrl-enter = 'exec-and-forget open -a Ghostty'
       cmd-ctrl-tab = 'focus dfs-next'
       cmd-ctrl-shift-tab = 'focus dfs-prev'
     '';

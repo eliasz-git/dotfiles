@@ -26,7 +26,7 @@
     };
     taps = [ ];  # declared in extraConfig below with `trusted: true`
     brews = [
-      "borders" "cups" "opencode"
+      "borders" "sketchybar" "cups" "opencode" "mas"
       #"yabai"
       "pcre2" "ripgrep"
       "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
@@ -49,6 +49,10 @@
       "browseros" "wakatime"
       # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
+      # Terminal — Ghostty replaces Alacritty
+      "ghostty"
+      # Installed manually via brew, caught up here so rebuilds keep them
+      "foobar2000" "xld" "openlogi"
     ];
     # Third-party taps. Declared with `trusted: true` so that `brew bundle
     # cleanup` (run on activation via cleanup = "zap") restores the Homebrew
@@ -62,6 +66,10 @@
       tap "anomalyco/tap", trusted: true
       tap "steipete/tap", trusted: true
       tap "nikitabobko/tap", trusted: true
+      # Mac App Store apps
+      mas "Hush Nag Blocker", id: 1544743900
+      mas "uBlock Origin Lite", id: 6745342698
+      mas "Obsidian Web Clipper", id: 6720708363
     '';
   };
 
