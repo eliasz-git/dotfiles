@@ -28,14 +28,14 @@
       config-version = 2
       start-at-login = true
 
-      # Gaps — 4px logical = 8px physical on Retina HiDPI (1920x1200 looks-like is 2x)
-      # Fixed uniform so built-in Liquid Retina acts like external monitor
-      gaps.inner.horizontal = 4
-      gaps.inner.vertical = 4
-      gaps.outer.left = 4
-      gaps.outer.bottom = 4
-      gaps.outer.top = 4
-      gaps.outer.right = 4
+      # Gaps — fixed uniform for 1920x1200 HiDPI (built-in acts like monitor)
+      # 8 logical = 16 physical on Retina 2x, sits 4px below pill bottom (pill 4+32=36)
+      gaps.inner.horizontal = 8
+      gaps.inner.vertical = 8
+      gaps.outer.left = 8
+      gaps.outer.bottom = 8
+      gaps.outer.top = 44
+      gaps.outer.right = 8
 
       # Default layout for new workspaces
       default-root-container-layout = 'tiles'
