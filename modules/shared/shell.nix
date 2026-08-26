@@ -41,24 +41,24 @@
       add_newline = true;
       format = "$username$hostname$directory$git_branch$git_status$nix_shell$character";
       character = {
-        error_symbol = "[➜](bold #7090b8)";
-        success_symbol = "[➜](bold #5ba3c9)";
+        error_symbol = "[➜](bold #305561)";
+        success_symbol = "[➜](bold #116FAE)";
       };
       directory = {
-        style = "bold #4f8fbf";
+        style = "bold #116FAE";
         truncate_to_repo = true;
         truncation_length = 3;
       };
       git_branch = {
-        style = "bold #8eafd4";
+        style = "bold #68A2C6";
         symbol = " ";
       };
       git_status = {
-        style = "bold #a8c8e8";
+        style = "bold #7E8A94";
       };
       nix_shell = {
         format = "via [$symbol$state]($style) ";
-        style = "bold #4f8fbf";
+        style = "bold #06467E";
         symbol = " ";
       };
     };
@@ -67,18 +67,18 @@
     enable = true;
     enableZshIntegration = true;
     colors = {
-      bg = "#0d1b2a";
-      "bg+" = "#1b2d42";
-      fg = "#cdd9e5";
-      "fg+" = "#cdd9e5";
-      hl = "#5ba3c9";
-      "hl+" = "#5ba3c9";
-      info = "#a8c8e8";
-      marker = "#7090b8";
-      prompt = "#4f8fbf";
-      spinner = "#6ec6c6";
-      pointer = "#8eafd4";
-      header = "#6ec6c6";
+      bg = "#04182F";
+      "bg+" = "#06467E";
+      fg = "#68A2C6";
+      "fg+" = "#68A2C6";
+      hl = "#116FAE";
+      "hl+" = "#116FAE";
+      info = "#7E8A94";
+      marker = "#305561";
+      prompt = "#116FAE";
+      spinner = "#68A2C6";
+      pointer = "#68A2C6";
+      header = "#305561";
     };
   };
   programs.bat = {

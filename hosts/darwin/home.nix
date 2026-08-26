@@ -9,6 +9,7 @@
     ../../modules/shared/fastfetch.nix
     ../../modules/darwin/terminal.nix
     ../../modules/darwin/sketchybar.nix
+    ../../modules/darwin/hammerspoon.nix
   ];
 
   home.stateVersion = "25.05";
@@ -27,13 +28,14 @@
       config-version = 2
       start-at-login = true
 
-      # Gaps — top is 44 to clear minimalist SketchyBar pill (32 + 4 y_offset + 8 margin)
-      gaps.inner.horizontal = 8
-      gaps.inner.vertical = 8
-      gaps.outer.left = 8
-      gaps.outer.bottom = 8
-      gaps.outer.top = 44
-      gaps.outer.right = 8
+      # Gaps — 4px logical = 8px physical on Retina HiDPI (1920x1200 looks-like is 2x)
+      # Fixed uniform so built-in Liquid Retina acts like external monitor
+      gaps.inner.horizontal = 4
+      gaps.inner.vertical = 4
+      gaps.outer.left = 4
+      gaps.outer.bottom = 4
+      gaps.outer.top = 4
+      gaps.outer.right = 4
 
       # Default layout for new workspaces
       default-root-container-layout = 'tiles'
@@ -102,11 +104,13 @@
       cmd-ctrl-shift-9 = 'move-node-to-workspace 9-security'
       cmd-ctrl-shift-0 = 'move-node-to-workspace 10-vms'
 
-      # Layouts / window ops
+      # Layouts / window ops (i3-like)
       cmd-ctrl-t = 'layout tiles'
       cmd-ctrl-a = 'layout accordion'
       cmd-ctrl-f = 'fullscreen'
+      cmd-ctrl-q = 'close'
       cmd-ctrl-w = 'close'
+      cmd-ctrl-r = 'reload-config'
       cmd-ctrl-enter = 'exec-and-forget open -a Ghostty'
       cmd-ctrl-tab = 'focus dfs-next'
       cmd-ctrl-shift-tab = 'focus dfs-prev'

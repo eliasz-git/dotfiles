@@ -26,7 +26,7 @@
     };
     taps = [ ];  # declared in extraConfig below with `trusted: true`
     brews = [
-      "borders" "sketchybar" "cups" "opencode" "mas"
+      "sketchybar" "cups" "opencode" "mas"
       #"yabai"
       "pcre2" "ripgrep"
       "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
@@ -51,6 +51,8 @@
       "aerospace" "vorssaint"
       # Terminal — Ghostty replaces Alacritty
       "ghostty"
+      # Automation — Hammerspoon for display watcher
+      "hammerspoon"
       # Installed manually via brew, caught up here so rebuilds keep them
       "foobar2000" "xld" "openlogi"
     ];
@@ -70,6 +72,7 @@
       mas "Hush Nag Blocker", id: 1544743900
       mas "uBlock Origin Lite", id: 6745342698
       mas "Obsidian Web Clipper", id: 6720708363
+      mas "Night Eye", id: 1450504903
     '';
   };
 
@@ -122,6 +125,15 @@
 
   services.yabai = {
     enable = false;
+  };
+
+  services.jankyborders = {
+    enable = true;
+    active_color = "0xff116FAE";
+    inactive_color = "0xff06467E";
+    width = 6.0;
+    style = "round";
+    hidpi = true;
   };
 
   # User

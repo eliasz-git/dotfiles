@@ -5,22 +5,12 @@
     enable = true;
     settings = {
       logo = {
-        padding = {
-          top = 1;
-          left = 2;
-          right = 2;
-        };
-        color = {
-          "1" = "green";
-          "2" = "cyan";
-        };
+        padding = { top = 1; left = 2; right = 2; };
+        color = { "1" = "blue"; "2" = "cyan"; };
       };
       display = {
         separator = " → ";
-        color = {
-          keys = "green";
-          title = "cyan";
-        };
+        color = { keys = "blue"; title = "cyan"; };
       };
       modules = [
         # Title and separator

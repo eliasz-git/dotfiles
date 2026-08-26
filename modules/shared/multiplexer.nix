@@ -17,18 +17,23 @@ bind h select-pane -L
 bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
-set -g status-style "bg=#0d1b2a,fg=#cdd9e5"
-set -g window-status-current-style "bg=#5ba3c9,fg=#0d1b2a,bold"
-set -g pane-active-border-style "fg=#5ba3c9"
+# r/unixporn powerline navy
+set -g status-style "bg=#04182F,fg=#68A2C6"
+set -g status-left "#[bg=#116FAE,fg=#04182F,bold] #S #[bg=#06467E,fg=#68A2C6] #{pane_current_path} "
+set -g status-right "#[bg=#06467E,fg=#68A2C6] %I:%M %p #[bg=#116FAE,fg=#04182F,bold] #h "
+set -g window-status-current-style "bg=#116FAE,fg=#04182F,bold"
+set -g window-status-style "fg=#7E8A94"
+set -g pane-active-border-style "fg=#116FAE"
+set -g pane-border-style "fg=#06467E"
     '';
   };
   programs.lazygit = {
     enable = true;
     settings = {
       gui.theme = {
-        activeBorderColor = [ "#5ba3c9" "bold" ];
-        inactiveBorderColor = [ "#1b2d42" ];
-        selectedLineBgColor = [ "#1b2d42" ];
+        activeBorderColor = [ "#116FAE" "bold" ];
+        inactiveBorderColor = [ "#06467E" ];
+        selectedLineBgColor = [ "#04182F" ];
       };
     };
   };
