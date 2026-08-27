@@ -58,6 +58,38 @@
       ];
     };
 
+    # ── Homelab: headless NixOS minis (Tailscale, Docker) ────────────
+    #  mini1 — HP ProDesk 600 G1 DM (i3-4160T) — infra, 192.168.1.75
+    #  mini2 — HP ProDesk 405 G4 DM (R5 PRO 2400GE) — media, 192.168.1.76
+    nixosConfigurations.mini1 = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      pkgs   = linuxPkgs;
+      modules = [
+        ./hosts/mini/1/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs       = true;
+          home-manager.useUserPackages     = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.users.elias         = import ./hosts/mini/1/home.nix;
+        }
+      ];
+    };
+    nixosConfigurations.mini2 = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      pkgs   = linuxPkgs;
+      modules = [
+        ./hosts/mini/2/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs       = true;
+          home-manager.useUserPackages     = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.users.elias         = import ./hosts/mini/2/home.nix;
+        }
+      ];
+    };
+
     # ── Artix Linux — OpenRC, Everforest, nixpkgs 25.05 ──────────
     homeConfigurations.artix = home-manager.lib.homeManagerConfiguration {
       pkgs    = linuxPkgs;

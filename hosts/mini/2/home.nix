@@ -7,7 +7,6 @@
     ../../../modules/shared/git.nix
     ../../../modules/shared/multiplexer.nix
     ../../../modules/shared/fastfetch.nix
-    ../../../modules/nixos/terminal.nix
   ];
 
   home.username = "elias";
@@ -17,69 +16,36 @@
 
   xdg.enable = true;
 
+  # Headless — no desktop apps, no gaming. Server TUI only.
+  # Old desktop list (kitty/brave/thunderbird/vscodium/waybar/ollama/gamescope)
+  # removed per your call to run both minis headless.
   home.packages = with pkgs; [
-    kitty
+    btop
     powertop
-    playerctl
-    bluetuith
-    netop
+    bluetuith # bluetooth TUI if ever needed
     wl-clipboard
-    grim
-    slurp
-    swappy
-    dunst
-    rofi-wayland
-    librewolf
-    brave
-    thunderbird
-    vscodium
-    signal-desktop
-    bitwarden
-    obsidian
-    libreoffice
-    vlc
-    lollypop
-    tutanota-desktop
-    yubioath-flutter
-    prismlauncher
-    nextcloud-client
-    davmail
-    gnome-online-accounts
-    bibata-cursors
-    papirus-icon-theme
-    everforest-gtk-theme
-    waybar
 
-    # Add local AI + gaming packages
-    ollama
-    gamescope
-    mangohud
+    # media debugging on headless
+    ffmpeg
+    mediainfo
+
+    # keep yubikey for ssh
+    yubikey-manager
   ];
 
   programs.zsh.shellAliases = {
-    hms = "cd ~/.config/nix-config && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#mini2";
-    hmu = "cd ~/.config/nix-config && nix flake update && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#mini2";
+    # NixOS (new primary)
+    rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#mini2";
+    rbu = "cd ~/.config/nix-config && sudo nix flake update && sudo nixos-rebuild switch --flake .#mini2";
+    # Home-manager fallback (still works standalone if you test without nixos)
+    hms = "home-manager switch --flake ~/.config/nix-config#mini2";
+    hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#mini2";
+    dps = "docker ps";
+    dcu = "docker compose up -d";
+    dcd = "docker compose down";
+    dcl = "docker compose logs -f";
   };
 
-  # Waybar tweaks: remove battery from modules-right
-  programs.waybar = {
-    enable = true;
-    settings = {
-      mainBar = {
-        modules-left = [ "niri/workspaces" "niri/window" ];
-        modules-center = [ "clock" ];
-        modules-right = [ "mpris" "pulseaudio" "network" "cpu" "memory" "tray" ];
-      };
-
-      "niri/workspaces" = { format = "{name}"; on-click = "activate"; };
-      "niri/window" = { max-length = 50; };
-      clock = { format = "{:%a %d %b %I:%M %p}"; };
-      cpu = { format = "󰻠 {usage}%"; };
-      memory = { format = "󰍛 {percentage}%"; };
-    };
-  };
-
-  # Minimal changes: replace TLP function with comment by removing it from install script
   programs.git = {
     enable = true;
     userName = "elias";

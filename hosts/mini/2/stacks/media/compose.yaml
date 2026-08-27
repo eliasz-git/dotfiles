@@ -1,0 +1,150 @@
+# mini2 — media stack (R5 2400GE Vega 11, headless, 16GB)
+# Deploy: sudo docker compose -f /etc/stacks/media/compose.yaml up -d
+# Requires: /mnt/storage mounted (ext4 STORAGE), .env next to this file (Mullvad)
+# PUID/PGID 1000 = elias. Change if your user id differs (id -u / id -g).
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add: [NET_ADMIN]
+    devices: [/dev/net/tun:/dev/net/tun]
+    ports:
+      - 9091:9091  # transmission
+      # uncomment if you want *arr behind VPN as well (optional):
+      # - 9696:9696  # prowlarr via gluetun
+      # - 8989:8989  # sonarr via gluetun
+      # - 7878:7878  # radarr via gluetun
+    volumes:
+      - ./data/gluetun:/gluetun
+    env_file: [.env]
+    environment:
+      - DOT=off
+      # healthcheck helps dependants wait
+    healthcheck:
+      test: ["CMD-SHELL", "wg show || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  transmission:
+    <<: *common
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun: { condition: service_healthy }
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/transmission:/config
+      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/media/downloads:/watch
+    # no ports here — uses gluetun's 9091
+
+  prowlarr:
+    <<: *common
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    ports: ["9696:9696"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/prowlarr:/config
+
+  sonarr:
+    <<: *common
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    ports: ["8989:8989"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/sonarr:/config
+      - /mnt/storage/media/tv:/tv
+      - /mnt/storage/media/downloads:/downloads
+
+  radarr:
+    <<: *common
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    ports: ["7878:7878"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/radarr:/config
+      - /mnt/storage/media/movies:/movies
+      - /mnt/storage/media/downloads:/downloads
+
+  jellyseerr:
+    <<: *common
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    ports: ["5055:5055"]
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=America/New_York
+    volumes:
+      - ./data/jellyseerr:/app/config
+
+  jellyfin:
+    <<: *common
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    ports: ["8096:8096", "8920:8920"]
+    devices: [/dev/dri:/dev/dri]  # Vega 11 VAAPI
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/jellyfin/config:/config
+      - ./data/jellyfin/cache:/cache
+      - /mnt/storage/media/tv:/media/tv:ro
+      - /mnt/storage/media/movies:/media/movies:ro
+      - /mnt/storage/media/music:/media/music:ro
+    # For VAAPI: Admin → Playback → VAAPI /dev/dri/renderD128
+
+  navidrome:
+    <<: *common
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    ports: ["4533:4533"]
+    environment:
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+    volumes:
+      - ./data/navidrome:/data
+      - /mnt/storage/media/music:/music:ro
+
+  immich:
+    <<: *common
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: immich
+    ports: ["2283:2283"]
+    # immich needs postgres + redis — use their compose or run separately.
+    # Simplest: keep immich in docker compose with its db (see immich docs).
+    # This placeholder runs the server only; add db/redis if you use immich.
+    # For now, comment out immich and follow https://immich.app/docs/install/docker-compose
+    # To enable, uncomment and add the postgres/redis services from upstream compose.
+    # For a quick start without immich, this stack works fine without it.
+    restart: "no"
+    profiles: ["with-immich"]
+    volumes:
+      - ./data/immich:/usr/src/app/upload
+      - /mnt/storage/media/photos:/usr/src/app/external:ro
+    environment:
+      - TZ=America/New_York

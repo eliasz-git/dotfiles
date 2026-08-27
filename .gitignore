@@ -18,5 +18,9 @@ hosts/nixos/hardware-configuration.nix
 *.swo
 *~
 
+# Secrets / local env
+hosts/mini/**/stacks/**/.env
+hosts/mini/secrets.yaml
+
 # Logs
 *.log

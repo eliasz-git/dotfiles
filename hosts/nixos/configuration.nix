@@ -1,7 +1,11 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ /etc/nixos/hosts/nixos/hardware-configuration.nix ];
+  imports = [
+    (if builtins.pathExists ./hardware-configuration.nix
+     then ./hardware-configuration.nix
+     else ./hardware-configuration.nix.example)
+  ];
 
   # Boot loader
   boot.loader.systemd-boot.enable = true;
