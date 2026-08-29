@@ -214,14 +214,22 @@
 
   home.file.".local/bin/sconnect".executable = true;
 
-  home.file.".config/ssh/devices".text = ''
-    # sconnect devices — one host per line:  name user@host[:port] [identity_file]
-    # add more any time:  sconnect --add "name user@host"
-    # (examples below — edit addresses/users to match your network)
-    macbook  elias@macbook.local
-    icarus    elias@icarus.local
-    mini1     elias@mini1.local
-    mini2     elias@mini2.local
-    router    admin@192.168.1.1
+  # devices file is user-owned (writable) so `sconnect --add` / edits work;
+  # seeded once, never overwritten on later rebuilds
+  home.activation.sshDevices = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    mkdir -p "$HOME/.config/ssh"
+    if [ -L "$HOME/.config/ssh/devices" ] || [ ! -f "$HOME/.config/ssh/devices" ]; then
+      rm -f "$HOME/.config/ssh/devices"
+      cat > "$HOME/.config/ssh/devices" <<'DEVICES'
+# sconnect devices — one host per line:  name user@host[:port] [identity_file]
+# add more any time:  sconnect --add "name user@host"
+# (examples below — edit addresses/users to match your network)
+macbook  elias@macbook.local
+icarus    elias@icarus.local
+mini1     elias@mini1.local
+mini2     elias@mini2.local
+router    admin@192.168.1.1
+DEVICES
+    fi
   '';
 }
