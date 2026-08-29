@@ -50,7 +50,7 @@
       # Apps installed manually (DMG) that have brew casks — catch-up so a
       # rebuild can restore them without re-downloading DMGs
       "calibre" "discord" "gramps"
-      "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
+      "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
       "termius" "zed" "balenaetcher" "tinymediamanager" "hermes-desktop"
       "browseros" "wakatime"
       # Tiling WM + menu bar toolkit
@@ -60,7 +60,7 @@
       # Automation — Hammerspoon for display watcher
       "hammerspoon"
       # Installed manually via brew, caught up here so rebuilds keep them
-      "foobar2000" "xld" "openlogi"
+      "xld" "openlogi"
     ];
     # Third-party taps. Declared with `trusted: true` so that `brew bundle
     # cleanup` (run on activation via cleanup = "zap") restores the Homebrew

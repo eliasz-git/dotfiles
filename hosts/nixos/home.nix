@@ -20,7 +20,7 @@
     wl-clipboard grim slurp swappy
     dunst rofi-wayland swaybg
     librewolf brave thunderbird vscodium signal-desktop
-    bitwarden obsidian libreoffice vlc
+    bitwarden obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
     steam calibre discord gramps rustdesk tailscale docker
     tutanota-desktop yubioath-flutter prismlauncher
@@ -471,7 +471,7 @@
         rewind_to_start_sec: None,
         keep_state_on_song_change: true,
         reflect_changes_to_playlist: false,
-        select_current_song_on_change: false,
+        select_current_song_on_change: true,
         ignore_leading_the: false,
         browser_song_sort: [Disc, Track, Artist, Title],
         directories_sort: SortFormat(group_by_type: true, reverse: false),
