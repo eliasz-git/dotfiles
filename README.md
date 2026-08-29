@@ -24,7 +24,6 @@ cd hosts/darwin && ./replace.sh <user> <github> <email> && cd ../..
 nix flake update
 sudo darwin-rebuild switch --flake .#macbook --option fallback true
 ```
-Artix: `bash hosts/artix/install.sh`
 NixOS: copy `hardware-configuration.nix`, symlink `/etc/nixos`, `sudo nixos-rebuild switch --flake .#laptop`
 
 ## Features

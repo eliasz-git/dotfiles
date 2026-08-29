@@ -26,6 +26,6 @@ Hosts:
 
 Notes / Safety:
 - I updated flake.nix to register both homeConfigurations.mini1 and mini2. Home Manager flakes will reference those names.
-- The install scripts are conservative scaffolds derived from the alpine/artix scripts. Review them before running as root.
+- The install scripts are conservative scaffolds derived from the alpine script. Review them before running as root.
 - Replace the placeholder userEmail in each home.nix (programs.git.userEmail) with your real email.
 - I did not push changes to the remote by default — tell me to push and I'll push the commits to origin/main.

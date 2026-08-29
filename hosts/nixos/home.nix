@@ -14,7 +14,6 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    kitty
     ghostty
     powertop brightnessctl playerctl
     bluetuith netop
@@ -208,12 +207,12 @@
       spawn-at-startup = [
         { command = [ "waybar" ]; }
         { command = [ "dunst" ]; }
-        { command = [ "sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/wallpaper.jpg -m fill" ]; }
+        { command = [ "sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/everforest-adhd.jpg -m fill" ]; }
         { command = [ "signal-desktop" ]; }
       ];
 
       window-rules = [
-        { matches = [ { app-id = "^kitty$"; } ]; opacity = 0.85; }
+        { matches = [ { app-id = "^ghostty$"; } ]; opacity = 0.85; }
         { matches = [ { app-id = "^VSCodium$"; } ]; opacity = 0.88; }
         { matches = [ { app-id = "^librewolf$"; } ]; opacity = 0.92; }
         { matches = [ { app-id = "^thunar$"; } ]; opacity = 0.85; }
@@ -221,7 +220,7 @@
       ];
 
       binds = with config.lib.niri.actions; {
-        "Mod+G".action = spawn "kitty";
+        "Mod+G".action = spawn "ghostty";
         "Mod+B".action = spawn "brave";
         "Mod+U".action = spawn "vscodium";
         "Mod+M".action = spawn "rmpc";            # music (rmpc)
