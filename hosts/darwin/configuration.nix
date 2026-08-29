@@ -24,7 +24,7 @@
     };
     taps = [ ];  # declared in extraConfig below with `trusted: true`
     brews = [
-      "sketchybar" "cups" "opencode" "mas"
+      "sketchybar" "cups" "mas" "docker" "colima"
       #"yabai"
       "pcre2" "ripgrep"
       "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
@@ -46,12 +46,11 @@
       "tuta-mail" "boring-notch" "pear-desktop"
       "beeper" "netnewswire" "macfuse"
       "veracrypt" "microsoft-teams"
-      "opencode-desktop"
       # Apps installed manually (DMG) that have brew casks — catch-up so a
       # rebuild can restore them without re-downloading DMGs
       "calibre" "discord" "gramps"
-      "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
-      "termius" "zed" "balenaetcher" "tinymediamanager" "hermes-desktop"
+      "burn" "rustdesk" "tailscale-app"
+      "termius" "zed" "balenaetcher" "tinymediamanager"
       "browseros" "wakatime"
       # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
