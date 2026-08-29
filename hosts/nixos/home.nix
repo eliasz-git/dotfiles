@@ -21,7 +21,7 @@
     dunst rofi-wayland swaybg
     librewolf brave thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice vlc
-    mpd rmpc mpdscribble mpc
+    mpd rmpc mpdscribble mpc slskd
     steam calibre discord gramps rustdesk tailscale docker
     tutanota-desktop yubioath-flutter prismlauncher
     nextcloud-client
@@ -788,6 +788,34 @@
     Unit = { Description = "mpdscribble Last.fm scrobbler"; };
     Service = {
       ExecStart = "${pkgs.mpdscribble}/bin/mpdscribble";
+      Restart = "always";
+    };
+    Install = { WantedBy = [ "default.target" ]; };
+  };
+
+  # slskd — headless Soulseek daemon (web UI :5030). Lowest-resource client;
+  # only ONE instance should log in with the account at a time (run on the
+  # always-on homelab and reach it from elsewhere via the web UI).
+  home.file.".config/slskd/slskd.yml".text = ''
+    slskd:
+      username: "CHANGEME"
+      password: "CHANGEME"
+
+    shares:
+      directories:
+        - "~/Music"
+
+    web:
+      username: slskd
+      password: slskd
+      port: 5030
+      https: false
+  '';
+
+  systemd.user.services.slskd = {
+    Unit = { Description = "slskd Soulseek daemon (headless, web UI :5030)"; };
+    Service = {
+      ExecStart = "${pkgs.slskd}/bin/slskd";
       Restart = "always";
     };
     Install = { WantedBy = [ "default.target" ]; };

@@ -36,6 +36,8 @@
       "mpd" "rmpc" "mpdscribble" "mpc"
       # rust: needed for Rust builds (airpods-cli); declared so it survives rebuilds
       "rust"
+      # Soulseek client (GUI, bottled, light); Linux hosts run slskd headless instead
+      "nicotine-plus"
     ];
     casks = [
       "cloudflare-warp" "lulu" "keepassxc"

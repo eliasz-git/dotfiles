@@ -22,7 +22,7 @@
     kubernetes helm k9s kubectx
     terraform ansible
     tailscale
-    ollama caddy
+    ollama caddy slskd
     btop
     yubikey-manager pass gnupg age sops
     restic rclone
@@ -37,5 +37,32 @@
     enable = true;
     userName = "elias";
     userEmail = "elias@example.com";
+  };
+
+  # slskd — headless Soulseek daemon (web UI :5030). Only one instance should
+  # log in with the account at a time; the always-on homelab is the natural host.
+  home.file.".config/slskd/slskd.yml".text = ''
+    slskd:
+      username: "CHANGEME"
+      password: "CHANGEME"
+
+    shares:
+      directories:
+        - "~/Music"
+
+    web:
+      username: slskd
+      password: slskd
+      port: 5030
+      https: false
+  '';
+
+  systemd.user.services.slskd = {
+    Unit = { Description = "slskd Soulseek daemon (headless, web UI :5030)"; };
+    Service = {
+      ExecStart = "${pkgs.slskd}/bin/slskd";
+      Restart = "always";
+    };
+    Install = { WantedBy = [ "default.target" ]; };
   };
 }

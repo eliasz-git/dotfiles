@@ -33,6 +33,7 @@
     yubikey-manager
 
     impala
+    slskd
 
     nix-tree
     nixpkgs-fmt
@@ -91,5 +92,33 @@
     enable = true;
     userName = "elias";
     userEmail = "elias@example.com";
+  };
+
+  # slskd — headless Soulseek daemon (web UI :5030). Alpine runs OpenRC, so the
+  # systemd user unit is inert here; start it with `slskd` directly or an OpenRC
+  # service. Only one instance should log in with the account at a time.
+  home.file.".config/slskd/slskd.yml".text = ''
+    slskd:
+      username: "CHANGEME"
+      password: "CHANGEME"
+
+    shares:
+      directories:
+        - "~/Music"
+
+    web:
+      username: slskd
+      password: slskd
+      port: 5030
+      https: false
+  '';
+
+  systemd.user.services.slskd = {
+    Unit = { Description = "slskd Soulseek daemon (headless, web UI :5030)"; };
+    Service = {
+      ExecStart = "${pkgs.slskd}/bin/slskd";
+      Restart = "always";
+    };
+    Install = { WantedBy = [ "default.target" ]; };
   };
 }
