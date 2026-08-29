@@ -857,6 +857,8 @@
     exec ssh "''${args[@]}" "$userhost"
   '';
 
+  home.file.".local/bin/sconnect".executable = true;
+
   home.file.".config/ssh/devices".text = ''
     # sconnect devices — one host per line:  name user@host[:port] [identity_file]
     # add more any time:  sconnect --add "name user@host"
