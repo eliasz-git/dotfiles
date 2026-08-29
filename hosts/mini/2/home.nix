@@ -50,7 +50,6 @@
     everforest-gtk-theme
     waybar
 
-    # Add local AI + gaming packages
     ollama
     gamescope
     mangohud

@@ -13,7 +13,6 @@
         color = { keys = "blue"; title = "cyan"; };
       };
       modules = [
-        # Title and separator
         {
           type = "title";
           format = "{user-name}@{host-name}";
@@ -23,7 +22,6 @@
           string = "─";
         }
         
-        # Hardware Section
         {
           type = "custom";
           format = "󰍛 HARDWARE";
@@ -53,13 +51,11 @@
           key = "  Battery";
         }
         
-        # Separator
         {
           type = "separator";
           string = "─";
         }
-        
-        # Software Section
+
         {
           type = "custom";
           format = " SOFTWARE";
@@ -81,13 +77,11 @@
           key = "  Shell";
         }
         
-        # Separator
         {
           type = "separator";
           string = "─";
         }
-        
-        # Desktop Section
+
         {
           type = "custom";
           format = " DESKTOP";
@@ -113,13 +107,11 @@
           key = "  Font";
         }
         
-        # Separator
         {
           type = "separator";
           string = "─";
         }
-        
-        # System Section
+
         {
           type = "custom";
           format = "󰥔 SYSTEM";
@@ -133,7 +125,6 @@
           key = "  Local IP";
         }
         
-        # Color palette
         {
           type = "separator";
           string = "─";

@@ -35,23 +35,19 @@ let
   pair = a: b: "${h a} ${h b}";
 
 in {
-  # ── Shared modules (colour-agnostic utilities + packages) ───────
   imports = [
     ../../modules/shared/programs.nix   # eza bat fzf zoxide ripgrep etc.
     ../../modules/shared/fastfetch.nix  # system info on shell open
   ];
 
-  # ── Identity ────────────────────────────────────────────────────
   home.username      = "elias";
   home.homeDirectory = "/home/elias";
   home.stateVersion  = "25.05";
   programs.home-manager.enable = true;
 
-  # ── Packages (user environment — NOT system/apk) ────────────────
   # System layer (Sway, pipewire, drivers, PAM) is managed by APK.
   # Everything a user touches day-to-day lives here.
   home.packages = with pkgs; [
-    # ---- TUI: daily tools
     nano
     #lf              # terminal file manager
     btop            # system monitor (gruvbox theme built-in)
@@ -62,15 +58,12 @@ in {
     calcurse        # calendar / todo
     pulsemixer      # audio mixer TUI
 
-    # ---- TUI: network management
     impala          # TUI wifi manager (nmcli backend)
 
-    # ---- Security / passwords
     pass
     gnupg
     yubikey-manager
 
-    # ---- Shell utilities (some duplicated from programs.nix for clarity)
     fd
     delta           # git diff with syntax highlighting
     jq
@@ -78,14 +71,12 @@ in {
     entr            # run commands on file change (useful for dev)
     just            # command runner (better make)
 
-    # ---- Dev
     python3
     nodejs
     go
     gcc
     gnumake
 
-    # ---- GUI (minimal — terminal is primary)
     librewolf       # browser with sync
     keepassxc       # password vault GUI
     xfce.thunar
@@ -95,13 +86,11 @@ in {
     nerd-fonts.jetbrains-mono
     noto-fonts-emoji
 
-    # ---- Nix utilities
     nix-tree              # visualise the store
     nixpkgs-fmt           # format .nix files
     nix-output-monitor    # nicer nix build output (nom)
   ];
 
-  # ── XDG directories ─────────────────────────────────────────────
   xdg.enable = true;
   xdg.userDirs = {
     enable            = true;
@@ -117,10 +106,8 @@ in {
     };
   };
 
-  # ── Fonts ────────────────────────────────────────────────────────
   fonts.fontconfig.enable = true;
 
-  # ── ~/.profile — loaded by login shells, sets up environment ─────
   # Sway reads this via the login shell before launching.
   home.file.".profile".text = ''
     # Seat backend — required for Sway/wlroots device access
@@ -148,7 +135,6 @@ in {
     # from the shell profile. Ly reads /usr/share/wayland-sessions/sway.desktop.
   '';
 
-  # ── Zsh ──────────────────────────────────────────────────────────
   programs.zsh = {
     enable    = true;
     dotDir    = ".config/zsh";
@@ -218,7 +204,6 @@ in {
     '';
   };
 
-  # ── FZF — Gruvbox Dark colours ───────────────────────────────────
   programs.fzf = {
     enable               = true;
     enableZshIntegration = true;
@@ -233,13 +218,11 @@ in {
     ];
   };
 
-  # ── Zoxide ───────────────────────────────────────────────────────
   programs.zoxide = {
     enable               = true;
     enableZshIntegration = true;
   };
 
-  # ── Starship prompt — Gruvbox powerline ──────────────────────────
   programs.starship = {
     enable               = true;
     enableZshIntegration = true;
@@ -308,7 +291,6 @@ in {
     };
   };
 
-  # ── Tmux — Gruvbox, tmux-powerline aesthetic ─────────────────────
   programs.tmux = {
     enable       = true;
     prefix       = "C-Space";
@@ -365,7 +347,6 @@ in {
     '';
   };
 
-  # ── Git ──────────────────────────────────────────────────────────
   programs.git = {
     enable    = true;
     userName  = "elias";
@@ -395,14 +376,12 @@ in {
     };
   };
 
-  # ── GPG agent (YubiKey SSH/GPG) ──────────────────────────────────
   services.gpg-agent = {
     enable           = true;
     enableSshSupport = true;
     pinentryPackage  = pkgs.pinentry-curses;
   };
 
-  # ── GTK dark mode ────────────────────────────────────────────────
   gtk = {
     enable = true;
     font = {
@@ -415,11 +394,8 @@ in {
     gtk4.extraConfig = { gtk-application-prefer-dark-theme = true; };
   };
 
-  # ═══════════════════════════════════════════════════════════════
   #  CONFIG FILES  (Sway stays in APK; we own the config)
-  # ═══════════════════════════════════════════════════════════════
 
-  # ── Sway ─────────────────────────────────────────────────────────
   home.file.".config/sway/config".text = ''
     # ── Gruvbox Dark
     set $bg0h   ${gb.bg0h}
@@ -565,7 +541,6 @@ in {
     for_window [title="^Picture.in.Picture$"]        floating enable, sticky enable
   '';
 
-  # ── Waybar — tmux-statusline / vim-airline aesthetic ─────────────
   # Flat bar, no floating, no radius, powerline glyphs, monospace.
   home.file.".config/waybar/config".text = builtins.toJSON {
     layer    = "top";
@@ -766,7 +741,6 @@ in {
     }
   '';
 
-  # ── Foot terminal — Gruvbox Dark ─────────────────────────────────
   home.file.".config/foot/foot.ini".text = ''
     [main]
     font=JetBrainsMono Nerd Font:size=11
@@ -813,7 +787,6 @@ in {
     hide-when-typing=yes
   '';
 
-  # ── Fuzzel launcher — terminal dropdown aesthetic ─────────────────
   # Looks like a terminal prompt / dmenu, not a GUI dialog
   home.file.".config/fuzzel/fuzzel.ini".text = ''
     [main]
@@ -847,7 +820,6 @@ in {
     exit-immediately-if-one-item=false
   '';
 
-  # ── Librewolf userChrome — hide tab bar ───────────────────────────
   # Run librewolf once first to create the profile, then hms will write this.
   home.file.".librewolf/userChrome-template.css".text = ''
     /*
@@ -905,7 +877,6 @@ in {
     }
   '';
 
-  # ── Stylus usercss — Gruvbox Dark for all websites ────────────────
   home.file."Downloads/gruvbox-dark-web.user.css".text = ''
     /* ==UserStyle==
     @name         Gruvbox Dark — Universal
@@ -1005,7 +976,6 @@ in {
     }
   '';
 
-  # ── wifi-setup.sh — interactive TUI wifi helper ───────────────────
   home.file."wifi-setup.sh" = {
     executable = true;
     text = ''
@@ -1093,7 +1063,6 @@ in {
     '';
   };
 
-  # ── usb-mount.sh — TUI USB disk picker ───────────────────────────
   home.file."usb-mount.sh" = {
     executable = true;
     text = ''

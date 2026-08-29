@@ -21,6 +21,7 @@
 
   home.packages = with pkgs; [
     kitty
+    ghostty
     powertop brightnessctl playerctl
     bluetuith netop
     wl-clipboard grim slurp swappy
@@ -33,11 +34,10 @@
     gnome-online-accounts
     bibata-cursors
     papirus-icon-theme
-    everforest-gtk-theme
+    orchis-theme
     waybar
   ];
 
-  # Artix-specific shell aliases
   programs.zsh.shellAliases = {
     # Use flake HM reliably (don’t depend on channel home-manager)
     hms = "cd ~/.config/nix-config && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#artix";
@@ -79,8 +79,8 @@
       package = pkgs.papirus-icon-theme;
     };
     theme = {
-      name = "Everforest-Dark-BL";
-      package = pkgs.everforest-gtk-theme;
+      name = "Orchis-Dark";
+      package = pkgs.orchis-theme;
     };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
@@ -97,10 +97,10 @@
       inherit (config.lib.formats.rasi) mkLiteral;
     in {
       "*" = {
-        bg = mkLiteral "#2d353b";
-        bg-alt = mkLiteral "#343f44";
-        fg = mkLiteral "#d3c6aa";
-        fg-alt = mkLiteral "#9da9a0";
+        bg = mkLiteral "#04182F";
+        bg-alt = mkLiteral "#06467E";
+        fg = mkLiteral "#68A2C6";
+        fg-alt = mkLiteral "#7E8A94";
         background-color = mkLiteral "transparent";
         text-color = mkLiteral "@fg";
         margin = 0;
@@ -123,7 +123,7 @@
         vertical-align = mkLiteral "0.5";
       };
       "prompt" = {
-        text-color = mkLiteral "#a7c080";
+        text-color = mkLiteral "#116FAE";
       };
       "textbox" = {
         padding = 8;
@@ -143,23 +143,23 @@
         text-color = mkLiteral "@fg";
       };
       "element normal urgent" = {
-        text-color = mkLiteral "#e67e80";
+        text-color = mkLiteral "#305561";
       };
       "element normal active" = {
-        text-color = mkLiteral "#7fbbb3";
+        text-color = mkLiteral "#68A2C6";
       };
       "element selected normal" = {
-        background-color = mkLiteral "#a7c080";
+        background-color = mkLiteral "#116FAE";
         text-color = mkLiteral "@bg";
         border-radius = 4;
       };
       "element selected urgent" = {
-        background-color = mkLiteral "#e67e80";
+        background-color = mkLiteral "#305561";
         text-color = mkLiteral "@bg";
         border-radius = 4;
       };
       "element selected active" = {
-        background-color = mkLiteral "#7fbbb3";
+        background-color = mkLiteral "#68A2C6";
         text-color = mkLiteral "@bg";
         border-radius = 4;
       };
@@ -177,12 +177,7 @@
     input {
       keyboard {
         xkb {
-          // QWERTY:
           layout "us"
-          // If you want the old toggle back, use:
-          // layout "us,us"
-          // variant ",colemak"
-          // options "grp:alt_shift_toggle"
         }
       }
 
@@ -198,8 +193,8 @@
 
       focus-ring {
         width 3
-        active-color "#a7c080ff"
-        inactive-color "#475258aa"
+        active-color "#116FAEff"
+        inactive-color "#06467Eaa"
       }
 
       border {
@@ -386,22 +381,22 @@
 
       window#waybar {
         background-color: transparent;
-        color: #d3c6aa;
+        color: #68A2C6;
       }
 
       #workspaces button {
         padding: 0 10px;
-        color: #d3c6aa;
-        background-color: rgba(71, 82, 88, 0.5);
+        color: #68A2C6;
+        background-color: rgba(4, 24, 47, 0.6);
         margin: 3px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #workspaces button.active {
-        background-color: rgba(167, 192, 128, 0.9);
-        color: #2d353b;
-        box-shadow: 0 3px 6px rgba(167, 192, 128, 0.4);
+        background-color: rgba(17, 111, 174, 0.9);
+        color: #04182F;
+        box-shadow: 0 3px 6px rgba(17, 111, 174, 0.4);
       }
 
       #window,
@@ -415,27 +410,27 @@
       #tray {
         padding: 0 12px;
         margin: 3px;
-        background-color: rgba(131, 192, 146, 0.7);
-        color: #2d353b;
+        background-color: rgba(17, 111, 174, 0.7);
+        color: #04182F;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(131, 192, 146, 0.4);
+        box-shadow: 0 2px 4px rgba(17, 111, 174, 0.4);
       }
 
       #battery.charging {
-        background-color: rgba(167, 192, 128, 0.9);
-        color: #2d353b;
-        box-shadow: 0 2px 4px rgba(167, 192, 128, 0.4);
+        background-color: rgba(17, 111, 174, 0.9);
+        color: #04182F;
+        box-shadow: 0 2px 4px rgba(17, 111, 174, 0.4);
       }
 
       #battery.warning:not(.charging) {
-        background-color: rgba(219, 188, 127, 0.9);
-        color: #2d353b;
+        background-color: rgba(48, 85, 97, 0.9);
+        color: #04182F;
         box-shadow: 0 2px 4px rgba(219, 188, 127, 0.4);
       }
 
       #battery.critical:not(.charging) {
         background-color: rgba(230, 126, 128, 0.9);
-        color: #2d353b;
+        color: #04182F;
         box-shadow: 0 2px 4px rgba(230, 126, 128, 0.4);
       }
     '';

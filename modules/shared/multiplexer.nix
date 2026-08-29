@@ -17,7 +17,6 @@ bind h select-pane -L
 bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
-# r/unixporn powerline navy
 set -g status-style "bg=#04182F,fg=#68A2C6"
 set -g status-left "#[bg=#116FAE,fg=#04182F,bold] #S #[bg=#06467E,fg=#68A2C6] #{pane_current_path} "
 set -g status-right "#[bg=#06467E,fg=#68A2C6] %I:%M %p #[bg=#116FAE,fg=#04182F,bold] #h "

@@ -3,7 +3,6 @@
 {
   imports = [ /etc/nixos/hosts/nixos/hardware-configuration.nix ];
 
-  # Boot loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -16,15 +15,12 @@
     "i915.enable_dc=2"          # Intel display C-states
   ];
 
-  # Networking
   networking.hostName = "icarus";
   networking.networkmanager.enable = true;
 
-  # Time zone and locale
   time.timeZone = "America/New_York";  # Change to your timezone
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Niri
   programs.niri.enable = true;
 
   # Enable SDDM for Wayland login with proper theme
@@ -34,13 +30,11 @@
     theme = "chili";  # Using chili theme which supports customization
   };
 
-  # XDG Portal for screen sharing
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
-  # Enable sound
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -49,19 +43,16 @@
     pulse.enable = true;
   };
 
-  # Enable Bluetooth
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = false;
   };
   services.blueman.enable = true;
 
-  # Enable touchpad support
   services.libinput.enable = true;
 
   services.pcscd.enable = true;
 
-  # YubiKey U2F/FIDO2 support
   services.udev.packages = [ pkgs.yubikey-personalization ];
   
   security.pam.u2f = {
@@ -156,20 +147,17 @@
     };
   };
 
-  # Thermal management for Intel CPUs
   services.thermald.enable = true;
 
   # Disable power-profiles-daemon as it conflicts with TLP
   services.power-profiles-daemon.enable = false;
 
-  # CPU Power Management
   powerManagement = {
     enable = true;
     # Note: cpuFreqGovernor is managed by TLP, not set here to avoid conflicts
     powertop.enable = true;
   };
 
-  # PowerTOP auto-tune at boot
   systemd.services.powertop-autotune = {
     description = "PowerTOP auto-tune";
     wantedBy = [ "multi-user.target" ];
@@ -181,7 +169,6 @@
     };
   };
 
-  # Runtime PM rules for maximum power saving
   services.udev.extraRules = ''
     # Enable runtime PM for PCI devices
     ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
@@ -199,7 +186,6 @@
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto"
   '';
 
-  # Printing with CUPS
   services.printing = {
     enable = true;
     drivers = with pkgs; [ 
@@ -211,14 +197,12 @@
     ];
   };
   
-  # Enable printer discovery
   services.avahi = {
     enable = true;
     nssmdns4 = true;
     openFirewall = true;
   };
 
-  # Define user account
   users.users.tundra = {
     isNormalUser = true;
     description = "tundra";
@@ -226,17 +210,14 @@
     shell = pkgs.zsh;
   };
 
-  console.keyMap = "colemak";
+  console.keyMap = "us";
 
   services.xserver = {
     xkb = {
-      layout = "us,us";
-      variant = "colemak,";
-      options = "grp:alt_shift_toggle";
+      layout = "us";
     };
   };
 
-  # System packages including SDDM theme and cursor theme
   environment.systemPackages = with pkgs; [
     nano
     wget
@@ -254,34 +235,27 @@
     yubico-pam
     pam_u2f
     mullvad-vpn
-    # Printing utilities
     cups
     system-config-printer    # GUI for printer management
   ];
 
-  # Enable Docker
   virtualisation.docker.enable = true;
 
-  # Enable zsh
   programs.zsh.enable = true;
 
-  # Enable SSH
   services.openssh.enable = true;
   
-  # Nix settings
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
   };
 
-  # Garbage collection
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
 
-  # Fonts
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code

@@ -10,6 +10,7 @@
     ../../modules/darwin/terminal.nix
     ../../modules/darwin/sketchybar.nix
     ../../modules/darwin/hammerspoon.nix
+    ../../modules/darwin/launcher.nix
   ];
 
   home.stateVersion = "25.05";
@@ -20,7 +21,6 @@
     config.lib.file.mkOutOfStoreSymlink
       "/Users/elias/.config/nix-config/modules/darwin/karabiner";
 
-  # AeroSpace — i3-style tiling window manager
     home.file.".config/aerospace/aerospace.toml".text = ''
       # AeroSpace — https://nikitabobko.github.io/AeroSpace/
       # Minimalist SketchyBar integration: trigger on workspace change
@@ -28,14 +28,13 @@
       config-version = 2
       start-at-login = true
 
-      # Gaps — fixed uniform for 1920x1200 HiDPI (built-in acts like monitor)
-      # 8 logical = 16 physical on Retina 2x, sits 4px below pill bottom (pill 4+32=36)
-      gaps.inner.horizontal = 8
-      gaps.inner.vertical = 8
-      gaps.outer.left = 8
-      gaps.outer.bottom = 8
+      # Gaps — 16px all around so JankyBorders 6px doesn't clip edge, top 44 still clears pill
+      gaps.inner.horizontal = 16
+      gaps.inner.vertical = 16
+      gaps.outer.left = 16
+      gaps.outer.bottom = 16
       gaps.outer.top = 44
-      gaps.outer.right = 8
+      gaps.outer.right = 16
 
       # Default layout for new workspaces
       default-root-container-layout = 'tiles'
@@ -43,14 +42,14 @@
       # Auto-assign apps to workspaces (alt+1..0)
       persistent-workspaces = ['1-browsers', '2-chat', '3-mail', '4-code', '5-terminal', '6-docs', '7-media', '8-games', '9-security', '10-vms']
       on-window-detected = [
-        # 1 - Browsers
-        { if = 'test %{app-bundle-id} = org.mozilla.firefox || test %{app-bundle-id} = com.apple.Safari || test %{app-bundle-id} = com.browseros.BrowserClaw', run = 'move-node-to-workspace 1-browsers' },
+        # 1 - Browsers — Safari only (Firefox removed)
+        { if = 'test %{app-bundle-id} = com.apple.Safari || test %{app-bundle-id} = com.browseros.BrowserClaw', run = 'move-node-to-workspace 1-browsers' },
         # 2 - Chat
         { if = 'test %{app-bundle-id} = com.hnc.Discord || test %{app-bundle-id} = com.automattic.beeper.desktop || test %{app-bundle-id} = com.microsoft.teams2 || test %{app-bundle-id} = com.apple.FaceTime', run = 'move-node-to-workspace 2-chat' },
         # 3 - Mail / news
         { if = 'test %{app-bundle-id} = de.tutao.tutanota || test %{app-bundle-id} = com.ranchero.NetNewsWire-Evergreen || test %{app-bundle-id} = com.apple.mail || test %{app-bundle-id} = com.apple.news', run = 'move-node-to-workspace 3-mail' },
-        # 4 - Code / AI
-        { if = 'test %{app-bundle-id} = com.vscodium || test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.nousresearch.hermes || test %{app-bundle-id} = macos-wakatime.WakaTime', run = 'move-node-to-workspace 4-code' },
+        # 4 - Code / AI — Zed + AI (Ghostty stays in 5-terminal)
+        { if = 'test %{app-bundle-id} = dev.zed.Zed || test %{app-bundle-id} = ai.opencode.desktop || test %{app-bundle-id} = com.anthropic.claudefordesktop || test %{app-bundle-id} = com.nousresearch.hermes || test %{app-bundle-id} = macos-wakatime.WakaTime', run = 'move-node-to-workspace 4-code' },
         # 5 - Terminal / SSH — Ghostty is com.mitchellh.ghostty
         { if = 'test %{app-bundle-id} = com.apple.Terminal || test %{app-bundle-id} = com.termius-dmg.mac || test %{app-bundle-id} = com.mitchellh.ghostty', run = 'move-node-to-workspace 5-terminal' },
         # 6 - Docs / notes
@@ -68,17 +67,37 @@
       ]
 
       [mode.main.binding]
-      # Focus (caps lock = hyper = cmd+ctrl)
+      # Focus — vim hjkl + arrows (hyper = caps cmd+ctrl, keep both for transition)
+      cmd-ctrl-h = 'focus left'
+      cmd-ctrl-j = 'focus down'
+      cmd-ctrl-k = 'focus up'
+      cmd-ctrl-l = 'focus right'
       cmd-ctrl-left = 'focus left'
       cmd-ctrl-down = 'focus down'
       cmd-ctrl-up = 'focus up'
       cmd-ctrl-right = 'focus right'
 
-      # Move windows
+      # Move windows — vim + arrows
+      cmd-ctrl-shift-h = 'move left'
+      cmd-ctrl-shift-j = 'move down'
+      cmd-ctrl-shift-k = 'move up'
+      cmd-ctrl-shift-l = 'move right'
       cmd-ctrl-shift-left = 'move left'
       cmd-ctrl-shift-down = 'move down'
       cmd-ctrl-shift-up = 'move up'
       cmd-ctrl-shift-right = 'move right'
+
+      # App launcher — hyper+space -> Raycast rofi, hyper+slash -> Ghostty fzf launcher (hyper+d kept for macOS Dictionary)
+      cmd-ctrl-space = 'exec-and-forget open -a Raycast'
+      cmd-ctrl-slash = 'exec-and-forget open -na Ghostty.app --args -e ~/.local/bin/app-launcher'
+      # Shortcuts — Safari/Zed/nano/music/video
+      cmd-ctrl-b = 'exec-and-forget open -a Safari'
+      cmd-ctrl-c = 'exec-and-forget open -a Zed'
+      cmd-ctrl-n = 'exec-and-forget open -na Ghostty.app --args -e nano'
+      cmd-ctrl-m = 'exec-and-forget open -na Ghostty.app --args -e /opt/homebrew/bin/rmpc'
+      cmd-ctrl-v = 'exec-and-forget open -a GrayJay'
+      cmd-ctrl-comma = 'exec-and-forget open -b com.apple.systempreferences'
+      cmd-ctrl-o = 'exec-and-forget open -a Obsidian'
 
       # Workspaces
       cmd-ctrl-1 = 'workspace 1-browsers'
@@ -104,9 +123,8 @@
       cmd-ctrl-shift-9 = 'move-node-to-workspace 9-security'
       cmd-ctrl-shift-0 = 'move-node-to-workspace 10-vms'
 
-      # Layouts / window ops (i3-like)
+      # Layouts / window ops — tiles only, no accordion
       cmd-ctrl-t = 'layout tiles'
-      cmd-ctrl-a = 'layout accordion'
       cmd-ctrl-f = 'fullscreen'
       cmd-ctrl-q = 'close'
       cmd-ctrl-w = 'close'
@@ -116,13 +134,27 @@
       cmd-ctrl-shift-tab = 'focus dfs-prev'
     '';
 
-  # macOS-specific shell aliases
+  # mpd daemon lifecycle (binary from homebrew.brews in configuration.nix); Home Manager bootstraps on switch
+  launchd.agents."com.elias.mpd" = {
+    enable = true;
+    config = {
+      Label = "com.elias.mpd";
+      ProgramArguments = [ "/opt/homebrew/bin/mpd" "--no-daemon" ];
+      KeepAlive = true;
+      RunAtLoad = true;
+      WorkingDirectory = "/Users/elias";
+      EnvironmentVariables = { PATH = "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"; };
+      StandardOutPath = "/tmp/mpd.out";
+      StandardErrorPath = "/tmp/mpd.err";
+      ProcessType = "Interactive";
+    };
+  };
+
   programs.zsh.shellAliases = {
     darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
     darwin-update = "cd ~/.config/nix-config && nix flake update && sudo darwin-rebuild switch --flake .#macbook";
   };
 
-  # macOS-specific update function
   programs.zsh.initContent = lib.mkOrder 600 ''
     update-all() {
         echo "Updating Nix flake..."

@@ -4,25 +4,23 @@
   system.stateVersion = 6;
   system.primaryUser = "elias";
 
-  # Nix settings
   nix.enable = false;
   nix.extraOptions = ''
     extra-platforms = x86_64-darwin aarch64-darwin
   '';
 
-  # System-wide packages (only essential system tools)
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.isLinux then [ gutenprint ] else []; in [
     cups
     ghostscript
     hermes-agent
   ] ++ extraPrinting;
 
-  # Homebrew integration
   homebrew = {
     enable = true;
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap";
+      # cleanup "none": "zap" uninstalled unlisted brews (mpdscribble, rust, mpc) and aborted switches
+      cleanup = "none";
     };
     taps = [ ];  # declared in extraConfig below with `trusted: true`
     brews = [
@@ -32,11 +30,17 @@
       "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       # Apple Reminders CLI + iMessage CLI (steipete/tap)
       "imsg" "remindctl"
+      # Now Playing widget for sketchybar (covers Music, Spotify, YT Music, browsers)
+      "nowplaying-cli"
+      # mpd/rmpc/mpdscribble/mpc: brew-declared (not nix packages, to skip darwin builds); daemon lifecycle in home.nix
+      "mpd" "rmpc" "mpdscribble" "mpc"
+      # rust: needed for Rust builds (airpods-cli); declared so it survives rebuilds
+      "rust"
     ];
     casks = [
-      "cloudflare-warp" "lulu" "firefox" "keepassxc"
+      "cloudflare-warp" "lulu" "keepassxc"
       "obsidian" "pearcleaner" "raycast" "steam" "yubico-authenticator"
-      "vscodium" "iina" "karabiner-elements" "claude" "prismlauncher"
+      "iina" "karabiner-elements" "claude" "prismlauncher"
       "tuta-mail" "boring-notch" "pear-desktop"
       "beeper" "netnewswire" "macfuse"
       "veracrypt" "microsoft-teams"
@@ -68,7 +72,6 @@
       tap "anomalyco/tap", trusted: true
       tap "steipete/tap", trusted: true
       tap "nikitabobko/tap", trusted: true
-      # Mac App Store apps
       mas "Hush Nag Blocker", id: 1544743900
       mas "uBlock Origin Lite", id: 6745342698
       mas "Obsidian Web Clipper", id: 6720708363
@@ -116,7 +119,6 @@
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  # Fonts
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
@@ -128,25 +130,17 @@
   };
 
   services.jankyborders = {
-    enable = true;
-    active_color = "0xff116FAE";
-    inactive_color = "0xff06467E";
-    width = 6.0;
-    style = "round";
-    hidpi = true;
+    enable = false;
   };
 
-  # User
   users.users.elias = {
     name = "elias";
     home = "/Users/elias";
     shell = pkgs.zsh;
   };
 
-  # Add system PATH for Homebrew
   environment.systemPath = [ "/opt/homebrew/bin" "/opt/homebrew/sbin" ];
 
-  # Enable zsh at system level
   programs.zsh.enable = true;
 
   home-manager.backupFileExtension = "backup";

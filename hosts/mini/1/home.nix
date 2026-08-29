@@ -14,7 +14,6 @@
   xdg.enable = true;
 
   home.packages = with pkgs; [
-    # TUI / CLI
     tmux
     btop
     git
@@ -25,7 +24,6 @@
     entr
     just
 
-    # Shell / utilities
     zsh
     starship
     fzf
@@ -34,10 +32,8 @@
     gnupg
     yubikey-manager
 
-    # Networking / helpers
     impala
 
-    # Nix helpers
     nix-tree
     nixpkgs-fmt
     nix-output-monitor
@@ -57,13 +53,11 @@
       wifi = "bash ~/wifi-setup.sh";
       usb  = "bash ~/usb-mount.sh";
 
-      # Docker convenience aliases
       dps = "docker ps";
       dcu = "docker compose up -d";
       dcd = "docker compose down";
       dcl = "docker compose logs -f";
 
-      # Home-manager / flake aliases
       hms = "home-manager switch --flake ~/.config/nix-config#mini1";
       hmu = "cd ~/.config/nix-config && nix flake update nixpkgs-unstable && home-manager switch --flake .#mini1";
     };
@@ -93,7 +87,6 @@
     executable = true;
   };
 
-  # Minimal git config defaults
   programs.git = {
     enable = true;
     userName = "elias";

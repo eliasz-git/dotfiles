@@ -35,9 +35,10 @@
         ./hosts/darwin/configuration.nix
         home-manager.darwinModules.home-manager
         {
-          home-manager.useGlobalPkgs   = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.elias     = import ./hosts/darwin/home.nix;
+          home-manager.useGlobalPkgs       = true;
+          home-manager.useUserPackages     = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.users.elias         = import ./hosts/darwin/home.nix;
         }
       ];
     };
@@ -56,12 +57,6 @@
           home-manager.users.tundra            = import ./hosts/nixos/home.nix;
         }
       ];
-    };
-
-    # ── Artix Linux — OpenRC, Everforest, nixpkgs 25.05 ──────────
-    homeConfigurations.artix = home-manager.lib.homeManagerConfiguration {
-      pkgs    = linuxPkgs;
-      modules = [ ./hosts/artix/home.nix ];
     };
 
     # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
