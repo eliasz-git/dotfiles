@@ -19,7 +19,7 @@
     bluetuith netop
     wl-clipboard grim slurp swappy
     dunst rofi-wayland swaybg
-    librewolf brave thunderbird vscodium signal-desktop
+    librewolf thunderbird vscodium signal-desktop
     bitwarden obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
     steam calibre discord gramps rustdesk tailscale docker
@@ -221,7 +221,7 @@
 
       binds = with config.lib.niri.actions; {
         "Mod+G".action = spawn "ghostty";
-        "Mod+B".action = spawn "brave";
+        "Mod+B".action = spawn "librewolf";
         "Mod+U".action = spawn "vscodium";
         "Mod+M".action = spawn "rmpc";            # music (rmpc)
         "Mod+Return".action = spawn "thunar";

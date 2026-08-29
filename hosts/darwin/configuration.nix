@@ -50,7 +50,7 @@
       # rebuild can restore them without re-downloading DMGs
       "calibre" "discord" "gramps"
       "burn" "rustdesk" "tailscale-app"
-      "termius" "zed" "balenaetcher" "tinymediamanager"
+      "termius" "balenaetcher" "tinymediamanager" "vscodium"
       "browseros" "wakatime"
       # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
