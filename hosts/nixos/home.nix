@@ -42,7 +42,7 @@
   programs.zsh.initContent = lib.mkOrder 600 ''
     eval "$(zoxide init zsh)"
     eval "$(thefuck --alias)"
-    export PATH="$HOME/.npm-global/bin:$PATH"
+    export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
 
     update-all() {
         echo "Updating Nix flake..."
@@ -820,4 +820,51 @@
     };
     Install = { WantedBy = [ "default.target" ]; };
   };
+
+  # sconnect — fuzzy SSH host picker (same as macOS). Hosts: ~/.config/ssh/devices;
+  # add a host with: sconnect --add "name user@host"
+  home.file.".local/bin/sconnect".text = ''
+    #!/usr/bin/env bash
+    # sconnect — fuzzy SSH host picker. Hosts: ~/.config/ssh/devices
+    # Format (one per line, # = comment):  name user@host[:port] [identity_file]
+    # Add a host:  sconnect --add "name user@host"
+    set -euo pipefail
+
+    DEVICES="''${SSH_DEVICES:-$HOME/.config/ssh/devices}"
+
+    if [ "''${1:-}" = "--add" ]; then
+      shift
+      printf '%s\n' "$*" >> "$DEVICES"
+      echo "added: $*"
+      exit 0
+    fi
+
+    [ -f "$DEVICES" ] || { echo "no devices file: $DEVICES" >&2; exit 1; }
+
+    pick="$(grep -vE '^[[:space:]]*#' "$DEVICES" | grep -vE '^[[:space:]]*$' | fzf --prompt='ssh > ')"
+    [ -n "$pick" ] || exit 0
+
+    read -r _ userhost ident <<<"$pick"
+    port=""
+    if [[ "$userhost" == *:* ]]; then
+      port="''${userhost##*:}"
+      userhost="''${userhost%:*}"
+    fi
+
+    args=()
+    [ -n "''${port:-}" ] && args+=(-p "$port")
+    [ -n "''${ident:-}" ] && args+=(-i "$ident")
+    exec ssh "''${args[@]}" "$userhost"
+  '';
+
+  home.file.".config/ssh/devices".text = ''
+    # sconnect devices — one host per line:  name user@host[:port] [identity_file]
+    # add more any time:  sconnect --add "name user@host"
+    # (examples below — edit addresses/users to match your network)
+    macbook  elias@macbook.local
+    icarus    elias@icarus.local
+    mini1     elias@mini1.local
+    mini2     elias@mini2.local
+    router    admin@192.168.1.1
+  '';
 }
