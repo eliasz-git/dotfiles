@@ -150,6 +150,14 @@
     };
   };
 
+  # Set the desktop wallpaper on every switch (idempotent, best-effort)
+  home.activation.setWallpaper = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    WALLPAPER="$HOME/.config/nix-config/wallpapers/wallpaper.jpg"
+    if [ -f "$WALLPAPER" ]; then
+      /usr/bin/osascript -e "tell application \"System Events\" to set picture of every desktop to POSIX file \"$WALLPAPER\"" || true
+    fi
+  '';
+
   programs.zsh.shellAliases = {
     darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
     darwin-update = "cd ~/.config/nix-config && nix flake update && sudo darwin-rebuild switch --flake .#macbook";

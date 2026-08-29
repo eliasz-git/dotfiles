@@ -207,7 +207,7 @@
       spawn-at-startup = [
         { command = [ "waybar" ]; }
         { command = [ "dunst" ]; }
-        { command = [ "sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/everforest-adhd.jpg -m fill" ]; }
+        { command = [ "sh" "-c" "swaybg -i ~/.config/nix-config/wallpapers/wallpaper.jpg -m fill" ]; }
         { command = [ "signal-desktop" ]; }
       ];
 
