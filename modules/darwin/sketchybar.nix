@@ -12,7 +12,7 @@
       sketchybar --add event aerospace_workspace_change
       for sid in 1-browsers 2-chat 3-mail 4-code 5-terminal 6-docs 7-media 8-games 9-security 10-vms; do num="''${sid%%-*}"; [ "$num" = "10" ] && display="0" || display="$num"; sketchybar --add item "workspace.$sid" left --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=0x40116FAE background.corner_radius=6 background.height=22 background.padding_left=2 background.padding_right=2 script="$PLUGIN_DIR/aerospace.sh" click_script="aerospace workspace $sid" --subscribe "workspace.$sid" aerospace_workspace_change; done
       sketchybar --add item front_app center --set front_app icon.drawing=off label.max_chars=28 label.color=0xff7E8A94 script="$PLUGIN_DIR/front_app.sh" --subscribe front_app front_app_switched
-      sketchybar --add item media center --set media icon="" icon.color=0xff68A2C6 label.max_chars=0 scroll_texts=on label.color=0xff68A2C6 drawing=off update_freq=5 script="$PLUGIN_DIR/media.sh" click_script="$PLUGIN_DIR/media_click.sh"
+      sketchybar --add item media center --set media icon="" icon.color=0xff68A2C6 label.max_chars=45 scroll_texts=on label.color=0xff68A2C6 drawing=off update_freq=5 script="$PLUGIN_DIR/media.sh" click_script="$PLUGIN_DIR/media_click.sh"
       # Right: cpu, mem, net (tailscale/warp), battery, volume, clock
       sketchybar --add item cpu right --set cpu update_freq=5 icon="" icon.color=0xff68A2C6 script="$PLUGIN_DIR/cpu.sh"
       sketchybar --add item mem right --set mem update_freq=10 icon="" icon.color=0xff68A2C6 script="$PLUGIN_DIR/memory.sh"
