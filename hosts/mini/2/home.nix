@@ -49,7 +49,7 @@
   programs.git = {
     enable = true;
     userName = "elias";
-    userEmail = "elias@example.com";
+    userEmail = "eliaspublic@icloud.com";
   };
 
   # slskd — headless Soulseek daemon (web UI :5030). Only one instance should

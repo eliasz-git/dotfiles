@@ -110,7 +110,7 @@
   # ── Reverse proxy ───────────────────────────────────────────────
   services.caddy = {
     enable = false; # enable when you add domains; auto-HTTPS via Tailscale or ACME
-    email = "elias@example.com";
+    email = "eliaspublic@icloud.com";
     # virtualHosts."mini1.your-tailnet.ts.net".extraConfig = ''
     #   reverse_proxy localhost:9090
     # '';
