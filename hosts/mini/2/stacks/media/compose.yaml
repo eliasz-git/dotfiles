@@ -158,7 +158,7 @@ services:
       - immich-redis
     volumes:
       - ./data/immich:/usr/src/app/upload
-      - /mnt/storage/media/photos:/usr/src/app/external:ro
+      - /mnt/storage/photos:/usr/src/app/external:ro
     environment:
       - TZ=America/New_York
       - DB_HOSTNAME=immich-postgres
