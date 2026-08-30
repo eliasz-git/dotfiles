@@ -47,6 +47,7 @@
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system  = linuxSystem;
       pkgs    = linuxPkgs;
+      config  = { allowUnfree = true; };
       modules = [
         ./hosts/nixos/configuration.nix
         home-manager.nixosModules.home-manager
