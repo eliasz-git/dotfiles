@@ -1,0 +1,37 @@
+---
+- Media:
+    - Jellyfin:
+        href: https://media.adal-matrix.ts.net
+        description: Jellyfin Media Server
+    - Navidrome:
+        href: https://music.adal-matrix.ts.net
+        description: Navidrome Music
+    - Immich Photos:
+        href: https://photos.adal-matrix.ts.net
+        description: Immich Photos on 2TB
+- Arr:
+    - Prowlarr:
+        href: http://mini2:9696
+        description: Indexer Manager
+    - Sonarr:
+        href: http://mini2:8989
+        description: TV Shows
+    - Radarr:
+        href: http://mini2:7878
+        description: Movies
+    - Jellyseerr:
+        href: http://mini2:5055
+        description: Requests
+    - RDT-Client:
+        href: http://mini2:6500
+        description: TorBox Bridge
+- Tools:
+    - Homepage:
+        href: https://home.adal-matrix.ts.net
+        description: Dashboard
+    - Cockpit:
+        href: https://mini2:9090
+        description: System Management
+    - ARM:
+        href: http://mini2:8080
+        description: DVD Auto Rip
