@@ -12,6 +12,12 @@
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "us";
 
+  environment.interactiveShellInit = ''
+    if [ "$TERM" = "xterm-ghostty" ]; then
+      export TERM=xterm-256color
+    fi
+  '';
+
   # ── Networking ──────────────────────────────────────────────────
   networking.networkmanager.enable = true;
   # Static .76 if you want it pinned; otherwise DHCP reservation on router.

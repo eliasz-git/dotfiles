@@ -9,11 +9,11 @@
   # boot.initrd.kernelModules = [];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
+    device = "/dev/disk/by-label/NIXOS";
     fsType = "ext4";
   };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
+    device = "/dev/disk/by-label/BOOT";
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
   };
