@@ -47,21 +47,6 @@
   programs.zsh.enable = true;
   security.sudo.wheelNeedsPassword = true;
 
-  # ── Storage ─────────────────────────────────────────────────────
-  # 256GB NVMe = / . 2TB external = /mnt/storage/media
-  # NTFS is common on externals — NixOS can read it, but ext4 is better long-term.
-  # If your 2TB is NTFS today, this will mount read-write via ntfs3.
-  fileSystems."/mnt/storage" = {
-    device = "/dev/disk/by-label/STORAGE"; # `blkid` and set label, or use /dev/disk/by-uuid/...
-    fsType = lib.mkDefault "ext4";
-    options = [ "nofail" "x-systemd.automount" "noatime" ];
-  };
-  # Optional subbinds — uncomment if you keep the old Homelab layout:
-  # fileSystems."/mnt/storage/media" = {
-  #   device = "/mnt/storage/media";
-  #   options = [ "bind" ];
-  # };
-
   # ── Memory — 16GB now, spare 16GB laptop DDR4 stick would make 32GB (405 G4 supports 2x16). ──
   # You said don't count on it — so default is 16GB-safe with zram. If you do add it,
   # just bump `memoryPercent = 15` or disable zram.
