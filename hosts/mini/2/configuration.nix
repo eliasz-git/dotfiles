@@ -117,6 +117,7 @@
   # ── Tailscale Serve — persistent svc: hosts for Jellyfin/Navidrome ──
   # Persists `tailscale serve` across reboots (state is in /var/lib/tailscale, this re-applies on boot).
   # Requires tags tag:media/tag:music + ACL nodeAttrs funnel + grants svc:media/svc:music (already added).
+  # Use the same tailscale package as the service (unstable 1.102.x, not stable 1.82.x which lacks --service svc:)
   systemd.services.tailscale-serve-media = {
     description = "Tailscale serve svc:media → Jellyfin 8096";
     after = [ "tailscaled.service" "network-online.target" ];
@@ -125,8 +126,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --service svc:media --https 443 --bg 8096";
-      ExecStop = "${pkgs.tailscale}/bin/tailscale serve --service svc:media --https 443 off";
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:media --https 443 --bg 8096";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:media --https 443 off";
     };
   };
   systemd.services.tailscale-serve-music = {
@@ -137,8 +138,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --service svc:music --https 443 --bg 4533";
-      ExecStop = "${pkgs.tailscale}/bin/tailscale serve --service svc:music --https 443 off";
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 --bg 4533";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 off";
     };
   };
 
