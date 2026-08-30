@@ -153,6 +153,7 @@ services:
     volumes:
       - ./data/arm:/home/arm
       - ./data/arm/logs:/home/arm/logs
+      - ./data/arm/config:/etc/arm/config
       - /mnt/storage/movies:/home/arm/media/movies:rw
       - /mnt/storage/music:/home/arm/media/music:rw
       - /mnt/storage/tvshows:/home/arm/media/tvshows:rw
