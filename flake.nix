@@ -47,8 +47,8 @@
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system  = linuxSystem;
       pkgs    = linuxPkgs;
-      config  = { allowUnfree = true; };
       modules = [
+        { services.tailscale.package = unstablePkgs.tailscale; } # latest 1.102.x vs stable 1.82.x
         ./hosts/nixos/configuration.nix
         home-manager.nixosModules.home-manager
         {
@@ -67,6 +67,7 @@
       system = linuxSystem;
       pkgs   = linuxPkgs;
       modules = [
+        { services.tailscale.package = unstablePkgs.tailscale; } # latest 1.102.x vs stable 1.82.x
         ./hosts/mini/1/configuration.nix
         home-manager.nixosModules.home-manager
         {
@@ -81,6 +82,7 @@
       system = linuxSystem;
       pkgs   = linuxPkgs;
       modules = [
+        { services.tailscale.package = unstablePkgs.tailscale; } # latest 1.102.x vs stable 1.82.x
         ./hosts/mini/2/configuration.nix
         home-manager.nixosModules.home-manager
         {
