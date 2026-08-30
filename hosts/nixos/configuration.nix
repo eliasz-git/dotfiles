@@ -25,6 +25,12 @@
   time.timeZone = "America/New_York";  # Change to your timezone
   i18n.defaultLocale = "en_US.UTF-8";
 
+  environment.interactiveShellInit = ''
+    if [ "$TERM" = "xterm-ghostty" ]; then
+      export TERM=xterm-256color
+    fi
+  '';
+
   programs.niri.enable = true;
 
   # Enable SDDM for Wayland login with proper theme

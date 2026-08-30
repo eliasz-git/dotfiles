@@ -49,7 +49,7 @@
   programs.git = {
     enable = true;
     userName = "tundra-node";
-    userEmail = "eliaspublic@icloud.com";
+    userEmail = "117379918+tundra-node@users.noreply.github.com";
   };
 
   # slskd — headless Soulseek daemon (web UI :5030). Only one instance should

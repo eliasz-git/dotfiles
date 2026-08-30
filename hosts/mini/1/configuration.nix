@@ -15,6 +15,13 @@
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "us";
 
+  environment.interactiveShellInit = ''
+    if [ "$TERM" = "xterm-ghostty" ]; then
+      export TERM=xterm-256color
+    fi
+  '';
+
+
   # ── Networking ──────────────────────────────────────────────────
   # Static .75 per your homelab docs. If your router does DHCP reservation,
   # just leave NetworkManager dhcp and reserve .75 there — simpler.
@@ -81,10 +88,12 @@
     autoPrune.enable = true;
     autoPrune.dates = "weekly";
   };
+  virtualisation.oci-containers.backend = "docker";
   # lets `docker compose` work without separate package (new plugin)
   environment.systemPackages = with pkgs; [
     git vim nano htop btop curl wget
     docker-compose
+    smartmontools hdparm
   ];
 
   # Cockpit for web management at :9090 (optional, light)
