@@ -142,6 +142,16 @@ services:
     container_name: immich-redis
     restart: unless-stopped
 
+  rdt-client:
+    image: rogerfar/rdtclient:latest
+    container_name: rdt-client
+    ports: ["6500:6500"]
+    volumes:
+      - ./data/rdt-client:/data
+    environment:
+      - TZ=America/New_York
+    restart: unless-stopped
+
   immich:
     <<: *common
     image: ghcr.io/immich-app/immich-server:release

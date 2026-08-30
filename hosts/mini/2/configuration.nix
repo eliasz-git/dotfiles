@@ -163,6 +163,7 @@
     2283 # immich
     4533 # navidrome
     9090 # cockpit
+    6500 # rdt-client (TorBox qBittorrent bridge for *arr)
     9696 8989 7878 5055 9091 # prowlarr/sonarr/radarr/jellyseerr/transmission
   ];
 
