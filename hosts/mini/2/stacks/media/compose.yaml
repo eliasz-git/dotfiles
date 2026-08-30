@@ -23,7 +23,7 @@ services:
       - ./data/gluetun:/gluetun
     env_file: [.env]
     environment:
-      - DOT=off
+      - DNS_OVER_TLS=off
     healthcheck:
       test: ["CMD-SHELL", "wg show || exit 1"]
       interval: 30s
@@ -133,7 +133,7 @@ services:
       - /mnt/storage/media/music:/music:ro
 
   immich-postgres:
-    image: postgres:16
+    image: tensorchord/pgvecto-rs:pg16-v0.3.0
     container_name: immich-postgres
     restart: unless-stopped
     environment:
