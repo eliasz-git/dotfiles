@@ -114,6 +114,34 @@
     port = 9090;
   };
 
+  # ── Tailscale Serve — persistent svc: hosts for Jellyfin/Navidrome ──
+  # Persists `tailscale serve` across reboots (state is in /var/lib/tailscale, this re-applies on boot).
+  # Requires tags tag:media/tag:music + ACL nodeAttrs funnel + grants svc:media/svc:music (already added).
+  systemd.services.tailscale-serve-media = {
+    description = "Tailscale serve svc:media → Jellyfin 8096";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --service svc:media --https 443 --bg 8096";
+      ExecStop = "${pkgs.tailscale}/bin/tailscale serve --service svc:media --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-music = {
+    description = "Tailscale serve svc:music → Navidrome 4533";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --service svc:music --https 443 --bg 4533";
+      ExecStop = "${pkgs.tailscale}/bin/tailscale serve --service svc:music --https 443 off";
+    };
+  };
+
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
     22    # ssh
