@@ -124,7 +124,7 @@ services:
       - /mnt/storage/music:/music:ro
 
   immich-postgres:
-    image: tensorchord/pgvecto-rs:pg16-v0.3.0
+    image: ghcr.io/immich-app/postgres:16-vector
     container_name: immich-postgres
     restart: unless-stopped
     environment:
