@@ -191,6 +191,7 @@ services:
     ports: ["6500:6500"]
     volumes:
       - ./data/rdt-client:/data
+      - /mnt/storage/downloads:/downloads
     environment:
       - TZ=America/New_York
     restart: unless-stopped
