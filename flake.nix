@@ -60,8 +60,6 @@
       ];
     };
 
-<<<<<<< HEAD
-=======
     # ── Homelab: headless NixOS minis (Tailscale, Docker) ────────────
     #  mini1 — HP ProDesk 600 G1 DM (i3-4160T) — infra, 192.168.1.75
     #  mini2 — HP ProDesk 405 G4 DM (R5 PRO 2400GE) — media, 192.168.1.76
@@ -100,7 +98,6 @@
       modules = [ ./hosts/artix/home.nix ];
     };
 
->>>>>>> ba7933859e0d1e08ed694970677d1f5780c30e01
     # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
     homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {
       pkgs = linuxPkgs;
