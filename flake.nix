@@ -91,30 +91,5 @@
         }
       ];
     };
-
-    # ── Artix Linux — OpenRC, Everforest, nixpkgs 25.05 ──────────
-    homeConfigurations.artix = home-manager.lib.homeManagerConfiguration {
-      pkgs    = linuxPkgs;
-      modules = [ ./hosts/artix/home.nix ];
-    };
-
-    # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
-    homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {
-      pkgs = linuxPkgs;
-      modules = [ ./hosts/mini/2/home.nix ];
-    };
-
-    # ── Alpine Linux — OpenRC, Gruvbox Dark, nixpkgs UNSTABLE ────
-    # Uses unstable for latest package versions (neovim, starship, etc.)
-    # Ly display manager is intentionally kept in APK — it runs as root
-    # before any user nix profile is mounted, so can't come from nixpkgs.
-    #
-    # Apply:  home-manager switch --flake ~/.config/nix-config#alpine
-    # Update: hmu  (alias: nix flake update && home-manager switch ...)
-    homeConfigurations.mini1 = home-manager.lib.homeManagerConfiguration {
-      pkgs = unstablePkgs;
-      modules = [ ./hosts/mini/1/home.nix ];
-    };
-
   };
 }
