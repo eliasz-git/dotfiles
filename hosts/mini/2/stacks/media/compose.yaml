@@ -158,7 +158,7 @@ services:
       - /mnt/storage/tvshows:/home/arm/media/tvshows:rw
     environment:
       - ARM_UID=1000
-      - ARM_GID=1000
+      - ARM_GID=100
 
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
