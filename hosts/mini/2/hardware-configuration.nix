@@ -17,6 +17,13 @@
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
   };
+  # STAGED: HDD currently on mini2 — keep local mount for now.
+  # After moving 2TB to mini1 as NAS, replace with NFS mount:
+  # fileSystems."/mnt/storage" = {
+  #   device = "mini1:/mnt/storage";
+  #   fsType = "nfs";
+  #   options = [ "nofail" "x-systemd.automount" "noatime" "soft" "timeo=100" ];
+  # };
   fileSystems."/mnt/storage" = {
     device = "/dev/disk/by-uuid/04d77883-ba85-4992-af18-9862040416a2";
     fsType = "ext4";

@@ -62,13 +62,40 @@
 
   # ── Storage ─────────────────────────────────────────────────────
   # 256GB SSD at / . External mounts go under /mnt/storage if you reattach.
-  # The 2TB drive lives on mini2 — don't mount it here.
+  # The 2TB drive lives on mini2 for now — staged for move to mini1 as NAS.
   # Example placeholder for a future backup USB:
   # fileSystems."/mnt/backup" = {
   #   device = "/dev/disk/by-label/BACKUP";
   #   fsType = "ext4";
   #   options = [ "nofail" "x-systemd.automount" ];
   # };
+
+  # ── NAS — 2TB STORAGE staged for move mini2 → mini1 ───────────────
+  # After physically moving /dev/disk/by-uuid/04d77883-ba85-4992-af18-9862040416a2 from mini2 → mini1:
+  # 1. Uncomment fileSystems."/mnt/storage" in hardware-configuration.nix
+  # 2. sudo nixos-rebuild switch --flake .#mini1 ; sudo mkdir -p /mnt/storage && sudo mount /mnt/storage
+  # 3. sudo smbpasswd -a elias (set Samba password) ; sudo systemctl restart samba
+  # Currently STAGED — HDD stays on mini2, so these services are enabled but idle until mount exists.
+  services.nfs.server.enable = true;
+  services.nfs.server.exports = ''
+    /mnt/storage 192.168.1.0/24(rw,sync,no_subtree_check,no_root_squash) 100.64.0.0/10(rw,sync,no_subtree_check,no_root_squash)
+  '';
+  services.samba = {
+    enable = true;
+    openFirewall = true;
+    settings.global = {
+      workgroup = "WORKGROUP";
+      "server string" = "mini1 NAS";
+      security = "user";
+    };
+    shares.storage = {
+      path = "/mnt/storage";
+      browseable = "yes";
+      "read only" = "no";
+      "guest ok" = "no";
+      "valid users" = "elias";
+    };
+  };
 
   # ── Memory — 16GB (spare stick would be DDR3L only for this box, max 16GB anyway) ──
   zramSwap = {

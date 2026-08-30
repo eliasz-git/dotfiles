@@ -20,6 +20,13 @@
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
+  # STAGED for NAS move from mini2 → mini1 — uncomment after physically moving the 2TB drive:
+  # fileSystems."/mnt/storage" = {
+  #   device = "/dev/disk/by-uuid/04d77883-ba85-4992-af18-9862040416a2";
+  #   fsType = "ext4";
+  #   options = [ "nofail" "noatime" ];
+  # };
+
   swapDevices = [ ];
 
   networking.useDHCP = lib.mkDefault true;
