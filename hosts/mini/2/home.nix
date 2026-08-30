@@ -48,7 +48,7 @@
 
   programs.git = {
     enable = true;
-    userName = "elias";
+    userName = "tundra-node";
     userEmail = "eliaspublic@icloud.com";
   };
 
