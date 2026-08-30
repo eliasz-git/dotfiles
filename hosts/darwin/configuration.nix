@@ -131,7 +131,16 @@
   };
 
   services.jankyborders = {
-    enable = false;
+    enable = true;
+    width = 6.0;
+    hidpi = false; # 1920x1080 @1x - hidpi=on misaligns (left slightly, right off screen)
+    active_color = "0xff116FAE";
+    inactive_color = "0xff5E81AC"; # visible inactive to avoid ghost when window closed; use 0x00000000 for transparent
+    style = "round";
+    background_color = "0x00000000";
+    blur_radius = 0.0;
+    ax_focus = false; # off = faster, avoids lag/ghost when window removed; on = slower AX API
+    order = "below"; # below = more stable with AeroSpace tiling (above can leave ghost on close)
   };
 
   users.users.elias = {

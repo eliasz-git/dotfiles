@@ -55,6 +55,17 @@ services:
     volumes:
       - ./data/prowlarr:/config
 
+  flaresolverr:
+    <<: *common
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    ports: ["8191:8191"]
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=America/New_York
+
   sonarr:
     <<: *common
     image: lscr.io/linuxserver/sonarr:latest
