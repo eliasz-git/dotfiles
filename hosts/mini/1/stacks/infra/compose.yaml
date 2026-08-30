@@ -1,0 +1,38 @@
+# mini1 — infra stack (Haswell, headless)
+# Deploy: sudo docker compose -f /etc/stacks/infra/compose.yaml up -d
+# This is optional if you use Nix-native services (services.adguardhome / services.caddy).
+# Pick ONE path for DNS: either this AdGuard container or NixOS services.adguardhome.
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    restart: unless-stopped
+    # host net so :53 binds without extra config; or use bridge + ports 53:53
+    network_mode: host
+    volumes:
+      - ./data/adguard/work:/opt/adguardhome/work
+      - ./data/adguard/conf:/opt/adguardhome/conf
+    # visit http://mini1:3000 for setup, then DNS on 192.168.1.75:53
+
+  # uncomment if you want kuma on infra (light, useful):
+  # uptime-kuma:
+  #   image: louislam/uptime-kuma:1
+  #   container_name: uptime-kuma
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3001:3001"
+  #   volumes:
+  #     - ./data/kuma:/app/data
+
+  # caddy — only if you want tailnet https. NixOS services.caddy is cleaner.
+  # caddy:
+  #   image: caddy:2-alpine
+  #   container_name: caddy
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - ./data/caddy:/data
+  #     - ./data/caddy-config:/config

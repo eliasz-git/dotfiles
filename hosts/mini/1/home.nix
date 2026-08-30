@@ -59,8 +59,15 @@
       dcd = "docker compose down";
       dcl = "docker compose logs -f";
 
+<<<<<<< HEAD
+=======
+      # NixOS (new primary)
+      rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#mini1";
+      rbu = "cd ~/.config/nix-config && sudo nix flake update && sudo nixos-rebuild switch --flake .#mini1";
+      # Home-manager fallback
+>>>>>>> ba7933859e0d1e08ed694970677d1f5780c30e01
       hms = "home-manager switch --flake ~/.config/nix-config#mini1";
-      hmu = "cd ~/.config/nix-config && nix flake update nixpkgs-unstable && home-manager switch --flake .#mini1";
+      hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#mini1";
     };
 
     initExtra = ''

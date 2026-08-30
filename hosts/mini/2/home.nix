@@ -16,6 +16,7 @@
 
   xdg.enable = true;
 
+<<<<<<< HEAD
   # Homelab only — headless server / self-hosted tooling, no desktop or gaming GUI
   home.packages = with pkgs; [
     docker docker-compose
@@ -26,11 +27,36 @@
     btop
     yubikey-manager pass gnupg age sops
     restic rclone
+=======
+  # Headless — no desktop apps, no gaming. Server TUI only.
+  # Old desktop list (kitty/brave/thunderbird/vscodium/waybar/ollama/gamescope)
+  # removed per your call to run both minis headless.
+  home.packages = with pkgs; [
+    btop
+    powertop
+    bluetuith # bluetooth TUI if ever needed
+    wl-clipboard
+
+    # media debugging on headless
+    ffmpeg
+    mediainfo
+
+    # keep yubikey for ssh
+    yubikey-manager
+>>>>>>> ba7933859e0d1e08ed694970677d1f5780c30e01
   ];
 
   programs.zsh.shellAliases = {
-    hms = "cd ~/.config/nix-config && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#mini2";
-    hmu = "cd ~/.config/nix-config && nix flake update && nix run github:nix-community/home-manager/release-25.05 -- switch --flake .#mini2";
+    # NixOS (new primary)
+    rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#mini2";
+    rbu = "cd ~/.config/nix-config && sudo nix flake update && sudo nixos-rebuild switch --flake .#mini2";
+    # Home-manager fallback (still works standalone if you test without nixos)
+    hms = "home-manager switch --flake ~/.config/nix-config#mini2";
+    hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#mini2";
+    dps = "docker ps";
+    dcu = "docker compose up -d";
+    dcd = "docker compose down";
+    dcl = "docker compose logs -f";
   };
 
   programs.git = {
