@@ -15,17 +15,15 @@ services:
     cap_add: [NET_ADMIN]
     devices: [/dev/net/tun:/dev/net/tun]
     ports:
-      - 9091:9091  # transmission
-      # uncomment if you want *arr behind VPN as well (optional):
-      # - 9696:9696  # prowlarr via gluetun
-      # - 8989:8989  # sonarr via gluetun
-      # - 7878:7878  # radarr via gluetun
+      - 9091:9091  # transmission via VPN
+      - 9696:9696  # prowlarr via VPN
+      - 8989:8989  # sonarr via VPN
+      - 7878:7878  # radarr via VPN
     volumes:
       - ./data/gluetun:/gluetun
     env_file: [.env]
     environment:
       - DOT=off
-      # healthcheck helps dependants wait
     healthcheck:
       test: ["CMD-SHELL", "wg show || exit 1"]
       interval: 30s
@@ -47,13 +45,14 @@ services:
       - ./data/transmission:/config
       - /mnt/storage/media/downloads:/downloads
       - /mnt/storage/media/downloads:/watch
-    # no ports here — uses gluetun's 9091
 
   prowlarr:
     <<: *common
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
-    ports: ["9696:9696"]
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun: { condition: service_healthy }
     environment:
       - PUID=1000
       - PGID=1000
@@ -65,7 +64,9 @@ services:
     <<: *common
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
-    ports: ["8989:8989"]
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun: { condition: service_healthy }
     environment:
       - PUID=1000
       - PGID=1000
@@ -79,7 +80,9 @@ services:
     <<: *common
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
-    ports: ["7878:7878"]
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun: { condition: service_healthy }
     environment:
       - PUID=1000
       - PGID=1000
@@ -116,7 +119,6 @@ services:
       - /mnt/storage/media/tv:/media/tv:ro
       - /mnt/storage/media/movies:/media/movies:ro
       - /mnt/storage/media/music:/media/music:ro
-    # For VAAPI: Admin → Playback → VAAPI /dev/dri/renderD128
 
   navidrome:
     <<: *common
@@ -130,21 +132,37 @@ services:
       - ./data/navidrome:/data
       - /mnt/storage/media/music:/music:ro
 
+  immich-postgres:
+    image: postgres:16
+    container_name: immich-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: immich
+    volumes:
+      - ./data/immich-postgres:/var/lib/postgresql/data
+
+  immich-redis:
+    image: redis:7
+    container_name: immich-redis
+    restart: unless-stopped
+
   immich:
     <<: *common
     image: ghcr.io/immich-app/immich-server:release
     container_name: immich
     ports: ["2283:2283"]
-    # immich needs postgres + redis — use their compose or run separately.
-    # Simplest: keep immich in docker compose with its db (see immich docs).
-    # This placeholder runs the server only; add db/redis if you use immich.
-    # For now, comment out immich and follow https://immich.app/docs/install/docker-compose
-    # To enable, uncomment and add the postgres/redis services from upstream compose.
-    # For a quick start without immich, this stack works fine without it.
-    restart: "no"
-    profiles: ["with-immich"]
+    depends_on:
+      - immich-postgres
+      - immich-redis
     volumes:
       - ./data/immich:/usr/src/app/upload
       - /mnt/storage/media/photos:/usr/src/app/external:ro
     environment:
       - TZ=America/New_York
+      - DB_HOSTNAME=immich-postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE_NAME=immich
+      - REDIS_HOSTNAME=immich-redis
