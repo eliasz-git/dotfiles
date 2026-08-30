@@ -160,6 +160,18 @@ services:
       - ARM_UID=1000
       - ARM_GID=1000
 
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports: ["3000:3000"]
+    volumes:
+      - ./data/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+
   rdt-client:
     image: rogerfar/rdtclient:latest
     container_name: rdt-client

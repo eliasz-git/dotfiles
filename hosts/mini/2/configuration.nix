@@ -157,11 +157,24 @@
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 off";
     };
   };
+  systemd.services.tailscale-serve-home = {
+    description = "Tailscale serve svc:home → Homepage 3000";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:home --https 443 --bg 3000";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:home --https 443 off";
+    };
+  };
 
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
     22    # ssh
     80 443
+    3000 # homepage
     8096 8920 # jellyfin
     2283 # immich
     4533 # navidrome
