@@ -41,9 +41,12 @@
   users.users.elias = {
     isNormalUser = true;
     description = "elias";
-    extraGroups = [ "wheel" "networkmanager" "docker" "render" "video" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "render" "video" "optical" ];
     shell = pkgs.zsh;
   };
+
+  # ── Optical — DVD/Blu-ray auto-rip via ARM ────────────────────────
+  services.udev.extraRules = ''KERNEL=="sr[0-9]*", MODE="0666", GROUP="optical"'';
   programs.zsh.enable = true;
   security.sudo.wheelNeedsPassword = true;
 
@@ -162,6 +165,7 @@
     8096 8920 # jellyfin
     2283 # immich
     4533 # navidrome
+    8080 # ARM (Automatic Ripping Machine)
     9090 # cockpit
     6500 # rdt-client (TorBox qBittorrent bridge for *arr)
     9696 8989 7878 5055 9091 # prowlarr/sonarr/radarr/jellyseerr/transmission

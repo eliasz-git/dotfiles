@@ -142,6 +142,24 @@ services:
     container_name: immich-redis
     restart: unless-stopped
 
+  arm:
+    image: automaticrippingmachine/automatic-ripping-machine:latest
+    container_name: arm
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/sr0:/dev/sr0
+    ports: ["8080:8080"]
+    volumes:
+      - ./data/arm:/home/arm
+      - ./data/arm/logs:/home/arm/logs
+      - /mnt/storage/movies:/home/arm/media/movies:rw
+      - /mnt/storage/music:/home/arm/media/music:rw
+      - /mnt/storage/tvshows:/home/arm/media/tvshows:rw
+    environment:
+      - ARM_UID=1000
+      - ARM_GID=1000
+
   rdt-client:
     image: rogerfar/rdtclient:latest
     container_name: rdt-client
