@@ -144,6 +144,7 @@ services:
     image: ghcr.io/immich-app/immich-server:release
     container_name: immich
     ports: ["2283:2283"]
+    # serves photos at /mnt/storage/photos → https://photos.adal-matrix.ts.net via svc:photos
     depends_on:
       - immich-postgres
       - immich-redis

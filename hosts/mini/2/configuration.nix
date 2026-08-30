@@ -142,16 +142,16 @@
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 off";
     };
   };
-  systemd.services.tailscale-serve-immich = {
-    description = "Tailscale serve svc:immich → Immich 2283";
+  systemd.services.tailscale-serve-photos = {
+    description = "Tailscale serve svc:photos → Immich 2283";
     after = [ "tailscaled.service" "network-online.target" ];
     wants = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:immich --https 443 --bg 2283";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:immich --https 443 off";
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 --bg 2283";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 off";
     };
   };
 
