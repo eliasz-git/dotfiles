@@ -170,6 +170,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - HOMEPAGE_ALLOWED_HOSTS=home.adal-matrix.ts.net,mini2.adal-matrix.ts.net,localhost,127.0.0.1
     restart: unless-stopped
 
   rdt-client:
