@@ -194,6 +194,8 @@ services:
       - /mnt/storage/downloads:/downloads
     environment:
       - TZ=America/New_York
+      - PUID=1000
+      - PGID=1000
     restart: unless-stopped
 
   immich:
