@@ -43,8 +43,8 @@ services:
       - TZ=America/New_York
     volumes:
       - ./data/transmission:/config
-      - /mnt/storage/media/downloads:/downloads
-      - /mnt/storage/media/downloads:/watch
+      - /mnt/storage/downloads:/downloads
+      - /mnt/storage/downloads:/watch
 
   prowlarr:
     <<: *common
@@ -73,8 +73,8 @@ services:
       - TZ=America/New_York
     volumes:
       - ./data/sonarr:/config
-      - /mnt/storage/media/tv:/tv
-      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/tvshows:/tv
+      - /mnt/storage/downloads:/downloads
 
   radarr:
     <<: *common
@@ -89,8 +89,8 @@ services:
       - TZ=America/New_York
     volumes:
       - ./data/radarr:/config
-      - /mnt/storage/media/movies:/movies
-      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/movies:/movies
+      - /mnt/storage/downloads:/downloads
 
   jellyseerr:
     <<: *common
@@ -116,9 +116,9 @@ services:
     volumes:
       - ./data/jellyfin/config:/config
       - ./data/jellyfin/cache:/cache
-      - /mnt/storage/media/tv:/media/tv:ro
-      - /mnt/storage/media/movies:/media/movies:ro
-      - /mnt/storage/media/music:/media/music:ro
+      - /mnt/storage/tvshows:/media/tv:ro
+      - /mnt/storage/movies:/media/movies:ro
+      - /mnt/storage/music:/media/music:ro
 
   navidrome:
     <<: *common
@@ -130,7 +130,7 @@ services:
       - ND_LOGLEVEL=info
     volumes:
       - ./data/navidrome:/data
-      - /mnt/storage/media/music:/music:ro
+      - /mnt/storage/music:/music:ro
 
   immich-postgres:
     image: tensorchord/pgvecto-rs:pg16-v0.3.0
