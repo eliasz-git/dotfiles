@@ -16,18 +16,6 @@
 
   xdg.enable = true;
 
-<<<<<<< HEAD
-  # Homelab only — headless server / self-hosted tooling, no desktop or gaming GUI
-  home.packages = with pkgs; [
-    docker docker-compose
-    kubernetes helm k9s kubectx
-    terraform ansible
-    tailscale
-    ollama caddy slskd
-    btop
-    yubikey-manager pass gnupg age sops
-    restic rclone
-=======
   # Headless — no desktop apps, no gaming. Server TUI only.
   # Old desktop list (kitty/brave/thunderbird/vscodium/waybar/ollama/gamescope)
   # removed per your call to run both minis headless.
@@ -43,7 +31,6 @@
 
     # keep yubikey for ssh
     yubikey-manager
->>>>>>> ba7933859e0d1e08ed694970677d1f5780c30e01
   ];
 
   programs.zsh.shellAliases = {
