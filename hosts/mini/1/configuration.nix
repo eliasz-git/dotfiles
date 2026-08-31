@@ -173,7 +173,8 @@
     dates = "weekly";
     options = "--delete-older-than 14d";
   };
-  nixpkgs.config.allowUnfree = true;
+  # nixpkgs.config.allowUnfree moved to flake.nix linuxPkgs (import nixpkgs { config.allowUnfree = true; })
+  # nixpkgs.config.allowUnfree = true;
 
   # ── Power / UPS ─────────────────────────────────────────────────
   # Haswell desktop — no TLP needed like a laptop. Keep powertop autos tune optional.

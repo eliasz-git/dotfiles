@@ -52,8 +52,8 @@
     defaultKeymap = "viins";
 
     shellAliases = {
-      ls  = "eza --icons --group-directories-first";
-      ll  = "eza -la --icons --group-directories-first --git";
+      ls  = lib.mkForce "eza --icons --group-directories-first";
+      ll  = lib.mkForce "eza -la --icons --group-directories-first --git";
       wifi = "bash ~/wifi-setup.sh";
       usb  = "bash ~/usb-mount.sh";
 
@@ -70,7 +70,7 @@
       hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#mini1";
     };
 
-    initExtra = ''
+    initContent = lib.mkOrder 550 ''
       [ -f ~/.profile ] && . ~/.profile
       eval "$(zoxide init zsh)"
       source ${pkgs.fzf}/share/fzf/key-bindings.zsh 2>/dev/null || true
