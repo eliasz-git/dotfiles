@@ -32,11 +32,14 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = true;
-      PermitRootLogin = "yes";
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
       KbdInteractiveAuthentication = false;
     };
   };
+
+  # Add your pubkey here (key only now):
+  # users.users.elias.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAA..." ];
 
   users.users.elias = {
     isNormalUser = true;
