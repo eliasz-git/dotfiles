@@ -196,8 +196,14 @@
 
     [ -f "$DEVICES" ] || { echo "no devices file: $DEVICES" >&2; exit 1; }
 
-    pick="$(grep -vE '^[[:space:]]*#' "$DEVICES" | grep -vE '^[[:space:]]*$' | fzf --prompt='ssh > ')"
-    [ -n "$pick" ] || exit 0
+    if [ -n "''${1:-}" ] && [ "''${1:-}" != "--help" ] && [ "''${1:-}" != "-h" ]; then
+      pick="$(grep -vE '^[[:space:]]*#' "$DEVICES" | grep -E "^''${1}([[:space:]]|$)" | head -n1)"
+      if [ -z "$pick" ]; then exec ssh "$1"; fi
+      shift
+    else
+      pick="$(grep -vE '^[[:space:]]*#' "$DEVICES" | grep -vE '^[[:space:]]*$' | fzf --prompt='ssh > ')"
+      [ -n "$pick" ] || exit 0
+    fi
 
     read -r _ userhost ident <<<"$pick"
     port=""
