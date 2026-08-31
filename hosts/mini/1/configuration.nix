@@ -146,7 +146,12 @@
     extraComponents = [ "default_config" "met" "esphome" ];
     config = {
       default_config = {};
-      http.server_port = 8123;
+      http = {
+        server_port = 8123;
+        server_host = [ "0.0.0.0" "::" ];
+        use_x_forwarded_for = true;
+        trusted_proxies = [ "100.64.0.0/10" "127.0.0.1" "::1" ];
+      };
     };
   };
 
