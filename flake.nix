@@ -66,6 +66,7 @@
     nixosConfigurations.mini1 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
       pkgs   = linuxPkgs;
+      specialArgs = { inherit hermes-agent; };
       modules = [
         { services.tailscale.package = unstablePkgs.tailscale; } # latest 1.102.x vs stable 1.82.x
         ./hosts/mini/1/configuration.nix

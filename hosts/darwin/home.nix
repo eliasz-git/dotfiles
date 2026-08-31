@@ -223,11 +223,10 @@
       cat > "$HOME/.config/ssh/devices" <<'DEVICES'
 # sconnect devices — one host per line:  name user@host[:port] [identity_file]
 # add more any time:  sconnect --add "name user@host"
-# (examples below — edit addresses/users to match your network)
-macbook  elias@macbook.local
-icarus    elias@icarus.local
-mini1     elias@mini1.local
-mini2     elias@mini2.local
+mini1 elias@100.99.239.80
+mini1-lan elias@192.168.1.75
+mini2 elias@100.65.55.0
+mini2-lan elias@192.168.1.76
 router    admin@192.168.1.1
 DEVICES
     fi

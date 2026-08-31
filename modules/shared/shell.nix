@@ -15,6 +15,7 @@
       gs = "git status";
       gd = "git diff";
       gc = "git commit";
+      sc = "sconnect";
       gp = "git push";
       gl = "git pull";
     };

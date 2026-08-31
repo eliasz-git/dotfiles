@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, hermes-agent, ... }:
 {
   imports = [ ./hardware-configuration.nix ];
 
@@ -118,6 +118,7 @@
     git vim nano htop btop curl wget
     docker-compose
     smartmontools hdparm
+    hermes-agent.packages.x86_64-linux.default
   ];
 
   # Cockpit for web management at :9090 (optional, light)
