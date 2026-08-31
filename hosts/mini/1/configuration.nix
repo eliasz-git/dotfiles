@@ -170,7 +170,7 @@
       "netatmo" "wyoming" "envisalink" "abode"
 
       # Vacuums / appliances
-      "roomba" "neato" "xbox" "lg_netcast" "whirlpool" "miele"
+      "roomba" "neato" "lg_netcast" "whirlpool" "miele"
 
       # Sensors / weather / energy
       "airvisual" "purpleair" "awair" "sense" "emonitor" "powerwall" "solaredge"
