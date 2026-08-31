@@ -243,6 +243,24 @@
   # nixpkgs.config.allowUnfree moved to flake.nix linuxPkgs (import nixpkgs { config.allowUnfree = true; })
   # nixpkgs.config.allowUnfree = true;
 
+
+  # ── Syncthing — vault sync (replaces iCloud on Linux) ──────────
+  services.syncthing = {
+    enable = true;
+    user = "elias";
+    dataDir = "/home/elias/.config/syncthing";
+    configDir = "/home/elias/.config/syncthing";
+    openDefaultPorts = true;
+    guiAddress = "0.0.0.0:8384";
+    overrideDevices = false;
+    overrideFolders = false;
+  };
+
+  # ── Hermes Agent — always-on when Mac is closed ────────────────
+  # Single profile at /home/elias/.hermes (same as Mac). Copy Mac's
+  # ~/.hermes/config.yaml + ~/.hermes/.env + auth.json after first install, then
+  # `hermes gateway install` for systemd service. Tailscale-only access fine at Beattie.
+  # Install via: `curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash` or `nix run github:NousResearch/hermes-agent`
   # ── Power / UPS ─────────────────────────────────────────────────
   # Haswell desktop — no TLP needed like a laptop. Keep powertop autos tune optional.
   powerManagement.powertop.enable = false;
