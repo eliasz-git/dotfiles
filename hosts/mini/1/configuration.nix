@@ -148,7 +148,38 @@
     enable = true;
     openFirewall = true;
     configDir = "/mnt/storage/homeassistant";
-    extraComponents = [ "default_config" "met" "esphome" "bluetooth" "samsungtv" "tplink" "led_ble" ];
+    extraComponents = [
+      "default_config" "met" "esphome" "bluetooth"
+
+      # TVs / media players / casting
+      "samsungtv" "androidtv" "roku" "cast" "sonos" "plex" "kodi" "webostv"
+      "harmony" "denonavr" "onkyo" "yamaha_musiccast" "apple_tv" "spotify"
+
+      # Networking gear
+      "tplink" "tplink_omada" "unifi" "asuswrt" "ubus" "fritz" "netgear_lte"
+
+      # Lighting / LED
+      "led_ble" "wled" "hue" "lifx" "hyperion" "lutron" "lutron_caseta" "flux_led"
+
+      # Hubs / protocols
+      "zha" "zwave_js" "mqtt" "tuya" "xiaomi_miio" "broadlink" "deconz"
+      "insteon" "isy994" "smartthings" "homekit" "homekit_controller" "matter"
+
+      # Voice / cloud smart devices
+      "google_assistant" "alexa" "ring" "wemo" "ecobee" "nest" "honeywell"
+      "netatmo" "arlo" "wyoming" "envisalink" "abode" "vivint"
+
+      # Vacuums / appliances
+      "roomba" "neato" "xbox" "lg_netcast" "whirlpool" "miele"
+
+      # Sensors / weather / energy
+      "airvisual" "purpleair" "awair" "sense" "emonitor" "powerwall" "solaredge"
+      "opower" "tesla_wall_connector"
+
+      # Misc widely-used
+      "ipp" "printer" "shelly" "govee_ble" "switchbot" "eufy" "meross"
+      "tado" "rachio" "flume" "rainmachine" "garages_amazon" "myq" "ratgdo"
+    ];
     config = {
       default_config = {};
       http = {
