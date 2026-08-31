@@ -148,7 +148,7 @@
     enable = true;
     openFirewall = true;
     configDir = "/mnt/storage/homeassistant";
-    extraComponents = [ "default_config" "met" "esphome" "bluetooth" ];
+    extraComponents = [ "default_config" "met" "esphome" "bluetooth" "samsungtv" "tplink" "led_ble" ];
     config = {
       default_config = {};
       http = {
