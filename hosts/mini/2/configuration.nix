@@ -20,10 +20,10 @@
 
   # ── Networking ──────────────────────────────────────────────────
   networking.networkmanager.enable = true;
-  # Static .76 if you want it pinned; otherwise DHCP reservation on router.
-  # networking.interfaces.enp1s0.ipv4.addresses = [{ address = "192.168.1.76"; prefixLength = 24; }];
-  # networking.defaultGateway = "192.168.1.1";
-  # networking.nameservers = [ "192.168.1.75" "1.1.1.1" ]; # point at mini1 AdGuard when enabled
+  # Wired .76 static like mini1 .75 — eno1 is the real NIC (altname enp5s0f0)
+  networking.interfaces.eno1.ipv4.addresses = [{ address = "192.168.1.76"; prefixLength = 24; }];
+  networking.defaultGateway = "192.168.1.1";
+  networking.nameservers = [ "192.168.1.75" "1.1.1.1" ]; # mini1 AdGuard first, then Cloudflare
 
   services.tailscale.enable = true;
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
