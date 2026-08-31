@@ -191,6 +191,25 @@
     };
   };
 
+  # ── Cloudflared Tunnel — alt to Tailscale when VPN blocked ─────────
+  # 1. cloudflared tunnel login  (on mini1, creates cert.pem in ~/.cloudflared)
+  # 2. cloudflared tunnel create mini1  (gives Tunnel ID + credentials JSON)
+  # 3. sudo mkdir -p /etc/cloudflared; sudo cp ~/.cloudflared/<ID>.json /etc/cloudflared/credentials.json
+  # 4. Cloudflare Dashboard → DNS → CNAME  ha  → <ID>.cfargotunnel.com  (same for adguard, home)
+  # 5. uncomment below, set tunnel ID, nixos-rebuild
+  # services.cloudflared = {
+  #   enable = true;
+  #   tunnels."<TUNNEL-ID>" = {
+  #     credentialsFile = "/etc/cloudflared/credentials.json";
+  #     default = "http_status:404";
+  #     ingress = {
+  #       "ha.adal-matrix.ts.net" = "http://localhost:8123";
+  #       "adguard.adal-matrix.ts.net" = "http://localhost:3000";
+  #       "home.adal-matrix.ts.net" = "http://mini2:3000";
+  #     };
+  #   };
+  # };
+
   # ── Reverse proxy ───────────────────────────────────────────────
   services.caddy = {
     enable = false; # enable when you add domains; auto-HTTPS via Tailscale or ACME
