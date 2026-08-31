@@ -25,13 +25,23 @@
     - RDT-Client:
         href: http://mini2:6500
         description: TorBox Bridge
+- Infra (mini1):
+    - AdGuard Home:
+        href: https://adguard.adal-matrix.ts.net
+        description: AdGuard DNS 192.168.1.75:53
+    - Home Assistant:
+        href: https://ha.adal-matrix.ts.net
+        description: Home Assistant 8123
+    - Cockpit mini1:
+        href: http://mini1:9090
+        description: mini1 System
 - Tools:
     - Homepage:
         href: https://home.adal-matrix.ts.net
         description: Dashboard
-    - Cockpit:
+    - Cockpit mini2:
         href: https://mini2:9090
-        description: System Management
+        description: mini2 System
     - ARM:
         href: http://mini2:8080
         description: DVD Auto Rip
