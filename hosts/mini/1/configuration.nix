@@ -26,10 +26,12 @@
   # Static .75 per your homelab docs. If your router does DHCP reservation,
   # just leave NetworkManager dhcp and reserve .75 there — simpler.
   networking.networkmanager.enable = true;
-  # Static 192.168.1.75 per homelab docs (was 192.168.68.x DHCP)
-  networking.interfaces.enp0s25.ipv4.addresses = [{ address = "192.168.1.75"; prefixLength = 24; }];
+  # Static 192.168.1.75 per homelab docs (was 192.168.68.x DHCP) — eno1 per mini1 ls
+  networking.interfaces.eno1.ipv4.addresses = [{ address = "192.168.1.75"; prefixLength = 24; }];
   networking.defaultGateway = "192.168.1.1";
   networking.nameservers = [ "127.0.0.1" "1.1.1.1" ];
+  # Wifi for Home Assistant — wlp6s0 via NetworkManager (add SSID via nmcli or nmtui)
+  # nmcli device wifi connect "SSID" password "PASS"  or  nmtui
 
   # Tailscale — replaces WireGuard for remote access. `sudo tailscale up`.
   services.tailscale.enable = true;
