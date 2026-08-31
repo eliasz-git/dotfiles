@@ -38,7 +38,7 @@
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   networking.firewall.allowedUDPPorts = [ 41641 ]; # tailscale
 
-  # ── SSH — password for now (no pubkey yet) ──────────────────────
+  # ── SSH — password + key (both minis have key) ─────────────────
   services.openssh = {
     enable = true;
     settings = {
@@ -47,6 +47,9 @@
       KbdInteractiveAuthentication = false;
     };
   };
+  users.users.elias.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
+  ];
 
   # Add your pubkey here post-install:
   # users.users.elias.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAA..." ];
