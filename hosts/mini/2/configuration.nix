@@ -177,6 +177,67 @@
     };
   };
 
+  systemd.services.tailscale-serve-radarr = {
+    description = "Tailscale serve svc:radarr → Radarr 7878";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:radarr --https 443 --bg 7878";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:radarr --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-sonarr = {
+    description = "Tailscale serve svc:sonarr → Sonarr 8989";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:sonarr --https 443 --bg 8989";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:sonarr --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-prowlarr = {
+    description = "Tailscale serve svc:prowlarr → Prowlarr 9696";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:prowlarr --https 443 --bg 9696";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:prowlarr --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-jellyseerr = {
+    description = "Tailscale serve svc:jellyseerr → Jellyseerr 5055";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:jellyseerr --https 443 --bg 5055";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:jellyseerr --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-lidarr = {
+    description = "Tailscale serve svc:lidarr → Lidarr 8686 (music *arr)";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 --bg 8686";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 off";
+    };
+  };
+
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
     22    # ssh
