@@ -262,5 +262,12 @@
     options = "--delete-older-than 14d";
   };
 
-  system.stateVersion = "25.05";
+
+  # NAS — 2TB STORAGE on mini1 (moved from mini2)
+  fileSystems."/mnt/storage" = {
+    fileSystem = "nfs4";
+    options = [ "nofail" "x-systemd.automount" "noatime" "soft" "timeo=100" ];
+    device = "100.99.239.80:/mnt/storage";
+  };
+
 }
