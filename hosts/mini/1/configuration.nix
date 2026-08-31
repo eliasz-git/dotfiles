@@ -138,12 +138,17 @@
     };
   };
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+
   # ── Home Assistant ──────────────────────────────────────────────
   services.home-assistant = {
     enable = true;
     openFirewall = true;
     configDir = "/mnt/storage/homeassistant";
-    extraComponents = [ "default_config" "met" "esphome" ];
+    extraComponents = [ "default_config" "met" "esphome" "bluetooth" ];
     config = {
       default_config = {};
       http = {
