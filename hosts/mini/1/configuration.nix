@@ -167,7 +167,7 @@
 
       # Voice / cloud smart devices
       "google_assistant" "alexa" "ring" "wemo" "ecobee" "nest" "honeywell"
-      "netatmo" "arlo" "wyoming" "envisalink" "abode" "vivint"
+      "netatmo" "wyoming" "envisalink" "abode"
 
       # Vacuums / appliances
       "roomba" "neato" "xbox" "lg_netcast" "whirlpool" "miele"
@@ -177,8 +177,8 @@
       "opower" "tesla_wall_connector"
 
       # Misc widely-used
-      "ipp" "printer" "shelly" "govee_ble" "switchbot" "eufy" "meross"
-      "tado" "rachio" "flume" "rainmachine" "garages_amazon" "myq" "ratgdo"
+      "ipp" "shelly" "govee_ble" "switchbot" "eufy"
+      "tado" "rachio" "flume" "rainmachine" "myq"
     ];
     config = {
       default_config = {};
