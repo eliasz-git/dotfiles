@@ -20,10 +20,13 @@
 
   # ── Networking ──────────────────────────────────────────────────
   networking.networkmanager.enable = true;
-  # Wired .76 static like mini1 .75 — eno1 is the real NIC (altname enp5s0f0)
-  networking.interfaces.eno1.ipv4.addresses = [{ address = "192.168.1.76"; prefixLength = 24; }];
-  networking.defaultGateway = "192.168.1.1";
-  networking.nameservers = [ "192.168.1.75" "1.1.1.1" ]; # mini1 AdGuard first, then Cloudflare
+  # Wired .76 static like mini1 .75 — eno1 is the real NIC (altname enp5s0f0, enx80e82c16c768)
+  # Force NM to manual so DHCP 192.168.68.x never returns
+  networking.networkmanager.ensureProfiles.profiles."Wired connection 1" = {
+    connection = { id = "Wired connection 1"; type = "ethernet"; interface-name = "eno1"; };
+    ipv4 = { method = "manual"; addresses = "192.168.1.76/24"; gateway = "192.168.1.1"; dns = "192.168.1.75;1.1.1.1;"; };
+    ipv6.method = "disabled";
+  };
 
   services.tailscale.enable = true;
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
