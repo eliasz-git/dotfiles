@@ -38,8 +38,9 @@
     };
   };
 
-  # Add your pubkey here (key only now):
-  # users.users.elias.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAA..." ];
+  users.users.elias.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
+  ];
 
   users.users.elias = {
     isNormalUser = true;
