@@ -36,7 +36,7 @@
   # Tailscale — replaces WireGuard for remote access. `sudo tailscale up`.
   services.tailscale.enable = true;
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
-  networking.firewall.allowedUDPPorts = [ 41641 ]; # tailscale
+  networking.firewall.allowedUDPPorts = [ 41641 111 2049 20048 ]; # tailscale + NFS
 
   # ── SSH — password + key (both minis have key) ─────────────────
   services.openssh = {
@@ -229,6 +229,9 @@
     9090 # cockpit
     8123 # home assistant (if you move it here later)
     8081 # metube
+    111  # rpcbind (NFS)
+    2049 # nfs
+    20048 # mountd (NFS)
   ];
 
   # ── Nix ─────────────────────────────────────────────────────────
