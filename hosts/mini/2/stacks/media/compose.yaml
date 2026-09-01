@@ -179,6 +179,12 @@ services:
     container_name: rdt-client
     ports: ["6500:6500"]
     volumes:
+      # Upstream docs: /data/db for sqlite + /data/downloads for downloads. We keep /downloads for
+      # Lidarr compat (Lidarr/radarr/sonarr all use /mnt/storage/downloads:/downloads). If you use
+      # /data/downloads here, set rdt-client Settings Download path=/data/downloads and add Lidarr
+      # Remote Path Mapping Remote=/data/downloads Local=/downloads (or Local=/data/downloads if you
+      # also change Lidarr mount). Host path is same for all arrs so /downloads/lidarr is visible
+      # in both containers once systemd.tmpfiles creates it.
       - ./data/rdt-client:/data
       - /mnt/storage/downloads:/downloads
     environment:

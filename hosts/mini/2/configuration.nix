@@ -276,6 +276,20 @@
     9696 8989 7878 5055 9091 # prowlarr/sonarr/radarr/jellyseerr/transmission
   ];
 
+  # ── Ensures /downloads/lidarr etc exist for rdt-client -> Lidarr Remote Path Mappings
+  # Lidarr health check is "download client places downloads in /downloads/lidarr but this directory
+  # does not appear to exist inside the container" when host dir is missing. tmpfiles creates it
+  # with correct ownership before docker starts, so docker exec lidarr ls -la /downloads/lidarr succeeds.
+  # Containers share host path via same container path (/mnt/storage/downloads -> /downloads) so Remote
+  # Path Mapping can be Remote=/downloads Local=/downloads (Host=rdt-client). If you switch rdt-client to
+  # /data/downloads, change Local/Remote to /data/downloads accordingly.
+  systemd.tmpfiles.rules = [
+    "d /mnt/storage/downloads 0775 elias users -"
+    "d /mnt/storage/downloads/lidarr 0775 elias users -"
+    "d /mnt/storage/downloads/radarr 0775 elias users -"
+    "d /mnt/storage/downloads/sonarr 0775 elias users -"
+  ];
+
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
