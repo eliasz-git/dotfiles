@@ -74,16 +74,16 @@ services:
       - /mnt/storage/music:/music
       - /mnt/storage/downloads:/downloads
 
-  jellyseerr:
+  seerr:
     <<: *common
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
+    image: ghcr.io/seerr/seerr:latest
+    container_name: seerr
     ports: ["5055:5055"]
     environment:
       - LOG_LEVEL=debug
       - TZ=America/New_York
     volumes:
-      - ./data/jellyseerr:/app/config
+      - ./data/seerr:/app/config
 
   jellyfin:
     <<: *common
