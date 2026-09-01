@@ -287,11 +287,7 @@
   };
 
 
-  # NAS — 2TB STORAGE on mini1 (moved from mini2)
-  fileSystems."/mnt/storage" = {
-    fsType = "nfs4";
-    options = [ "nofail" "x-systemd.automount" "noatime" "soft" "timeo=100" ];
-    device = "100.99.239.80:/mnt/storage";
-  };
+  # NAS — 2TB STORAGE on mini1 (moved from mini2) - defined in hardware-configuration.nix
+  # fileSystems."/mnt/storage" now in hardware-configuration.nix with IP 100.99.239.80
 
 }

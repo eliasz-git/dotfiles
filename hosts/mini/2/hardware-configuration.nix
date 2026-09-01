@@ -19,8 +19,8 @@
   };
   # HDD now on mini1 as NAS — mini2 mounts via NFS
   fileSystems."/mnt/storage" = {
-    device = "mini1:/mnt/storage";
-    fsType = "nfs";
+    device = "100.99.239.80:/mnt/storage";
+    fsType = "nfs4";
     options = [ "nofail" "x-systemd.automount" "noatime" "soft" "timeo=100" ];
   };
 
