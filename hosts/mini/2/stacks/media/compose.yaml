@@ -76,7 +76,7 @@ services:
 
   seerr:
     <<: *common
-    image: ghcr.io/seerr/seerr:latest
+    image: seerr/seerr:latest
     container_name: seerr
     ports: ["5055:5055"]
     environment:

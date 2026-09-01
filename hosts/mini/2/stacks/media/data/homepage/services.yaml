@@ -22,12 +22,15 @@
     - Radarr:
         href: https://radarr.adal-matrix.ts.net
         description: Movies
-    - Jellyseerr:
-        href: https://jellyseerr.adal-matrix.ts.net
-        description: Requests
+    - Seerr:
+        href: https://seerr.adal-matrix.ts.net
+        description: Requests (was Jellyseerr)
     - RDT-Client:
         href: https://rdt-client.adal-matrix.ts.net
         description: TorBox Bridge
+    - Maintainerr:
+        href: https://maintainerr.adal-matrix.ts.net
+        description: Auto-clean watched media
 - Infra (mini1):
     - AdGuard Home:
         href: https://adguard.adal-matrix.ts.net
