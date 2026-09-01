@@ -60,6 +60,20 @@ services:
       - /mnt/storage/movies:/movies
       - /mnt/storage/downloads:/downloads
 
+  lidarr:
+    <<: *common
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    ports: ["8686:8686"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/lidarr:/config
+      - /mnt/storage/music:/music
+      - /mnt/storage/downloads:/downloads
+
   jellyseerr:
     <<: *common
     image: fallenbagel/jellyseerr:latest
