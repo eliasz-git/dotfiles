@@ -119,6 +119,15 @@ services:
     container_name: immich-redis
     restart: unless-stopped
 
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    container_name: immich-machine-learning
+    restart: unless-stopped
+    volumes:
+      - ./data/immich-ml:/cache
+    environment:
+      - TZ=America/New_York
+
   arm:
     image: automaticrippingmachine/automatic-ripping-machine:latest
     container_name: arm

@@ -144,7 +144,24 @@
     powerOnBoot = true;
   };
 
-  # ── Home Assistant — DOCKER (migrated 2026-09-01) ─────────────────
+  # -- Home Assistant docker (oci-container) - auto-started via systemd docker-homeassistant
+  virtualisation.oci-containers.containers.homeassistant = {
+    image = "ghcr.io/home-assistant/home-assistant:stable";
+    volumes = [
+      "/mnt/storage/homeassistant:/config"
+      "/etc/localtime:/etc/localtime:ro"
+      "/run/dbus:/run/dbus:ro"
+    ];
+    environment = {
+      TZ = "America/New_York";
+    };
+    extraOptions = [
+      "--network=host"
+      "--privileged"
+    ];
+  };
+
+  # -- Home Assistant — DOCKER (migrated 2026-09-01) ─────────────────
   # NixOS module disabled — now runs as Docker container for HACS/latest.
   # Config preserved at /mnt/storage/homeassistant (bind mount).
   # Compose lives at /etc/stacks/homeassistant/compose.yaml on mini1.
