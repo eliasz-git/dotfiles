@@ -237,6 +237,30 @@
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 off";
     };
   };
+  systemd.services.tailscale-serve-rdt-client = {
+    description = "Tailscale serve svc:rdt-client → RDT-Client 6500";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:rdt-client --https 443 --bg 6500";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:rdt-client --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-arm = {
+    description = "Tailscale serve svc:arm → ARM 8080";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 --bg 8080";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 off";
+    };
+  };
 
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [

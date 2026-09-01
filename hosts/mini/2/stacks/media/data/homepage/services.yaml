@@ -10,20 +10,23 @@
         href: https://photos.adal-matrix.ts.net
         description: Immich Photos on 2TB
 - Arr:
+    - Lidarr:
+        href: https://lidarr.adal-matrix.ts.net
+        description: Music Downloader
     - Prowlarr:
-        href: http://mini2:9696
+        href: https://prowlarr.adal-matrix.ts.net
         description: Indexer Manager
     - Sonarr:
-        href: http://mini2:8989
+        href: https://sonarr.adal-matrix.ts.net
         description: TV Shows
     - Radarr:
-        href: http://mini2:7878
+        href: https://radarr.adal-matrix.ts.net
         description: Movies
     - Jellyseerr:
-        href: http://mini2:5055
+        href: https://jellyseerr.adal-matrix.ts.net
         description: Requests
     - RDT-Client:
-        href: http://mini2:6500
+        href: https://rdt-client.adal-matrix.ts.net
         description: TorBox Bridge
 - Infra (mini1):
     - AdGuard Home:
@@ -33,15 +36,18 @@
         href: https://ha.adal-matrix.ts.net
         description: Home Assistant 8123
     - Cockpit mini1:
-        href: http://mini1:9090
+        href: http://192.168.1.75:9090
         description: mini1 System
 - Tools:
     - Homepage:
         href: https://home.adal-matrix.ts.net
         description: Dashboard
+    - Uptime Kuma:
+        href: https://health.adal-matrix.ts.net
+        description: Uptime Monitor 3001
     - Cockpit mini2:
-        href: https://mini2:9090
+        href: http://192.168.1.76:9090
         description: mini2 System
     - ARM:
-        href: http://mini2:8080
+        href: https://arm.adal-matrix.ts.net
         description: DVD Auto Rip
