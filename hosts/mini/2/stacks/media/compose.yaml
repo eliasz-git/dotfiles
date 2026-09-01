@@ -196,6 +196,8 @@ services:
     depends_on:
       - immich-postgres
       - immich-redis
+    devices:
+      - /dev/dri:/dev/dri  # Vega 11 VAAPI for video transcode
     volumes:
       - /mnt/storage/immich:/usr/src/app/upload
       - /mnt/storage/photos:/usr/src/app/external:ro
