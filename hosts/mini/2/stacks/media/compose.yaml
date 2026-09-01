@@ -197,10 +197,21 @@ services:
     image: ghcr.io/maintainerr/maintainerr:latest
     container_name: maintainerr
     ports: ["6246:6246"]
+    user: "1000:1000"
     volumes:
       - ./data/maintainerr:/opt/data
     environment:
       - TZ=America/New_York
+    restart: unless-stopped
+
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    container_name: recyclarr
+    volumes:
+      - ./data/recyclarr:/config
+    environment:
+      - TZ=America/New_York
+      - CRON_SCHEDULE=@daily
     restart: unless-stopped
 
   immich:
