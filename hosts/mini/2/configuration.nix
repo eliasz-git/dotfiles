@@ -261,6 +261,18 @@
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 off";
     };
   };
+  systemd.services.tailscale-serve-maintainerr = {
+    description = "Tailscale serve svc:maintainerr → Maintainerr 6246";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:maintainerr --https 443 --bg 6246";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:maintainerr --https 443 off";
+    };
+  };
 
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
@@ -273,6 +285,7 @@
     8080 # ARM (Automatic Ripping Machine)
     9090 # cockpit
     6500 # rdt-client (TorBox qBittorrent bridge for *arr)
+    6246 # maintainerr
     9696 8989 7878 5055 9091 # prowlarr/sonarr/radarr/jellyseerr/transmission
   ];
 

@@ -193,6 +193,16 @@ services:
       - PGID=1000
     restart: unless-stopped
 
+  maintainerr:
+    image: ghcr.io/maintainerr/maintainerr:latest
+    container_name: maintainerr
+    ports: ["6246:6246"]
+    volumes:
+      - ./data/maintainerr:/opt/data
+    environment:
+      - TZ=America/New_York
+    restart: unless-stopped
+
   immich:
     <<: *common
     image: ghcr.io/immich-app/immich-server:release
