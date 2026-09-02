@@ -313,8 +313,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.docker}/bin/docker network create paperless || true";
-      ExecStop = "${pkgs.docker}/bin/docker network rm paperless || true";
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.docker}/bin/docker network create paperless || true'";
+      ExecStop = "${pkgs.bash}/bin/bash -c '${pkgs.docker}/bin/docker network rm paperless || true'";
     };
   };
 
