@@ -352,7 +352,7 @@
       PAPERLESS_URL = "https://paperless.adal-matrix.ts.net";
       PAPERLESS_OCR_LANGUAGE = "eng";
       PAPERLESS_TIME_ZONE = "America/New_York";
-      PAPERLESS_OCR_MODE = "skip";
+      PAPERLESS_OCR_MODE = "auto";
       PAPERLESS_CONSUMER_POLLING = "10";
       PAPERLESS_CONSUMER_RECURSIVE = "true";
       PAPERLESS_TIKA_ENABLED = "0";
