@@ -136,6 +136,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:media --https 443 --bg 8096";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:media --https 443 off";
     };
@@ -148,6 +150,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 --bg 4533";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 off";
     };
@@ -160,6 +164,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 --bg 2283";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 off";
     };
@@ -172,6 +178,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:home --https 443 --bg 3000";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:home --https 443 off";
     };
@@ -185,6 +193,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:radarr --https 443 --bg 7878";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:radarr --https 443 off";
     };
@@ -197,6 +207,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:sonarr --https 443 --bg 8989";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:sonarr --https 443 off";
     };
@@ -209,6 +221,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:prowlarr --https 443 --bg 9696";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:prowlarr --https 443 off";
     };
@@ -221,6 +235,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:seerr --https 443 --bg 5055";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:seerr --https 443 off";
     };
@@ -233,6 +249,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 --bg 8686";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 off";
     };
@@ -245,6 +263,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:rdt-client --https 443 --bg 6500";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:rdt-client --https 443 off";
     };
@@ -257,6 +277,8 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 --bg 8080";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 off";
     };
@@ -269,8 +291,39 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:maintainerr --https 443 --bg 6246";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:maintainerr --https 443 off";
+    };
+  };
+
+  systemd.services.tailscale-serve-bazarr = {
+    description = "Tailscale serve svc:bazarr -> Bazarr 6767";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:bazarr --https 443 --bg 6767";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:bazarr --https 443 off";
+    };
+  };
+  systemd.services.tailscale-serve-tautulli = {
+    description = "Tailscale serve svc:tautulli -> Tautulli 8181";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:tautulli --https 443 --bg 8181";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:tautulli --https 443 off";
     };
   };
 
@@ -284,6 +337,8 @@
     4533 # navidrome
     8080 # ARM (Automatic Ripping Machine)
     9090 # cockpit
+    6767 # bazarr
+    8181 # tautulli
     6500 # rdt-client (TorBox qBittorrent bridge for *arr)
     6246 # maintainerr
     9696 8989 7878 5055 9091 # prowlarr/sonarr/radarr/seerr/transmission

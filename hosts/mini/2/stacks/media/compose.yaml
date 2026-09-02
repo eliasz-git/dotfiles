@@ -193,6 +193,33 @@ services:
       - PGID=1000
     restart: unless-stopped
 
+  bazarr:
+    <<: *common
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    ports: ["6767:6767"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/bazarr:/config
+      - /mnt/storage/movies:/movies
+      - /mnt/storage/tvshows:/tv
+
+  tautulli:
+    <<: *common
+    image: ghcr.io/tautulli/tautulli:latest
+    container_name: tautulli
+    ports: ["8181:8181"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./data/tautulli:/config
+      - ./data/jellyfin/config:/config-jellyfin:ro
+
   maintainerr:
     image: ghcr.io/maintainerr/maintainerr:latest
     container_name: maintainerr

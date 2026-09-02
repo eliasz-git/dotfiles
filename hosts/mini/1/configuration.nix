@@ -121,6 +121,14 @@
     hermes-agent.packages.x86_64-linux.default
   ];
 
+  # ── SMART — STORAGE disk health ───────────────────────────────
+  services.smartd = {
+    enable = true;
+    autodetect = true;
+    notifications.wall.enable = true;
+    notifications.mail.enable = false;
+  };
+
   # Cockpit for web management at :9090 (optional, light)
   services.cockpit = {
     enable = true;
@@ -203,6 +211,7 @@
     80 443 # caddy
     3000 # adguard setup
     9090 # cockpit
+    3001 # uptime kuma
     8123 # home assistant docker (host mode)
     8081 # metube
     111  # rpcbind (NFS)
@@ -234,6 +243,52 @@
     guiAddress = "0.0.0.0:8384";
     overrideDevices = false;
     overrideFolders = false;
+  };
+  # disable user service duplicate - system service is the one we use (0.0.0.0:8384)
+  # the user service binds same port and fails with restart loop
+  systemd.user.services.syncthing.enable = lib.mkForce false;
+
+  # ── Lightweight backup — configs only (not full media) ──────────
+  # Photos already iCloud, media re-downloadable. This backs up homeassistant,
+  # syncthing config, and homepage data daily to /mnt/storage/backups.
+  systemd.tmpfiles.rules = [
+    "d /mnt/storage/backups 0755 elias users -"
+    "d /mnt/storage/uptime-kuma 0755 elias users -"
+  ];
+  systemd.services.homelab-backup = {
+    description = "homelab config backup to /mnt/storage/backups";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c \'mkdir -p /mnt/storage/backups && tar -czf /mnt/storage/backups/homeassistant-$(date +%F).tgz -C /mnt/storage homeassistant --exclude=homeassistant/home-assistant_v2.db 2>/dev/null; tar -czf /mnt/storage/backups/syncthing-$(date +%F).tgz -C /home/elias .config/syncthing 2>/dev/null; tar -czf /mnt/storage/backups/mini1-config-$(date +%F).tgz -C /home/elias/.config nix-config 2>/dev/null; ls -t /mnt/storage/backups/homeassistant-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/syncthing-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/mini1-config-*.tgz | tail -n +8 | xargs -r rm; echo backup done $(date) >> /mnt/storage/backups/backup.log\'";
+      User = "elias";
+    };
+  };
+  systemd.timers.homelab-backup = {
+    description = "daily homelab backup";
+    wantedBy = [ "timers.target" ];
+    timerConfig = { OnCalendar = "daily"; Persistent = true; Unit = "homelab-backup.service"; };
+  };
+
+  # ── Uptime Kuma — lightweight status monitor ────────────────────
+  virtualisation.oci-containers.containers.uptime-kuma = {
+    image = "louislam/uptime-kuma:1";
+    ports = [ "3001:3001" ];
+    volumes = [ "/mnt/storage/uptime-kuma:/app/data" ];
+    extraOptions = [ "--pull=always" ];
+  };
+  systemd.services.tailscale-serve-status = {
+    description = "Tailscale serve svc:status -> Uptime Kuma 3001";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:status --https 443 --bg 3001";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:status --https 443 off";
+    };
   };
 
   # ── Hermes Agent — always-on when Mac is closed ────────────────

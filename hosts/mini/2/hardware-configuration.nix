@@ -21,7 +21,7 @@
   fileSystems."/mnt/storage" = {
     device = "100.99.239.80:/mnt/storage";
     fsType = "nfs4";
-    options = [ "nofail" "x-systemd.automount" "noatime" "soft" "timeo=100" ];
+    options = [ "nofail" "x-systemd.automount" "noatime" "hard" "timeo=600" "retrans=3" ];
   };
 
   swapDevices = [ ];

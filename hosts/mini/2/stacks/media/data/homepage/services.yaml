@@ -25,6 +25,12 @@
     - Seerr:
         href: https://seerr.adal-matrix.ts.net
         description: Requests (was Jellyseerr)
+    - Bazarr:
+        href: https://bazarr.adal-matrix.ts.net
+        description: Subtitles
+    - Tautulli:
+        href: https://tautulli.adal-matrix.ts.net
+        description: Jellyfin Stats
     - RDT-Client:
         href: https://rdt-client.adal-matrix.ts.net
         description: TorBox Bridge
@@ -46,7 +52,7 @@
         href: https://home.adal-matrix.ts.net
         description: Dashboard
     - Uptime Kuma:
-        href: https://health.adal-matrix.ts.net
+        href: https://status.adal-matrix.ts.net
         description: Uptime Monitor 3001
     - Cockpit mini2:
         href: http://192.168.1.76:9090
