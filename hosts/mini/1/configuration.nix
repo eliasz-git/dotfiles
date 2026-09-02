@@ -304,10 +304,24 @@
   # consume: /mnt/storage/paperless/consume (drop pdfs there, auto-ocr)
   # samba: \\mini1\storage\paperless or NFS /mnt/storage/paperless
 
+
+  # paperless docker network (so paperless-db/redis/gotenberg resolve via name)
+  systemd.services.docker-network-paperless = {
+    description = "Create docker network paperless";
+    after = [ "docker.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.docker}/bin/docker network create paperless || true";
+      ExecStop = "${pkgs.docker}/bin/docker network rm paperless || true";
+    };
+  };
+
   virtualisation.oci-containers.containers.paperless-redis = {
     image = "redis:7";
     volumes = [ "/mnt/storage/paperless/pgdata-redis:/data" ];
-    extraOptions = [ "--pull=always" ];
+    extraOptions = [ "--network=paperless" "--pull=always" ];
   };
   virtualisation.oci-containers.containers.paperless-db = {
     image = "postgres:17";
@@ -317,12 +331,12 @@
       POSTGRES_PASSWORD = "paperless";
     };
     volumes = [ "/mnt/storage/paperless/pgdata:/var/lib/postgresql/data" ];
-    extraOptions = [ "--pull=always" ];
+    extraOptions = [ "--network=paperless" "--pull=always" ];
   };
   virtualisation.oci-containers.containers.paperless-gotenberg = {
     image = "gotenberg/gotenberg:8";
     cmd = [ "gotenberg" "--api-timeout=300s" ];
-    extraOptions = [ "--pull=always" ];
+    extraOptions = [ "--network=paperless" "--pull=always" ];
   };
   virtualisation.oci-containers.containers.paperless = {
     image = "ghcr.io/paperless-ngx/paperless-ngx:latest";
@@ -351,8 +365,19 @@
       "/mnt/storage/paperless/export:/usr/src/paperless/export"
       "/mnt/storage/paperless/consume:/usr/src/paperless/consume"
     ];
-    extraOptions = [ "--pull=always" ];
+    extraOptions = [ "--network=paperless" "--pull=always" ];
   };
+
+  # ensure paperless network exists before containers start
+  systemd.services.docker-paperless-redis.after = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless-redis.wants = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless-db.after = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless-db.wants = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless-gotenberg.after = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless-gotenberg.wants = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless.after = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless.wants = [ "docker-network-paperless.service" ];
+
   systemd.services.tailscale-serve-paperless = {
     description = "Tailscale serve svc:paperless -> Paperless 8010";
     after = [ "tailscaled.service" "network-online.target" ];
