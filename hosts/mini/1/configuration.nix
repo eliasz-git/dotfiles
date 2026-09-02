@@ -211,6 +211,7 @@
     80 443 # caddy
     3000 # adguard setup
     9090 # cockpit
+    8010 # paperless
     3001 # uptime kuma
     8123 # home assistant docker (host mode)
     8081 # metube
@@ -254,6 +255,13 @@
   systemd.tmpfiles.rules = [
     "d /mnt/storage/backups 0755 elias users -"
     "d /mnt/storage/uptime-kuma 0755 elias users -"
+    "d /mnt/storage/paperless 0755 elias users -"
+    "d /mnt/storage/paperless/data 0755 elias users -"
+    "d /mnt/storage/paperless/media 0755 elias users -"
+    "d /mnt/storage/paperless/consume 0755 elias users -"
+    "d /mnt/storage/paperless/export 0755 elias users -"
+    "d /mnt/storage/paperless/pgdata 0755 elias users -"
+    "d /mnt/storage/paperless/pgdata-redis 0755 elias users -"
   ];
   systemd.services.homelab-backup = {
     description = "homelab config backup to /mnt/storage/backups";
@@ -288,6 +296,75 @@
       RestartSec = 5;
       ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:status --https 443 --bg 3001";
       ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:status --https 443 off";
+    };
+  };
+
+
+  # ── Paperless-NGX — document archive (mini1, english ocr) ───────
+  # consume: /mnt/storage/paperless/consume (drop pdfs there, auto-ocr)
+  # samba: \\mini1\storage\paperless or NFS /mnt/storage/paperless
+
+  virtualisation.oci-containers.containers.paperless-redis = {
+    image = "redis:7";
+    volumes = [ "/mnt/storage/paperless/pgdata-redis:/data" ];
+    extraOptions = [ "--pull=always" ];
+  };
+  virtualisation.oci-containers.containers.paperless-db = {
+    image = "postgres:17";
+    environment = {
+      POSTGRES_DB = "paperless";
+      POSTGRES_USER = "paperless";
+      POSTGRES_PASSWORD = "paperless";
+    };
+    volumes = [ "/mnt/storage/paperless/pgdata:/var/lib/postgresql/data" ];
+    extraOptions = [ "--pull=always" ];
+  };
+  virtualisation.oci-containers.containers.paperless-gotenberg = {
+    image = "gotenberg/gotenberg:8";
+    cmd = [ "gotenberg" "--api-timeout=300s" ];
+    extraOptions = [ "--pull=always" ];
+  };
+  virtualisation.oci-containers.containers.paperless = {
+    image = "ghcr.io/paperless-ngx/paperless-ngx:latest";
+    ports = [ "8010:8000" ];
+    dependsOn = [ "paperless-db" "paperless-redis" "paperless-gotenberg" ];
+    environment = {
+      PAPERLESS_REDIS = "redis://paperless-redis:6379";
+      PAPERLESS_DBHOST = "paperless-db";
+      PAPERLESS_DBNAME = "paperless";
+      PAPERLESS_DBUSER = "paperless";
+      PAPERLESS_DBPASS = "paperless";
+      PAPERLESS_SECRET_KEY = "d12835f54bbd6283df54883d45a6cc6a228ef102d468110ed6cdc90654d4cd54";
+      PAPERLESS_URL = "https://paperless.adal-matrix.ts.net";
+      PAPERLESS_OCR_LANGUAGE = "eng";
+      PAPERLESS_TIME_ZONE = "America/New_York";
+      PAPERLESS_OCR_MODE = "skip";
+      PAPERLESS_CONSUMER_POLLING = "10";
+      PAPERLESS_CONSUMER_RECURSIVE = "true";
+      PAPERLESS_TIKA_ENABLED = "0";
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT = "http://paperless-gotenberg:3000";
+      PAPERLESS_TIKA_ENDPOINT = "http://paperless-gotenberg:3000";
+    };
+    volumes = [
+      "/mnt/storage/paperless/data:/usr/src/paperless/data"
+      "/mnt/storage/paperless/media:/usr/src/paperless/media"
+      "/mnt/storage/paperless/export:/usr/src/paperless/export"
+      "/mnt/storage/paperless/consume:/usr/src/paperless/consume"
+    ];
+    extraOptions = [ "--pull=always" ];
+  };
+  systemd.services.tailscale-serve-paperless = {
+    description = "Tailscale serve svc:paperless -> Paperless 8010";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      Restart = "on-failure";
+      RestartSec = 5;
+      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:paperless --https 443 --bg 8010";
+      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:paperless --https 443 off";
     };
   };
 

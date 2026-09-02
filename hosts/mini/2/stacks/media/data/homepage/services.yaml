@@ -37,6 +37,10 @@
     - Maintainerr:
         href: https://maintainerr.adal-matrix.ts.net
         description: Auto-clean watched media
+- Docs:
+    - Paperless-NGX:
+        href: https://paperless.adal-matrix.ts.net
+        description: Document Archive 8010
 - Infra (mini1):
     - AdGuard Home:
         href: https://adguard.adal-matrix.ts.net
