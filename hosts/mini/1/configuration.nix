@@ -173,7 +173,7 @@
   # NixOS module disabled — now runs as Docker container for HACS/latest.
   # Config preserved at /mnt/storage/homeassistant (bind mount).
   # Compose lives at /etc/stacks/homeassistant/compose.yaml on mini1.
-  # Backup: sudo tar -czf /mnt/storage/homeassistant-backup-$(date +%F).tgz -C /mnt/storage homeassistant
+  # Backup: sudo tar -czf /mnt/storage/homeassistant-backup-$(date +%%F).tgz -C /mnt/storage homeassistant
   services.home-assistant.enable = lib.mkForce false;
 
   # ── Cloudflared Tunnel — alt to Tailscale when VPN blocked ─────────
@@ -259,7 +259,7 @@
     description = "homelab config backup to /mnt/storage/backups";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c \'mkdir -p /mnt/storage/backups && tar -czf /mnt/storage/backups/homeassistant-$(date +%F).tgz -C /mnt/storage homeassistant --exclude=homeassistant/home-assistant_v2.db 2>/dev/null; tar -czf /mnt/storage/backups/syncthing-$(date +%F).tgz -C /home/elias .config/syncthing 2>/dev/null; tar -czf /mnt/storage/backups/mini1-config-$(date +%F).tgz -C /home/elias/.config nix-config 2>/dev/null; ls -t /mnt/storage/backups/homeassistant-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/syncthing-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/mini1-config-*.tgz | tail -n +8 | xargs -r rm; echo backup done $(date) >> /mnt/storage/backups/backup.log\'";
+      ExecStart = "${pkgs.bash}/bin/bash -c \'mkdir -p /mnt/storage/backups && tar -czf /mnt/storage/backups/homeassistant-$(date +%%F).tgz -C /mnt/storage homeassistant --exclude=homeassistant/home-assistant_v2.db 2>/dev/null; tar -czf /mnt/storage/backups/syncthing-$(date +%%F).tgz -C /home/elias .config/syncthing 2>/dev/null; tar -czf /mnt/storage/backups/mini1-config-$(date +%%F).tgz -C /home/elias/.config nix-config 2>/dev/null; ls -t /mnt/storage/backups/homeassistant-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/syncthing-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/mini1-config-*.tgz | tail -n +8 | xargs -r rm; echo backup done $(date) >> /mnt/storage/backups/backup.log\'";
       User = "elias";
     };
   };
