@@ -3,6 +3,8 @@
   imports = [
     (if builtins.pathExists ./hardware-configuration.nix
      then ./hardware-configuration.nix
+     else if builtins.pathExists ../beattie/hardware-configuration.nix
+     then ../beattie/hardware-configuration.nix
      else ../beattie/hardware-configuration.nix.example)
   ];
 
