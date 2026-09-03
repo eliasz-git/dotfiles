@@ -60,6 +60,7 @@
   services.xserver.xkb = { layout = "us"; variant = ""; };
 
   environment.systemPackages = with pkgs; [
+    git curl wget nano htop
     # gnome basics only - no extensions
     gnome-tweaks gnome-extension-manager gnome-software dconf-editor gnome-backgrounds
     bibata-cursors papirus-icon-theme everforest-gtk-theme adw-gtk3

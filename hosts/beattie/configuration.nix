@@ -123,6 +123,7 @@
 
   # ── System packages — GNOME polish + beginner tools ───────────────
   environment.systemPackages = with pkgs; [
+    git curl wget nano htop
     # GNOME essentials
     gnome-tweaks
     gnome-extension-manager
