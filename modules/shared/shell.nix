@@ -24,7 +24,7 @@
     };
     initContent = lib.mkOrder 550 ''
       eval "$(zoxide init zsh)"
-      eval "$(thefuck --alias)"
+      eval "$(pay-respects zsh --alias)"
       export PATH="$HOME/.npm-global/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
       FPATH="$HOME/.docker/completions:$FPATH"

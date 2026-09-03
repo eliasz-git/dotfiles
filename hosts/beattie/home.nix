@@ -30,7 +30,7 @@
     loupe evince file-roller
     gnome-calculator gnome-system-monitor baobab gnome-disk-utility
     nextcloud-client
-    bitwarden
+    bitwarden-desktop
     signal-desktop
     thunderbird
 
@@ -41,7 +41,7 @@
     python312 nodejs_22
 
     # Fun intro to terminal
-    cowsay fortune lolcat sl cmatrix hollywood pipes neofetch
+    cowsay fortune lolcat sl cmatrix hollywood pipes fastfetch
 
     # Media polish
     bibata-cursors
@@ -73,7 +73,7 @@
 
   programs.zsh.initContent = lib.mkOrder 600 ''
     eval "$(zoxide init zsh)"
-    eval "$(thefuck --alias)"
+    eval "$(pay-respects zsh --alias)"
     export PATH="$HOME/.npm-global/bin:$PATH"
     export PATH="$HOME/.local/bin:$PATH"
 

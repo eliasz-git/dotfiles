@@ -24,11 +24,8 @@
 
   # ── GNOME Desktop ─────────────────────────────────────────────────
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm = {
-    enable = true;
-    wayland = false; # x11 for now - set true once stable
-  };
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Exclude some default GNOME bloat but keep it beginner-friendly
   environment.gnome.excludePackages = with pkgs; [
@@ -271,7 +268,7 @@
     inter
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
   ];
 
   # Plymouth theme — keep boot pretty

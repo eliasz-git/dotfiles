@@ -3,10 +3,10 @@
 
   inputs = {
     # Stable — used by macOS, NixOS, and Artix hosts
-    nixpkgs.url          = "github:NixOS/nixpkgs/nixos-25.05";
-    darwin.url           = "github:LnL7/nix-darwin/nix-darwin-25.05";
+    nixpkgs.url          = "github:NixOS/nixpkgs/nixos-26.05";
+    darwin.url           = "github:LnL7/nix-darwin/nix-darwin-26.05";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url     = "github:nix-community/home-manager/release-25.05";
+    home-manager.url     = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # Unstable — used by the Alpine host for latest packages
@@ -107,12 +107,6 @@
       ];
     };
 
-    # ── Artix Linux — OpenRC, Everforest, nixpkgs 25.05 ──────────
-    homeConfigurations.artix = home-manager.lib.homeManagerConfiguration {
-      pkgs    = linuxPkgs;
-      modules = [ ./hosts/artix/home.nix ];
-    };
-
     # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
     homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {
       pkgs = linuxPkgs;
@@ -120,6 +114,7 @@
     };
 
     # ── Alpine Linux — OpenRC, Gruvbox Dark, nixpkgs UNSTABLE ────
+    # (artix host removed - dir deleted upstream)
     # Uses unstable for latest package versions (neovim, starship, etc.)
     # Ly display manager is intentionally kept in APK — it runs as root
     # before any user nix profile is mounted, so can't come from nixpkgs.
