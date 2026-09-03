@@ -1,5 +1,4 @@
 { config, pkgs, ... }:
-
 {
   imports = [
     (if builtins.pathExists ./hardware-configuration.nix
@@ -10,8 +9,6 @@
   # ── Boot ──────────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # use default kernel for max compat (was linuxPackages_latest - caused black screen on some hw)
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.plymouth.enable = false;
 
   # ── Networking ────────────────────────────────────────────────────
@@ -22,33 +19,26 @@
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # ── GNOME Desktop ─────────────────────────────────────────────────
+  # ── KDE Plasma 6 — beginner friendly, polished, Tundra Dark ──────
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = "breeze";
+  };
+  services.desktopManager.plasma6.enable = true;
 
-  # Exclude some default GNOME bloat but keep it beginner-friendly
-  environment.gnome.excludePackages = with pkgs; [
-    gnome-tour
-    epiphany
-    geary
-  ];
-
-  # Needed for screen sharing, flatpak portals, etc.
+  # KDE portals
   xdg.portal = {
     enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gnome
-      xdg-desktop-portal-gtk
-    ];
+    extraPortals = with pkgs; [ kdePackages.xdg-desktop-portal-kde xdg-desktop-portal-gtk ];
   };
 
-  # Flatpak for GUI app store (GNOME Software)
+  # Flatpak for Discover
   services.flatpak.enable = true;
-  # Enable GNOME Software to see flatpaks
   services.packagekit.enable = true;
 
-  # ── Graphics (fix login/black screen on 26.05/gnome 50 wayland)
+  # ── Graphics ──────────────────────────────────────────────────────
   hardware.graphics.enable = true;
   hardware.enableAllFirmware = true;
 
@@ -62,33 +52,21 @@
   };
 
   # ── Bluetooth ─────────────────────────────────────────────────────
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
+  hardware.bluetooth = { enable = true; powerOnBoot = true; };
   services.blueman.enable = true;
 
   # ── Input ─────────────────────────────────────────────────────────
   services.libinput.enable = true;
-  # Touchpad tap-to-click on by default (friendly)
   services.libinput.touchpad.tapping = true;
 
   # ── Printing ──────────────────────────────────────────────────────
   services.printing = {
     enable = true;
-    drivers = with pkgs; [
-      gutenprint hplip epson-escpr brlaser cnijfilter2
-    ];
+    drivers = with pkgs; [ gutenprint hplip epson-escpr brlaser cnijfilter2 ];
   };
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
+  services.avahi = { enable = true; nssmdns4 = true; openFirewall = true; };
 
-  # ── Users — demo friendly ────────────────────────────────────────
-  # Primary demo account — no password required for showcase.
-  # Change password on first boot with `passwd demo` / `passwd student`.
+  # ── Users ─────────────────────────────────────────────────────────
   users.users.demo = {
     isNormalUser = true;
     description = "Beattie Demo";
@@ -96,194 +74,82 @@
     shell = pkgs.zsh;
     initialPassword = "demo";
   };
-  # Also keep your account for admin
   users.users.tundra = {
-    initialPassword = "tundra";
     isNormalUser = true;
     description = "tundra";
     extraGroups = [ "networkmanager" "wheel" "docker" "wireshark" ];
     shell = pkgs.zsh;
+    initialPassword = "tundra";
   };
-
-  # Allow passwordless sudo for demo (classroom convenience) — remove if you want security
-  security.sudo.extraRules = [{
-    users = [ "demo" ];
-    commands = [{ command = "ALL"; options = [ "NOPASSWD" ]; }];
-  }];
-
+  security.sudo.extraRules = [{ users = [ "demo" ]; commands = [{ command = "ALL"; options = [ "NOPASSWD" ]; }]; }];
   users.mutableUsers = true;
-  # failsafe tty login if gdm fails - ctrl+alt+f3 will always work
-  # Auto-login demo for instant showcase (optional — comment out to require login)
-  # disabled for now - was causing fast black-screen loop if gdm failed
-  # services.displayManager.autoLogin = {
-  #   enable = true;
-  #   user = "demo";
-  # };
 
-  # ── Keymap — QWERTY by default for beginners ─────────────────────
-  # (your laptop uses colemak — this host stays normal for students)
+  # ── Keymap ────────────────────────────────────────────────────────
   console.keyMap = "us";
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-  };
+  services.xserver.xkb = { layout = "us"; variant = ""; };
 
-  # ── System packages — GNOME polish + beginner tools ───────────────
+  # ── System packages ───────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     git curl wget nano htop
-    # GNOME essentials
-    gnome-tweaks
-    gnome-extension-manager
-    gnome-software
-    dconf-editor
-    gnome-shell-extensions
-    gnome-backgrounds
 
-    # Extensions — installed system-wide
-    gnomeExtensions.dash-to-dock
-    gnomeExtensions.appindicator
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.caffeine
-    gnomeExtensions.just-perfection
-    gnomeExtensions.vitals
-    gnomeExtensions.arcmenu
-    gnomeExtensions.user-themes
-    gnomeExtensions.clipboard-indicator
-    gnomeExtensions.gsconnect
+    # KDE essentials + polish
+    kdePackages.discover kdePackages.kate kdePackages.konsole kdePackages.dolphin
+    kdePackages.ark kdePackages.spectacle kdePackages.gwenview kdePackages.okular
+    kdePackages.plasma-systemmonitor kdePackages.kcalc kdePackages.kcharselect
+    kdePackages.kdeconnect-kde
+    kdePackages.sddm-kcm
 
-    # Cursor / icons / themes (same family as your laptop)
-    bibata-cursors
-    papirus-icon-theme
-    everforest-gtk-theme
-    adw-gtk3
+    # Theming - Tundra Dark (Everforest base)
+    bibata-cursors papirus-icon-theme everforest-gtk-theme adw-gtk3
+    kdePackages.breeze-gtk kdePackages.breeze-icons
 
     # Browsers
-    librewolf
-    brave
+    librewolf brave
 
-    # Files + tweaks
-    nautilus
-    file-roller
-    baobab        # disk usage
-    gnome-disk-utility
-    gnome-system-monitor
-    gnome-calculator
-    gnome-calendar
-    gnome-weather
-    gnome-clocks
-    gnome-characters
-    gnome-font-viewer
-    loupe         # image viewer (replaces eog)
-    evince        # pdf
-
-    # Terminal choices — GNOME Console for beginners + Kitty for you
-    gnome-console
+    # Files + tools
+    file-roller baobab gnome-disk-utility
     kitty
 
-    # Beginner-friendly helpers
-    tldr
-    cowsay fortune lolcat sl cmatrix
-    fastfetch btop htop nvtopPackages.full
+    # Beginner helpers
+    tldr cowsay fortune lolcat sl cmatrix fastfetch btop nvtopPackages.full
+    hollywood pipes
 
-    # Fun / showcase
-    hollywood
-    pipes
+    # Dev
+    vscodium gh
 
-    # Beginner dev
-    vscodium
-    gh
+    # Cybersecurity Lab
+    wireshark nmap socat tcpdump netcat-gnu masscan amass gobuster ffuf wfuzz nuclei dnsutils whois
+    burpsuite zap sqlmap nikto
+    hashcat john hydra hashcat-utils hcxtools aircrack-ng
+    binwalk exiftool foremost sleuthkit ghidra radare2 cutter binutils strace ltrace
+    metasploit exploitdb seclists
 
-    # ── Cybersecurity Lab — full toolkit ─────────────────────────────
-    # Network / recon
-    wireshark
-    nmap
-    socat
-    tcpdump
-    netcat-gnu
-    masscan
-    amass
-    gobuster
-    ffuf
-    wfuzz
-    nuclei
-    dnsutils
-    whois
-    # Web / appsec
-    burpsuite
-    zap
-    sqlmap
-    nikto
-    # Cracking / crypto
-    hashcat
-    john
-    hydra
-    hashcat-utils
-    hcxtools
-    aircrack-ng
-    # Forensics / reversing
-    binwalk
-    exiftool
-    foremost
-    sleuthkit
-    ghidra
-    radare2
-    cutter
-    binutils
-    strace
-    ltrace
-    # Misc pentest
-    metasploit
-    exploitdb
-    seclists
-
-        # diagnostic
-    inxi lshw pciutils usbutils dmidecode hwinfo mesa-demos vulkan-tools htop btop smartmontools lm_sensors
+    # Diagnostic
+    inxi lshw pciutils usbutils dmidecode hwinfo mesa-demos vulkan-tools smartmontools lm_sensors
 
     # Flatpak helper
     flatpak-builder
   ];
 
-  # Wireshark needs this
   programs.wireshark.enable = true;
-
-  # Needed for GSConnect / KDE Connect firewall
+  programs.kdeconnect.enable = true;
   networking.firewall.allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
   networking.firewall.allowedUDPPortRanges = [{ from = 1714; to = 1764; }];
 
-  # ── Docker — for class demos ──────────────────────────────────────
   virtualisation.docker.enable = true;
-
-  # ── Shell ─────────────────────────────────────────────────────────
   programs.zsh.enable = true;
   environment.shells = with pkgs; [ zsh ];
-
   programs.dconf.enable = true;
-
   services.openssh.enable = true;
 
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true;
+  nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
 
   fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.fira-code
-    victor-mono
-    inter
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-color-emoji
+    nerd-fonts.jetbrains-mono nerd-fonts.fira-code victor-mono inter
+    noto-fonts noto-fonts-cjk-sans noto-fonts-color-emoji
   ];
-
-  # Plymouth theme — keep boot pretty
-  # boot.plymouth.theme = "bgrt";
 
   system.stateVersion = "25.05";
 }

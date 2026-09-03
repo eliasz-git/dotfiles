@@ -1,7 +1,7 @@
-# Welcome to Linux — Beattie GNOME Showcase
-### NixOS + GNOME — Tundra Dark — Beginner Friendly
+# Welcome to Linux — Beattie KDE Plasma Showcase
+### NixOS + KDE Plasma — Tundra Dark — Beginner Friendly
 
-You're on the **GNOME** station — **beattie**. The other two Linux desktops are **KDE Plasma** and **Omarchy** (Hyprland). All three are NixOS — same system, different desktops.
+You are on the **KDE Plasma** station — **beattie** (now the polished KDE showcase). The other two Linux stations are one KDE variant + Omarchy(Hyprland). All three are NixOS — same system, different desktops.
 
 > Full wiki: Super → `Beattie Wiki` or `hosts/beattie/WIKI.md`
 
@@ -15,9 +15,9 @@ You're on the **GNOME** station — **beattie**. The other two Linux desktops ar
 - **Workspaces** — Super + drag window to edge, or overview -> drag to new workspace.
 
 ### 2. Must-Try Apps (all in the dash or Super search)
-- **GNOME Software** — app store (Flatpaks). Install without terminal.
-- **Extension Manager** — customize GNOME (dash, blur, etc.). Try toggling Blur My Shell.
-- **GNOME Tweaks** — themes, fonts, window buttons.
+- **KDE Plasma Software** — app store (Flatpaks). Install without terminal.
+- **System Settings** — customize KDE Plasma (dash, blur, etc.). Try toggling Blur My Shell.
+- **KDE Plasma Tweaks** — themes, fonts, window buttons.
 - **Files (Nautilus)** — file manager. Press `/` to type a path, `Ctrl+H` hidden files.
 - **Console + Kitty** — terminals. Console is simple, Kitty is powerful.
 - **VSCodium** — code editor.
@@ -37,7 +37,7 @@ Helpers: `tldr <command>` explains anything. `helpme` fuzzy-searches all tldrs.
 
 ### 4. Customization
 - **Appearance:** Settings -> Appearance -> Style: Dark, Accent: Green.
-- **Extensions:** Extension Manager -> turn on/off Dash to Dock, Blur My Shell, Caffeine (prevents sleep), ArcMenu (start menu).
+- **Extensions:** System Settings -> turn on/off Dash to Dock, Blur My Shell, Caffeine (prevents sleep), ArcMenu (start menu).
 - **Wallpaper:** Settings -> Appearance -> Add Picture. Original at `~/.config/nix-config/wallpapers/wallpaper.jpg`.
 - **Theme:** Tundra Dark BL + Papirus Dark icons + Bibata cursor — same family as the other stations.
 
@@ -60,7 +60,7 @@ This whole desktop is ONE flake: `hosts/beattie/configuration.nix` + `home.nix` 
 - Rollback: reboot -> pick older generation in boot menu. You can't break it.
 
 ### 7. How It Differs From the Other Two
-- **This (GNOME):** macOS-like, simple, extensions. Best for beginners/creatives.
+- **This (KDE Plasma):** macOS-like, simple, extensions. Best for beginners/creatives.
 - **KDE:** Windows-like, ultra-customizable, widgets.
 - **Omarchy:** Keyboard-driven tiling (Hyprland), for power users.
 

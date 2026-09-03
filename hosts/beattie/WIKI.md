@@ -1,6 +1,6 @@
-# Beattie Wiki — GNOME + NixOS Lab
+# Beattie Wiki — KDE Plasma + NixOS Lab
 
-> **Host:** beattie · **DE:** GNOME 46 (Wayland) · **Base:** NixOS 25.05 · **Theme:** Tundra Dark BL + Papirus Dark + Bibata · **Users:** `demo` / `demo` (auto-login, NOPASSWD sudo) + `tundra` (admin)
+> **Host:** beattie · **DE:** KDE Plasma 6 (Wayland) · **Base:** NixOS 25.05 · **Theme:** Tundra Dark BL + Papirus Dark + Bibata · **Users:** `demo` / `demo` (auto-login, NOPASSWD sudo) + `tundra` (admin)
 
 This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wiki** or `xdg-open ~/.config/nix-config/hosts/beattie/WIKI.md`.
 
@@ -9,10 +9,10 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 ## Table of Contents
 1. [Quick Start](#quick-start)
 2. [Meet the 3 Linux Stations](#meet-the-3-linux-stations)
-3. [GNOME Tour (5 min)](#gnome-tour-5-min)
+3. [KDE Plasma Tour (5 min)](#gnome-tour-5-min)
 4. [Apps You Actually Have](#apps-you-actually-have)
 5. [Terminal Crash Course](#terminal-crash-course)
-6. [Customizing GNOME](#customizing-gnome)
+6. [Customizing KDE Plasma](#customizing-gnome)
 7. [NixOS Superpower — Rebuild + Rollback](#nixos-superpower)
 8. [Cybersecurity Lab](#cybersecurity-lab)
 9. [Cheat Sheets](#cheat-sheets)
@@ -35,13 +35,13 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 ## Meet the 3 Linux Stations
 All three run the **same NixOS config**, different desktops:
 
-- **This: beattie — GNOME** — macOS-like, simple, extensions. Best first desktop.
+- **This: beattie — KDE Plasma** — macOS-like, simple, extensions. Best first desktop.
 - **KDE Plasma station** — Windows-like, widgets, insane customization.
 - **Omarchy station** — Hyprland tiling, keyboard-driven, for power users.
 
 Try all three. Same apps, same terminal, different shell.
 
-## GNOME Tour (5 min)
+## KDE Plasma Tour (5 min)
 - **Activities / Super:** overview, workspaces, search.
 - **Dash (bottom):** click or Super + number. Drag to reorder. Scroll over icon cycles windows.
 - **Workspaces:** dynamic — drag window to right edge creates new. Or Super + swipe.
@@ -53,11 +53,11 @@ Try all three. Same apps, same terminal, different shell.
 ## Apps You Actually Have
 
 ### System
-- **GNOME Software** — graphical app store (Flatpak). No terminal needed.
-- **Extension Manager** — toggle Blur My Shell, Dash to Dock, Caffeine, etc.
-- **GNOME Tweaks** — fonts, theme, titlebar buttons.
-- **dconf Editor** — advanced GNOME settings.
-- **Baobab** (Disk Usage), **GNOME Disk Utility**, **System Monitor**
+- **KDE Plasma Software** — graphical app store (Flatpak). No terminal needed.
+- **System Settings** — toggle Blur My Shell, Dash to Dock, Caffeine, etc.
+- **KDE Plasma Tweaks** — fonts, theme, titlebar buttons.
+- **dconf Editor** — advanced KDE Plasma settings.
+- **Baobab** (Disk Usage), **KDE Plasma Disk Utility**, **System Monitor**
 
 ### Everyday
 - **Browsers:** LibreWolf (privacy), Brave
@@ -67,7 +67,7 @@ Try all three. Same apps, same terminal, different shell.
 - **Comms:** Thunderbird, Signal, Nextcloud
 
 ### Terminal (both installed)
-- **GNOME Console (kgx)** — simple, beginner default.
+- **KDE Plasma Console (kgx)** — simple, beginner default.
 - **Kitty** — fast, splits, images, for Elias.
 
 ## Terminal Crash Course
@@ -112,10 +112,10 @@ helpme        → fzf tldr
 
 MOTD prints on new shell: `Welcome to Beattie Linux...` with hints.
 
-## Customizing GNOME
+## Customizing KDE Plasma
 - **Appearance:** Settings → Appearance → Dark, green accent, background `wallpapers/wallpaper.jpg`
-- **Dock:** Extension Manager → Dash to Dock → position/size/intellihide.
-- **Blur:** Extension Manager → Blur My Shell → panel/dash blur.
+- **Dock:** System Settings → Dash to Dock → position/size/intellihide.
+- **Blur:** System Settings → Blur My Shell → panel/dash blur.
 - **Top bar:** Just Perfection → hide accessibility, adjust padding.
 - **Menu:** ArcMenu → Redmond layout, left in panel. Right-click menu button to change.
 - **Vitals:** click CPU icon → settings → pick sensors.
@@ -226,7 +226,7 @@ SecLists lives via nix at `/run/current-system/sw/share/seclists` — use that p
 
 ## Cheat Sheets
 
-**GNOME:**
+**KDE Plasma:**
 - Super — search/overview
 - Super+Tab / Alt+Tab — apps / windows
 - Super+Arrow — tile
@@ -245,7 +245,7 @@ SecLists lives via nix at `/run/current-system/sw/share/seclists` — use that p
 ## Troubleshooting
 - **No wifi?** Top-right → wifi → pick — or `nmtui` in terminal.
 - **Black screen?** Reboot → boot menu → older generation.
-- **Extensions broken after update?** Extension Manager → toggle off/on, or `gnome-extensions list`.
+- **Extensions broken after update?** System Settings → toggle off/on, or `gnome-extensions list`.
 - **Sound broken?** Settings → Sound → output, or `pavucontrol`.
 - **Forgot demo password?** Login as tundra, `sudo passwd demo`.
 - **Wallpaper not showing?** `home.file` links it to `~/.config/nix-config/wallpapers/wallpaper.jpg` — run `rb` to re-apply dconf.
