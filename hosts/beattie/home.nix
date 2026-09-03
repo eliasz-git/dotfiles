@@ -62,9 +62,8 @@
 
   # Keep same zsh goodies but add beginner aliases
   programs.zsh.shellAliases = {
-    rb = "sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure";
-    rb-beattie = "sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure";
-    update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#BeattieCST1 --impure";
+    rb = "sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure";
+    update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#beattie --impure";
     ll = "eza -la --icons";
     la = "eza -a --icons";
     l = "eza --icons";
@@ -92,7 +91,7 @@
       cd /etc/nixos
       sudo nix flake update
       echo "Rebuilding..."
-      sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure
+      sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
     }
   '';
 

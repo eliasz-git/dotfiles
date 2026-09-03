@@ -1,8 +1,8 @@
-# BeattieCST1 — GNOME Showcase
+# Beattie — GNOME Showcase
 
 NixOS + GNOME (Wayland) — Tundra Dark — beginner-friendly demo + cybersecurity lab.
 
-Hostname: **BeattieCST1** — flake: `#BeattieCST1` (alias `#beattie`). Complements KDE + Omarchy stations.
+Hostname: **beattie** — flake: `#beattie` (alias `#beattie`). Complements KDE + Omarchy stations.
 
 ## Quick start
 
@@ -16,9 +16,9 @@ sudo ln -s /path/to/nix-config /etc/nixos
 # or: git clone https://github.com/tundra-node/nix-config /etc/nixos
 
 # 3. Build (both work)
-sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure
 sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
-# or inside: rb  /  rb-beattie
+sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
+# or inside: rb
 ```
 
 Login: `demo` / `demo` (NOPASSWD sudo, auto-login). `tundra` is admin. To harden: comment `services.displayManager.autoLogin` + set hashedPassword.

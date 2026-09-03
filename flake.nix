@@ -91,8 +91,7 @@
     };
 
     # ── Beattie showcase — NixOS GNOME (Wayland, Tundra Dark) ────
-    # Primary: BeattieCST1 (hostname), alias: beattie
-    nixosConfigurations.BeattieCST1 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.beattie = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
       pkgs   = linuxPkgs;
       modules = [
@@ -107,7 +106,6 @@
         }
       ];
     };
-    nixosConfigurations.beattie = self.nixosConfigurations.BeattieCST1;
 
     # ── Artix Linux — OpenRC, Everforest, nixpkgs 25.05 ──────────
     homeConfigurations.artix = home-manager.lib.homeManagerConfiguration {

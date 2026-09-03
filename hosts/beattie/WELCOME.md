@@ -1,7 +1,7 @@
-# Welcome to Linux — BeattieCST1 GNOME Showcase
+# Welcome to Linux — Beattie GNOME Showcase
 ### NixOS + GNOME — Tundra Dark — Beginner Friendly
 
-You're on the **GNOME** station — **BeattieCST1**. The other two Linux desktops are **KDE Plasma** and **Omarchy** (Hyprland). All three are NixOS — same system, different desktops.
+You're on the **GNOME** station — **beattie**. The other two Linux desktops are **KDE Plasma** and **Omarchy** (Hyprland). All three are NixOS — same system, different desktops.
 
 > Full wiki: Super → `Beattie Wiki` or `hosts/beattie/WIKI.md`
 
@@ -54,8 +54,8 @@ msfconsole ; searchsploit apache
 > Ask instructor before scanning the school network! Full toolkit in WIKI.md: masscan, amass, ffuf, nuclei, sqlmap, hydra, aircrack-ng, binwalk, foremost, sleuthkit, etc.
 
 ### 6. NixOS Superpower
-This whole desktop is ONE flake: `hosts/beattie/configuration.nix` + `home.nix` → `BeattieCST1`.
-- `rb` — rebuild (`sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure`)
+This whole desktop is ONE flake: `hosts/beattie/configuration.nix` + `home.nix` → `beattie`.
+- `rb` — rebuild (`sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure`)
 - `update` — flake update + rebuild
 - Rollback: reboot -> pick older generation in boot menu. You can't break it.
 

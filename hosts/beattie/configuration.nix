@@ -14,7 +14,7 @@
   boot.plymouth.enable = true;
 
   # ── Networking ────────────────────────────────────────────────────
-  networking.hostName = "BeattieCST1";
+  networking.hostName = "beattie";
   networking.networkmanager.enable = true;
 
   # ── Locale ────────────────────────────────────────────────────────

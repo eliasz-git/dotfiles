@@ -1,6 +1,6 @@
-# BeattieCST1 Wiki — GNOME + NixOS Lab
+# Beattie Wiki — GNOME + NixOS Lab
 
-> **Host:** BeattieCST1 · **DE:** GNOME 46 (Wayland) · **Base:** NixOS 25.05 · **Theme:** Tundra Dark BL + Papirus Dark + Bibata · **Users:** `demo` / `demo` (auto-login, NOPASSWD sudo) + `tundra` (admin)
+> **Host:** beattie · **DE:** GNOME 46 (Wayland) · **Base:** NixOS 25.05 · **Theme:** Tundra Dark BL + Papirus Dark + Bibata · **Users:** `demo` / `demo` (auto-login, NOPASSWD sudo) + `tundra` (admin)
 
 This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wiki** or `xdg-open ~/.config/nix-config/hosts/beattie/WIKI.md`.
 
@@ -35,7 +35,7 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 ## Meet the 3 Linux Stations
 All three run the **same NixOS config**, different desktops:
 
-- **This: BeattieCST1 — GNOME** — macOS-like, simple, extensions. Best first desktop.
+- **This: beattie — GNOME** — macOS-like, simple, extensions. Best first desktop.
 - **KDE Plasma station** — Windows-like, widgets, insane customization.
 - **Omarchy station** — Hyprland tiling, keyboard-driven, for power users.
 
@@ -102,8 +102,8 @@ pipes
 
 **Aliases on this host:**
 ```
-rb            → rebuild BeattieCST1
-rb-beattie    → alias (same)
+rb            → rebuild beattie
+
 update        → flake update + rebuild
 ll / la / l   → eza variants
 cat           → bat
@@ -132,15 +132,15 @@ Whole desktop = two files: `hosts/beattie/configuration.nix` + `home.nix`.
 
 ```bash
 # edit, then rebuild
-sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure
+sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
 # or: rb
 
 # update all inputs
-sudo nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure
+sudo nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
 # or: update  (or update-all function)
 
 # try without committing
-sudo nixos-rebuild test --flake /etc/nixos#BeattieCST1 --impure
+sudo nixos-rebuild test --flake /etc/nixos#beattie --impure
 
 # rollback
 reboot → pick older generation at boot menu
@@ -254,9 +254,9 @@ SecLists lives via nix at `/run/current-system/sw/share/seclists` — use that p
 ## For Admins (Elias)
 - **Repo:** `~/Developer/nix-config` → symlinked to `/etc/nixos` on target.
 - **Generate hw config on target:** `sudo nixos-generate-config --show-hardware-config > hosts/beattie/hardware-configuration.nix`
-- **Build:** `sudo nixos-rebuild switch --flake /etc/nixos#BeattieCST1 --impure` (also `#beattie` alias)
+- **Build:** `sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure` (also `#beattie` alias)
 - **Users:** `demo` (auto-login, NOPASSWD sudo for class — remove `security.sudo.extraRules` if you want password), `tundra` (your admin).
-- **Hostnames:** `BeattieCST1` (flake attrs `BeattieCST1` + `beattie`).
+- **Hostnames:** `beattie` (flake attrs `beattie` + `beattie`).
 - **Flatpak:** `flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo`
 - **To lock down:** comment `services.displayManager.autoLogin`, set `users.users.demo.initialPassword = null`, add `users.users.demo.hashedPassword = "..."` or require passwd change.
 
