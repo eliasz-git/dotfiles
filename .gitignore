@@ -23,4 +23,4 @@ hosts/mini/**/stacks/**/.env
 hosts/mini/secrets.yaml
 
 # Logs
-*.log
+*.logpi-session*.html

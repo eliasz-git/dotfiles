@@ -4,80 +4,66 @@
   system.stateVersion = 6;
   system.primaryUser = "elias";
 
+  # Nix settings
   nix.enable = false;
   nix.extraOptions = ''
     extra-platforms = x86_64-darwin aarch64-darwin
   '';
 
+  # System-wide packages (only essential system tools)
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.isLinux then [ gutenprint ] else []; in [
     cups
     ghostscript
     hermes-agent
   ] ++ extraPrinting;
 
+  # Homebrew integration
   homebrew = {
     enable = true;
     onActivation = {
       autoUpdate = true;
-      # cleanup "none": "zap" uninstalled unlisted brews (mpdscribble, rust, mpc) and aborted switches
-      cleanup = "none";
+      cleanup = "zap";
     };
-    taps = [ ];  # declared in extraConfig below with `trusted: true`
+    taps = [
+      "FelixKratz/formulae"
+      "koekeishiya/formulae"
+      "TheBoredTeam/boring-notch"
+      "pear-devs/pear"
+      "anomalyco/tap"
+      "steipete/tap"
+      "nikitabobko/tap"
+    ];
     brews = [
-      "sketchybar" "cups" "mas" "docker" "colima"
+      "borders" "cups" "opencode"
       #"yabai"
       "pcre2" "ripgrep"
-      "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
+      "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       # Apple Reminders CLI + iMessage CLI (steipete/tap)
       "imsg" "remindctl"
-      # Now Playing widget for sketchybar (covers Music, Spotify, YT Music, browsers)
-      "nowplaying-cli"
-      # mpd/rmpc/mpdscribble/mpc: brew-declared (not nix packages, to skip darwin builds); daemon lifecycle in home.nix
-      "mpd" "rmpc" "mpdscribble" "mpc"
-      # rust: needed for Rust builds (airpods-cli); declared so it survives rebuilds
-      "rust"
-      # Soulseek client (GUI, bottled, light); Linux hosts run slskd headless instead
-      "nicotine-plus"
+      "mole"
     ];
     casks = [
-      "cloudflare-warp" "lulu" "keepassxc"
-      "obsidian" "pearcleaner" "raycast" "steam" "yubico-authenticator"
-      "iina" "karabiner-elements" "claude" "prismlauncher"
-      "tuta-mail" "boring-notch" "pear-desktop"
-      "beeper" "netnewswire" "macfuse"
-      "veracrypt" "microsoft-teams"
+      "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
+      "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
+      "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
+      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
+      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "loop"
+      "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "microsoft-teams"
+      "opencode-desktop"
       # Apps installed manually (DMG) that have brew casks — catch-up so a
       # rebuild can restore them without re-downloading DMGs
-      "calibre" "discord" "gramps"
-      "burn" "rustdesk" "tailscale-app"
-      "termius" "balenaetcher" "tinymediamanager" "vscodium"
-      "browseros" "wakatime"
+      "calibre" "discord" "gramps" "openwork" "protonvpn"
+      "copilot-cli"
+      "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
+      "termius" "zed" "zen" "balenaetcher" "tinymediamanager"
       # Tiling WM + menu bar toolkit
       "aerospace" "vorssaint"
-      # Terminal — Ghostty replaces Alacritty
-      "ghostty"
-      # Automation — Hammerspoon for display watcher
-      "hammerspoon"
-      # Installed manually via brew, caught up here so rebuilds keep them
-      "xld" "openlogi"
+      # Media stack: music library + ripping/tagging
+      "foobar2000" "xld" "musicbrainz-picard"
+      #"makemkv"  # pending: makemkv.com down (525), re-enable when reachable
+      # Catch-up: installed manually/via CLI, not yet declared
+      "browseros" "hermes-desktop" "wakatime"
     ];
-    # Third-party taps. Declared with `trusted: true` so that `brew bundle
-    # cleanup` (run on activation via cleanup = "zap") restores the Homebrew
-    # trust store instead of resetting it to empty, which would abort the
-    # activation when it then runs `brew cleanup`.
-    extraConfig = ''
-      tap "FelixKratz/formulae", trusted: true
-      tap "koekeishiya/formulae", trusted: true
-      tap "TheBoredTeam/boring-notch", trusted: true
-      tap "pear-devs/pear", trusted: true
-      tap "anomalyco/tap", trusted: true
-      tap "steipete/tap", trusted: true
-      tap "nikitabobko/tap", trusted: true
-      mas "Hush Nag Blocker", id: 1544743900
-      mas "uBlock Origin Lite", id: 6745342698
-      mas "Obsidian Web Clipper", id: 6720708363
-      mas "Night Eye", id: 1450504903
-    '';
   };
 
   system.defaults = {
@@ -120,6 +106,7 @@
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
+  # Fonts
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
@@ -135,22 +122,25 @@
     width = 6.0;
     hidpi = false; # 1920x1080 @1x - hidpi=on misaligns (left slightly, right off screen)
     active_color = "0xff116FAE";
-    inactive_color = "0xff5E81AC"; # visible inactive to avoid ghost when window closed; use 0x00000000 for transparent
+    inactive_color = "0xff5E81AC"; # visible inactive to avoid ghost when window closed
     style = "round";
     background_color = "0x00000000";
     blur_radius = 0.0;
-    ax_focus = false; # off = faster, avoids lag/ghost when window removed; on = slower AX API
-    order = "below"; # below = more stable with AeroSpace tiling (above can leave ghost on close)
+    ax_focus = false; # off = faster, avoids ghost when window removed
+    order = "below"; # below = stable with AeroSpace
   };
 
+  # User
   users.users.elias = {
     name = "elias";
     home = "/Users/elias";
     shell = pkgs.zsh;
   };
 
+  # Add system PATH for Homebrew
   environment.systemPath = [ "/opt/homebrew/bin" "/opt/homebrew/sbin" ];
 
+  # Enable zsh at system level
   programs.zsh.enable = true;
 
   home-manager.backupFileExtension = "backup";
