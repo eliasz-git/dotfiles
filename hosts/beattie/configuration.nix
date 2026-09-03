@@ -59,6 +59,8 @@
   services.libinput.enable = true;
   services.libinput.touchpad.tapping = true;
 
+  environment.variables.GSK_RENDERER = "ngl"; # safe for older intel, gtk apps on wayland
+
   # ── Printing ──────────────────────────────────────────────────────
   services.printing = {
     enable = true;

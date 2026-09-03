@@ -30,12 +30,17 @@
   services.flatpak.enable = true;
   services.packagekit.enable = true;
 
+  hardware.graphics.enable = true;
+  hardware.enableAllFirmware = true;
+
   security.rtkit.enable = true;
   services.pipewire = { enable = true; alsa.enable = true; alsa.support32Bit = true; pulse.enable = true; };
   hardware.bluetooth = { enable = true; powerOnBoot = true; };
   services.blueman.enable = true;
   services.libinput.enable = true;
   services.libinput.touchpad.tapping = true;
+
+  environment.variables.GSK_RENDERER = "ngl"; # fix for older intel vulkan -> ngl (research: discourse gsk)
 
   services.printing = {
     enable = true;
@@ -58,6 +63,20 @@
     shell = pkgs.zsh;
   };
   security.sudo.extraRules = [{ users = [ "demo" ]; commands = [{ command = "ALL"; options = [ "NOPASSWD" ]; }]; }];
+
+  # GDM 50 PAM fix - gnome-session not in PATH (github #523332)
+  security.pam.services.gdm-launch-environment.rules.session.gnome-session-path = {
+    order = config.security.pam.services.gdm-launch-environment.rules.session.systemd.order + 50;
+    control = "required";
+    modulePath = "''${config.security.pam.package}/lib/security/pam_env.so";
+    settings = {
+      conffile = let env = config.services.displayManager.generic.environment; in pkgs.writeText "gdm-launch-environment-env-conf" ''
+        PATH DEFAULT="''${PATH}:''${pkgs.gnome-session}/bin"
+        XDG_DATA_DIRS DEFAULT="''${XDG_DATA_DIRS}:''${env.XDG_DATA_DIRS}:''${pkgs.gdm}/share"
+      '';
+      readenv = 0;
+    };
+  };
 
   console.keyMap = "us";
   services.xserver.xkb = { layout = "us"; variant = ""; };
