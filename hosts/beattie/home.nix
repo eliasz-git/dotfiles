@@ -86,6 +86,10 @@
       echo ""
     fi
 
+    diag() {
+      echo "=== GPU ==="; lspci | grep -E "VGA|Display"; echo "";
+      echo "=== ERRORS LAST BOOT ==="; journalctl -b -1 -p 3 --no-pager | tail -n 40
+    }
     update-all() {
       echo "Updating flake..."
       cd /etc/nixos

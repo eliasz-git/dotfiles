@@ -106,6 +106,22 @@
         }
       ];
     };
+    # ── Beattie minimal — same host, no extensions, for black-screen debug ────
+    nixosConfigurations.beattie-minimal = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      pkgs   = linuxPkgs;
+      modules = [
+        ./hosts/beattie-minimal/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs           = true;
+          home-manager.useUserPackages         = true;
+          home-manager.backupFileExtension     = "backup";
+          home-manager.users.demo   = import ./hosts/beattie-minimal/home.nix;
+          home-manager.users.tundra = import ./hosts/beattie-minimal/home.nix;
+        }
+      ];
+    };
 
     # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
     homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {

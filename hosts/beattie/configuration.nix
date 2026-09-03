@@ -228,6 +228,9 @@
     exploitdb
     seclists
 
+        # diagnostic
+    inxi lshw pciutils usbutils dmidecode hwinfo mesa-demos vulkan-tools htop btop smartmontools lm_sensors
+
     # Flatpak helper
     flatpak-builder
   ];
