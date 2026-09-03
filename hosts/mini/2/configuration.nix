@@ -356,7 +356,41 @@
     "d /mnt/storage/downloads/lidarr 0775 elias users -"
     "d /mnt/storage/downloads/radarr 0775 elias users -"
     "d /mnt/storage/downloads/sonarr 0775 elias users -"
+    "d /mnt/storage/music-archive 0775 elias users -"
+    "d /mnt/storage/backups 0755 elias users -"
   ];
+  # ── Navidrome cleaner — archive not-played music (dry-run logs, no delete until you approve) ──
+  # Queries navidrome.db for tracks not played in 90 days, then unmonitors artist in Lidarr with deleteFiles=false (keeps files, moves to music-archive if you enable mv)
+  # Run: sudo systemctl start navidrome-cleaner && cat /mnt/storage/backups/navidrome-clean.log
+  systemd.services.navidrome-cleaner = let cleanScript = pkgs.writeShellScript "navidrome-cleaner" ''
+    set -e
+    LIDARR_KEY=$(grep -oP '(?<=<ApiKey>)[^<]+' /etc/stacks/media/data/lidarr/config.xml | head -n1)
+    LIDARR_URL=http://localhost:8686
+    NAVI_DB=/etc/stacks/media/data/navidrome/navidrome.db
+    LOG=/mnt/storage/backups/navidrome-clean.log
+    echo "[$(date -Iseconds)] navidrome-clean dry-run" >> "$LOG"
+    if [ ! -f "$NAVI_DB" ]; then echo "no navidrome.db" >> "$LOG"; exit 0; fi
+    ARTISTS=$(curl -s -H "X-Api-Key: $LIDARR_KEY" $LIDARR_URL/api/v1/artist | ${pkgs.jq}/bin/jq length)
+    echo "lidarr artists: $ARTISTS" >> "$LOG"
+    ${pkgs.sqlite}/bin/sqlite3 "$NAVI_DB" "SELECT artist, title, last_played_at, play_count FROM annotation LEFT JOIN media_file ON annotation.item_id=media_file.id WHERE (play_count=0 OR last_played_at < datetime(\'now\',\'-90 days\')) LIMIT 20;" >> "$LOG" 2>&1 || echo "sqlite query failed" >> "$LOG"
+    echo "-- dry-run: would unmonitor artists with no play in 90d via Lidarr DELETE ?deleteFiles=false (keeps files, manual mv to /mnt/storage/music-archive if wanted)" >> "$LOG"
+    echo "checked $(date)" >> "$LOG"
+    cat "$LOG" | tail -n 20
+  '' ; in {
+    description = "navidrome music archive - unmonitor not-played 90d (keeps files)";
+    after = [ "docker.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "elias";
+      ExecStart = "${cleanScript}";
+    };
+  };
+  systemd.timers.navidrome-cleaner = {
+    description = "weekly navidrome archive check";
+    wantedBy = [ "timers.target" ];
+    timerConfig = { OnCalendar = "weekly"; Persistent = true; Unit = "navidrome-cleaner.service"; };
+  };
+
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
