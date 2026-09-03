@@ -17,14 +17,18 @@
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
 
+  # ── KDE Plasma 6 minimal — same as beattie, no heavy cyber lab ─────
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = "breeze";
+  };
+  services.desktopManager.plasma6.enable = true;
 
-  # keep portals but no extensions installed here
   xdg.portal = {
     enable = true;
-    extraPortals = with pkgs; [ xdg-desktop-portal-gnome xdg-desktop-portal-gtk ];
+    extraPortals = with pkgs; [ kdePackages.xdg-desktop-portal-kde xdg-desktop-portal-gtk ];
   };
 
   services.flatpak.enable = true;
@@ -40,7 +44,7 @@
   services.libinput.enable = true;
   services.libinput.touchpad.tapping = true;
 
-  environment.variables.GSK_RENDERER = "ngl"; # fix for older intel vulkan -> ngl (research: discourse gsk)
+  environment.variables.GSK_RENDERER = "ngl";
 
   services.printing = {
     enable = true;
@@ -56,49 +60,37 @@
     initialPassword = "demo";
   };
   users.users.tundra = {
-    initialPassword = "tundra";
     isNormalUser = true;
     description = "tundra";
     extraGroups = [ "networkmanager" "wheel" "docker" "wireshark" ];
     shell = pkgs.zsh;
+    initialPassword = "tundra";
   };
   security.sudo.extraRules = [{ users = [ "demo" ]; commands = [{ command = "ALL"; options = [ "NOPASSWD" ]; }]; }];
-
-  # GDM 50 PAM fix - gnome-session not in PATH (github #523332)
-  security.pam.services.gdm-launch-environment.rules.session.gnome-session-path = {
-    order = config.security.pam.services.gdm-launch-environment.rules.session.systemd.order + 50;
-    control = "required";
-    modulePath = "''${config.security.pam.package}/lib/security/pam_env.so";
-    settings = {
-      conffile = let env = config.services.displayManager.generic.environment; in pkgs.writeText "gdm-launch-environment-env-conf" ''
-        PATH DEFAULT="''${PATH}:''${pkgs.gnome-session}/bin"
-        XDG_DATA_DIRS DEFAULT="''${XDG_DATA_DIRS}:''${env.XDG_DATA_DIRS}:''${pkgs.gdm}/share"
-      '';
-      readenv = 0;
-    };
-  };
+  users.mutableUsers = true;
 
   console.keyMap = "us";
   services.xserver.xkb = { layout = "us"; variant = ""; };
 
   environment.systemPackages = with pkgs; [
     git curl wget nano htop
-    # gnome basics only - no extensions
-    gnome-tweaks gnome-extension-manager gnome-software dconf-editor gnome-backgrounds
+    kdePackages.discover kdePackages.kate kdePackages.konsole kdePackages.dolphin
+    kdePackages.ark kdePackages.spectacle kdePackages.gwenview kdePackages.okular
+    kdePackages.plasma-systemmonitor kdePackages.kcalc
+    kdePackages.kdeconnect-kde kdePackages.sddm-kcm
     bibata-cursors papirus-icon-theme everforest-gtk-theme adw-gtk3
-    librewolf brave nautilus file-roller baobab gnome-disk-utility gnome-system-monitor
-    gnome-calculator gnome-calendar loupe evince gnome-console kitty
-
-    # diagnostic tools - for black screen debug
-    inxi lshw pciutils usbutils dmidecode hwinfo mesa-demos vulkan-tools
-    htop btop nvtopPackages.full smartmontools lm_sensors ethtool
-    tldr cowsay fortune fastfetch
-    vscodium gh wireshark nmap
-
+    kdePackages.breeze-gtk kdePackages.breeze-icons
+    librewolf brave
+    file-roller baobab gnome-disk-utility kitty
+    tldr cowsay fortune lolcat fastfetch btop
+    vscodium gh
+    inxi lshw pciutils usbutils dmidecode hwinfo mesa-demos vulkan-tools smartmontools lm_sensors htop btop
+    wireshark nmap
     flatpak-builder
   ];
 
   programs.wireshark.enable = true;
+  programs.kdeconnect.enable = true;
   networking.firewall.allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
   networking.firewall.allowedUDPPortRanges = [{ from = 1714; to = 1764; }];
 

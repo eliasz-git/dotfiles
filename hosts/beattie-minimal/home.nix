@@ -12,14 +12,14 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    gnome-tweaks gnome-extension-manager dconf-editor
+    kdePackages.kate kdePackages.konsole kdePackages.yakuake kdePackages.okular kdePackages.gwenview kdePackages.ark kdePackages.spectacle
+    kdePackages.kcalc
     librewolf brave vscodium obsidian libreoffice-fresh vlc celluloid gimp inkscape
-    loupe evince file-roller gnome-calculator gnome-system-monitor baobab gnome-disk-utility
-    kitty gnome-console tldr eza bat fzf zoxide ripgrep fastfetch yq tree htop btop
-    gh lazygit python312 nodejs_22 cowsay fortune lolcat
-    bibata-cursors papirus-icon-theme everforest-gtk-theme adw-gtk3 inter
-    # diagnostic
-    inxi lshw pciutils usbutils vulkan-tools mesa-demos
+    nextcloud-client bitwarden-desktop signal-desktop thunderbird
+    kitty tldr eza bat fzf zoxide ripgrep fastfetch yq tree htop btop gh lazygit python312 nodejs_22
+    cowsay fortune lolcat hollywood pipes
+    bibata-cursors papirus-icon-theme everforest-gtk-theme adw-gtk3 inter kdePackages.breeze-icons
+    inxi lshw pciutils usbutils mesa-demos vulkan-tools
   ];
 
   programs.zsh.shellAliases = {
@@ -36,16 +36,16 @@
     export PATH="$HOME/.local/bin:$PATH"
     if [ ! -f ~/.hushlogin ]; then
       echo ""
-      cowsay "beattie-minimal (no extensions) - test if black screen goes away" | lolcat
+      cowsay "beattie-minimal KDE - no heavy cyber lab" | lolcat
       echo "  rb       -> rebuild minimal"
-      echo "  rb-full  -> rebuild full beattie"
-      echo "  diag     -> run diagnostics"
+      echo "  rb-full  -> rebuild full beattie (KDE + cyber lab)"
+      echo "  diag     -> diagnostics"
       echo ""
     fi
     diag() {
-      echo "=== GPU ==="; lspci | grep -E "VGA|Display"; echo ""
-      echo "=== ERRORS LAST BOOT ==="; journalctl -b -1 -p 3 --no-pager | tail -n 40; echo ""
-      echo "=== GDM ==="; journalctl -b -1 -u display-manager --no-pager | tail -n 40
+      echo "=== GPU ==="; lspci | grep -E "VGA|Display"; echo "";
+      echo "=== ERRORS LAST BOOT ==="; journalctl -b -1 -p 3 --no-pager | tail -n 40; echo "";
+      echo "=== SDDM ==="; journalctl -b -1 -u display-manager --no-pager | tail -n 40
     }
   '';
 
@@ -58,35 +58,5 @@
     gtk3.extraConfig = { gtk-application-prefer-dark-theme = true; };
     gtk4.extraConfig = { gtk-application-prefer-dark-theme = true; };
   };
-
-  dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
-      gtk-theme = "Everforest-Dark-BL";
-      icon-theme = "Papirus-Dark";
-      cursor-theme = "Bibata-Modern-Classic";
-      cursor-size = 24;
-      font-name = "Inter 11";
-      document-font-name = "Inter 11";
-      monospace-font-name = "JetBrainsMono Nerd Font 11";
-      enable-animations = true;
-    };
-    "org/gnome/desktop/background" = {
-      picture-uri = "file://${config.home.homeDirectory}/.config/nix-config/wallpapers/wallpaper.jpg";
-      picture-uri-dark = "file://${config.home.homeDirectory}/.config/nix-config/wallpapers/wallpaper.jpg";
-      picture-options = "zoom";
-    };
-    "org/gnome/desktop/screensaver" = { picture-uri = "file://${config.home.homeDirectory}/.config/nix-config/wallpapers/wallpaper.jpg"; };
-    # no extensions enabled - clean gnome
-    "org/gnome/shell" = {
-      disable-user-extensions = false;
-      enabled-extensions = [];
-      favorite-apps = [ "librewolf.desktop" "org.gnome.Nautilus.desktop" "org.gnome.Console.desktop" "codium.desktop" "org.gnome.Software.desktop" ];
-    };
-    "org/gnome/mutter" = { dynamic-workspaces = true; edge-tiling = true; workspaces-only-on-primary = true; };
-    "org/gnome/settings-daemon/plugins/color" = { night-light-enabled = true; night-light-temperature = 3500; };
-    "org/gnome/Console" = { custom-font = "JetBrainsMono Nerd Font 11"; theme = "auto"; };
-  };
-
   home.file.".config/nix-config/wallpapers/wallpaper.jpg".source = ../../wallpapers/wallpaper.jpg;
 }
