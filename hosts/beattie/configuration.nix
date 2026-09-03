@@ -10,8 +10,9 @@
   # ── Boot ──────────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.plymouth.enable = true;
+  # use default kernel for max compat (was linuxPackages_latest - caused black screen on some hw)
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.plymouth.enable = false;
 
   # ── Networking ────────────────────────────────────────────────────
   networking.hostName = "beattie";
@@ -25,7 +26,7 @@
   services.xserver.enable = true;
   services.xserver.displayManager.gdm = {
     enable = true;
-    wayland = true;
+    wayland = false; # x11 for now - set true once stable
   };
   services.xserver.desktopManager.gnome.enable = true;
 
@@ -109,10 +110,11 @@
   }];
 
   # Auto-login demo for instant showcase (optional — comment out to require login)
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "demo";
-  };
+  # disabled for now - was causing fast black-screen loop if gdm failed
+  # services.displayManager.autoLogin = {
+  #   enable = true;
+  #   user = "demo";
+  # };
 
   # ── Keymap — QWERTY by default for beginners ─────────────────────
   # (your laptop uses colemak — this host stays normal for students)
@@ -273,7 +275,7 @@
   ];
 
   # Plymouth theme — keep boot pretty
-  boot.plymouth.theme = "bgrt";
+  # boot.plymouth.theme = "bgrt";
 
   system.stateVersion = "25.05";
 }
