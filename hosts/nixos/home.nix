@@ -20,7 +20,7 @@
     wl-clipboard grim slurp swappy
     dunst rofi-wayland swaybg
     librewolf thunderbird vscodium signal-desktop
-    bitwarden obsidian libreoffice
+    bitwarden-desktop obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
     steam calibre discord gramps rustdesk tailscale docker
     tutanota-desktop yubioath-flutter prismlauncher
@@ -41,7 +41,7 @@
 
   programs.zsh.initContent = lib.mkOrder 600 ''
     eval "$(zoxide init zsh)"
-    eval "$(thefuck --alias)"
+    eval "$(pay-respects zsh --alias)"
     export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
 
     update-all() {
