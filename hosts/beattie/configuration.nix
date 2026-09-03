@@ -48,6 +48,10 @@
   # Enable GNOME Software to see flatpaks
   services.packagekit.enable = true;
 
+  # ── Graphics (fix login/black screen on 26.05/gnome 50 wayland)
+  hardware.graphics.enable = true;
+  hardware.enableAllFirmware = true;
+
   # ── Sound ─────────────────────────────────────────────────────────
   security.rtkit.enable = true;
   services.pipewire = {
@@ -94,6 +98,7 @@
   };
   # Also keep your account for admin
   users.users.tundra = {
+    initialPassword = "tundra";
     isNormalUser = true;
     description = "tundra";
     extraGroups = [ "networkmanager" "wheel" "docker" "wireshark" ];
@@ -106,6 +111,8 @@
     commands = [{ command = "ALL"; options = [ "NOPASSWD" ]; }];
   }];
 
+  users.mutableUsers = true;
+  # failsafe tty login if gdm fails - ctrl+alt+f3 will always work
   # Auto-login demo for instant showcase (optional — comment out to require login)
   # disabled for now - was causing fast black-screen loop if gdm failed
   # services.displayManager.autoLogin = {

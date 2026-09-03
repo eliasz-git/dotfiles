@@ -51,6 +51,7 @@
     initialPassword = "demo";
   };
   users.users.tundra = {
+    initialPassword = "tundra";
     isNormalUser = true;
     description = "tundra";
     extraGroups = [ "networkmanager" "wheel" "docker" "wireshark" ];
