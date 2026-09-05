@@ -140,10 +140,33 @@
   services.adguardhome = {
     enable = true; # http://mini1:3000 + :53 DNS — AdGuard lighter than Pi-hole
     openFirewall = true;
-    mutableSettings = true;
+    mutableSettings = false;
     settings = {
       dns.bind_hosts = [ "0.0.0.0" ];
+      dns.upstream_dns = [ "127.0.0.1:5335" ];
+      dns.bootstrap_dns = [ "9.9.9.9" "1.1.1.1" ];
+      dns.protection_enabled = true;
       filtering.rewrites = [];
+    };
+  };
+
+  services.unbound = {
+    enable = true;
+    settings = {
+      server = {
+        interface = [ "127.0.0.1" ];
+        port = 5335;
+        access-control = [ "127.0.0.0/8 allow" "192.168.1.0/24 allow" "100.64.0.0/10 allow" ];
+        do-not-query-localhost = false;
+        hide-identity = true;
+        hide-version = true;
+        qname-minimisation = true;
+        prefetch = true;
+        cache-min-ttl = 300;
+        cache-max-ttl = 86400;
+        verbosity = 1;
+      };
+      # pure recursive - queries root servers directly, no forwarding
     };
   };
 
