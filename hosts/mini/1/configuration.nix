@@ -267,7 +267,7 @@
     description = "homelab config backup to /mnt/storage/backups";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c \'mkdir -p /mnt/storage/backups && tar -czf /mnt/storage/backups/homeassistant-$(date +%%F).tgz -C /mnt/storage homeassistant --exclude=homeassistant/home-assistant_v2.db 2>/dev/null; tar -czf /mnt/storage/backups/syncthing-$(date +%%F).tgz -C /home/elias .config/syncthing 2>/dev/null; tar -czf /mnt/storage/backups/mini1-config-$(date +%%F).tgz -C /home/elias/.config nix-config 2>/dev/null; ls -t /mnt/storage/backups/homeassistant-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/syncthing-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/mini1-config-*.tgz | tail -n +8 | xargs -r rm; echo backup done $(date) >> /mnt/storage/backups/backup.log\'";
+      ExecStart = "${pkgs.bash}/bin/bash -c \'mkdir -p /mnt/storage/backups && tar -czf /mnt/storage/backups/homeassistant-$(date +%%F).tgz --exclude=homeassistant/home-assistant_v2.db -C /mnt/storage homeassistant 2>/dev/null; tar -czf /mnt/storage/backups/syncthing-$(date +%%F).tgz -C /home/elias .config/syncthing 2>/dev/null; tar -czf /mnt/storage/backups/mini1-config-$(date +%%F).tgz -C /home/elias/.config nix-config 2>/dev/null; ls -t /mnt/storage/backups/homeassistant-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/syncthing-*.tgz | tail -n +8 | xargs -r rm; ls -t /mnt/storage/backups/mini1-config-*.tgz | tail -n +8 | xargs -r rm; echo backup done $(date) >> /mnt/storage/backups/backup.log\'";
       User = "elias";
     };
   };
