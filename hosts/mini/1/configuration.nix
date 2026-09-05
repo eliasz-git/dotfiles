@@ -143,7 +143,7 @@
     mutableSettings = false;
     settings = {
       dns.bind_hosts = [ "0.0.0.0" ];
-      dns.upstream_dns = [ "127.0.0.1:5335" ];
+      dns.upstream_dns = [ "127.0.0.1:5335" "9.9.9.9" "1.1.1.1" ];
       dns.bootstrap_dns = [ "9.9.9.9" "1.1.1.1" ];
       dns.protection_enabled = true;
       filtering.rewrites = [];
