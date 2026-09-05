@@ -64,7 +64,7 @@
     #  mini2 — HP ProDesk 405 G4 DM (R5 PRO 2400GE) — media, 192.168.1.76
     nixosConfigurations.mini1 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
-      pkgs   = linuxPkgs;
+      pkgs   = unstablePkgs;
       specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/mini/1/configuration.nix
@@ -76,10 +76,9 @@
           home-manager.users.elias         = import ./hosts/mini/1/home.nix;
         }
       ];
-    };
-    nixosConfigurations.mini2 = nixpkgs.lib.nixosSystem {
+    };\n    nixosConfigurations.mini2 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
-      pkgs   = linuxPkgs;
+      pkgs   = unstablePkgs;
       specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/mini/2/configuration.nix
