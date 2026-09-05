@@ -71,7 +71,7 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    extraPackages = with pkgs; [ vaapiVdpau libvdpau-va-gl mesa ];
+    extraPackages = with pkgs; [ libva-vdpau-driver libvdpau-va-gl mesa ];
   };
   hardware.enableRedistributableFirmware = true;
 
@@ -87,7 +87,7 @@
   environment.systemPackages = with pkgs; [
     git vim nano htop btop curl wget
     docker-compose
-    ffmpeg vaapiVdpau libva-utils # for `vainfo` testing
+    ffmpeg libva-vdpau-driver libva-utils # for `vainfo` testing
     smartmontools hdparm
   ];
 
