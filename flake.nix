@@ -46,6 +46,7 @@
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system  = linuxSystem;
       pkgs    = linuxPkgs;
+      specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/nixos/configuration.nix
         home-manager.nixosModules.home-manager
@@ -64,6 +65,7 @@
     nixosConfigurations.mini1 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
       pkgs   = linuxPkgs;
+      specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/mini/1/configuration.nix
         home-manager.nixosModules.home-manager
@@ -78,6 +80,7 @@
     nixosConfigurations.mini2 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
       pkgs   = linuxPkgs;
+      specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/mini/2/configuration.nix
         home-manager.nixosModules.home-manager
@@ -92,6 +95,7 @@
 
     # ── Beattie showcase — NixOS GNOME (Wayland, Tundra Dark) ────
     nixosConfigurations.beattie = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit hermes-agent; };
       system = linuxSystem;
       pkgs   = linuxPkgs;
       modules = [
@@ -108,6 +112,7 @@
     };
     # ── Beattie minimal — same host, no extensions, for black-screen debug ────
     nixosConfigurations.beattie-minimal = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit hermes-agent; };
       system = linuxSystem;
       pkgs   = linuxPkgs;
       modules = [
