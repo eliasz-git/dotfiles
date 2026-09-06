@@ -76,7 +76,8 @@
           home-manager.users.elias         = import ./hosts/mini/1/home.nix;
         }
       ];
-    };\n    nixosConfigurations.mini2 = nixpkgs.lib.nixosSystem {
+    };
+    nixosConfigurations.mini2 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
       pkgs   = unstablePkgs;
       specialArgs = { inherit hermes-agent; };
