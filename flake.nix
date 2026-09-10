@@ -2,28 +2,26 @@
   description = "Multi-system nix configuration — Tundra Dark";
 
   inputs = {
-    # Stable — used by macOS, NixOS, and Artix hosts
-    nixpkgs.url          = "github:NixOS/nixpkgs/nixos-26.05";
-    darwin.url           = "github:LnL7/nix-darwin/nix-darwin-26.05";
+    # Everything tracks nixpkgs unstable now — single channel, latest
+    # packages everywhere (tailscale, neovim, ly, etc.)
+    nixpkgs.url           = "github:NixOS/nixpkgs/nixos-unstable";
+    darwin.url            = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url     = "github:nix-community/home-manager/release-26.05";
+    home-manager.url      = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Unstable — used by the Alpine host for latest packages
-    # (ly 1.3.2, neovim HEAD, etc.)
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     hermes-agent.url = "github:NousResearch/hermes-agent";
-    hermes-agent.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    hermes-agent.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, darwin, home-manager, hermes-agent, ... }:
+  outputs = { self, nixpkgs, darwin, home-manager, hermes-agent, ... }:
   let
     darwinSystem   = "aarch64-darwin";
     linuxSystem    = "x86_64-linux";
 
-    darwinPkgs     = import nixpkgs          { system = darwinSystem; config.allowUnfree = true; };
-    linuxPkgs      = import nixpkgs          { system = linuxSystem;  config.allowUnfree = true; };
-    unstablePkgs   = import nixpkgs-unstable { system = linuxSystem;  config.allowUnfree = true; };
+    darwinPkgs     = import nixpkgs { system = darwinSystem; config.allowUnfree = true; };
+    linuxPkgs      = import nixpkgs { system = linuxSystem;  config.allowUnfree = true; };
+    unstablePkgs   = linuxPkgs;
   in {
 
     # ── macOS M2 ──────────────────────────────────────────────────
@@ -134,9 +132,8 @@
       modules = [ ./hosts/mini/2/home.nix ];
     };
 
-    # ── Alpine Linux — OpenRC, Gruvbox Dark, nixpkgs UNSTABLE ────
+    # ── Alpine Linux — OpenRC, Gruvbox Dark ────
     # (artix host removed - dir deleted upstream)
-    # Uses unstable for latest package versions (neovim, starship, etc.)
     # Ly display manager is intentionally kept in APK — it runs as root
     # before any user nix profile is mounted, so can't come from nixpkgs.
     #

@@ -181,7 +181,7 @@ in {
       net  = "impala";                   # TUI wifi manager
       # ---- Nix / home-manager
       hms  = "home-manager switch --flake ~/.config/nix-config#alpine";
-      hmu  = "cd ~/.config/nix-config && nix flake update nixpkgs-unstable && home-manager switch --flake .#alpine";
+      hmu  = "cd ~/.config/nix-config && nix flake update nixpkgs && home-manager switch --flake .#alpine";
       nsp  = "nix shell nixpkgs#";       # quick nix shell: nsp python3
       ndev = "nix develop";
     };
