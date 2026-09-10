@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ../../../modules/nixos/tailscale-serve.nix ];
 
   networking.hostName = "mini2"; # media — elias-server2 alias via DNS
 
@@ -124,207 +124,26 @@
     port = 9090;
   };
 
-  # ── Tailscale Serve — persistent svc: hosts for Jellyfin/Navidrome ──
+  # ── Tailscale Serve — persistent svc: hosts for the media/homelab stack ──
   # Persists `tailscale serve` across reboots (state is in /var/lib/tailscale, this re-applies on boot).
   # Requires tags tag:media/tag:music + ACL nodeAttrs funnel + grants svc:media/svc:music (already added).
-  # Use the same tailscale package as the service (unstable 1.102.x, not stable 1.82.x which lacks --service svc:)
-  systemd.services.tailscale-serve-media = {
-    description = "Tailscale serve svc:media → Jellyfin 8096";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:media --https 443 --bg 8096";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:media --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-music = {
-    description = "Tailscale serve svc:music → Navidrome 4533";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 --bg 4533";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:music --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-photos = {
-    description = "Tailscale serve svc:photos → Immich 2283";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 --bg 2283";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:photos --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-home = {
-    description = "Tailscale serve svc:home → Homepage 3000";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:home --https 443 --bg 3000";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:home --https 443 off";
-    };
-  };
-
-  systemd.services.tailscale-serve-radarr = {
-    description = "Tailscale serve svc:radarr → Radarr 7878";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:radarr --https 443 --bg 7878";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:radarr --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-sonarr = {
-    description = "Tailscale serve svc:sonarr → Sonarr 8989";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:sonarr --https 443 --bg 8989";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:sonarr --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-prowlarr = {
-    description = "Tailscale serve svc:prowlarr → Prowlarr 9696";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:prowlarr --https 443 --bg 9696";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:prowlarr --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-seerr = {
-    description = "Tailscale serve svc:seerr → Seerr 5055";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:seerr --https 443 --bg 5055";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:seerr --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-lidarr = {
-    description = "Tailscale serve svc:lidarr → Lidarr 8686 (music *arr)";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 --bg 8686";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:lidarr --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-rdt-client = {
-    description = "Tailscale serve svc:rdt-client → RDT-Client 6500";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:rdt-client --https 443 --bg 6500";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:rdt-client --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-arm = {
-    description = "Tailscale serve svc:arm → ARM 8080";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 --bg 8080";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:arm --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-maintainerr = {
-    description = "Tailscale serve svc:maintainerr → Maintainerr 6246";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:maintainerr --https 443 --bg 6246";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:maintainerr --https 443 off";
-    };
-  };
-
-  systemd.services.tailscale-serve-bazarr = {
-    description = "Tailscale serve svc:bazarr -> Bazarr 6767";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:bazarr --https 443 --bg 6767";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:bazarr --https 443 off";
-    };
-  };
-  systemd.services.tailscale-serve-tautulli = {
-    description = "Tailscale serve svc:tautulli -> Tautulli 8181";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:tautulli --https 443 --bg 8181";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:tautulli --https 443 off";
-    };
+  # Applied via modules/nixos/tailscale-serve.nix (single serialized service —
+  # 14 separate oneshot units used to race each other on tailscaled restart).
+  services.tailscaleServe.services = {
+    media       = { port = 8096; description = "Jellyfin"; };
+    music       = { port = 4533; description = "Navidrome"; };
+    photos      = { port = 2283; description = "Immich"; };
+    home        = { port = 3000; description = "Homepage"; };
+    radarr      = { port = 7878; };
+    sonarr      = { port = 8989; };
+    prowlarr    = { port = 9696; };
+    seerr       = { port = 5055; };
+    lidarr      = { port = 8686; description = "music *arr"; };
+    rdt-client  = { port = 6500; description = "RDT-Client"; };
+    arm         = { port = 8080; description = "Automatic Ripping Machine"; };
+    maintainerr = { port = 6246; };
+    bazarr      = { port = 6767; };
+    tautulli    = { port = 8181; };
   };
 
   networking.firewall.enable = true;
