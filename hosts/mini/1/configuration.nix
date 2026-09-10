@@ -1,6 +1,6 @@
 { config, pkgs, lib, hermes-agent, ... }:
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ../../../modules/nixos/tailscale-serve.nix ];
 
   # ── Host identity ───────────────────────────────────────────────
   networking.hostName = "mini1"; # infra — elias-server alias via DNS
@@ -307,20 +307,8 @@
     volumes = [ "/mnt/storage/uptime-kuma:/app/data" ];
     extraOptions = [ "--pull=always" ];
   };
-  systemd.services.tailscale-serve-status = {
-    description = "Tailscale serve svc:status -> Uptime Kuma 3001";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:status --https 443 --bg 3001";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:status --https 443 off";
-    };
-  };
+  # Tailscale serve svc:status -> Uptime Kuma 3001 (see modules/nixos/tailscale-serve.nix)
+  services.tailscaleServe.services.status = { port = 3001; description = "Uptime Kuma"; };
 
 
   # ── Paperless-NGX — document archive (mini1, english ocr) ───────
@@ -401,20 +389,8 @@
   systemd.services.docker-paperless.after = [ "docker-network-paperless.service" ];
   systemd.services.docker-paperless.wants = [ "docker-network-paperless.service" ];
 
-  systemd.services.tailscale-serve-paperless = {
-    description = "Tailscale serve svc:paperless -> Paperless 8010";
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      Restart = "on-failure";
-      RestartSec = 5;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --service svc:paperless --https 443 --bg 8010";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --service svc:paperless --https 443 off";
-    };
-  };
+  # Tailscale serve svc:paperless -> Paperless 8010 (see modules/nixos/tailscale-serve.nix)
+  services.tailscaleServe.services.paperless = { port = 8010; description = "Paperless-NGX"; };
 
   # ── Hermes Agent — always-on when Mac is closed ────────────────
   # Single profile at /home/elias/.hermes (same as Mac). Copy Mac's
