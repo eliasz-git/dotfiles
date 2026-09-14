@@ -22,13 +22,13 @@
       cleanup = "zap";
     };
     taps = [
-      "FelixKratz/formulae"
-      "koekeishiya/formulae"
-      "TheBoredTeam/boring-notch"
-      "pear-devs/pear"
-      "anomalyco/tap"
-      "steipete/tap"
-      "nikitabobko/tap"
+      { name = "FelixKratz/formulae"; trusted = true; }
+      { name = "koekeishiya/formulae"; trusted = true; }
+      { name = "TheBoredTeam/boring-notch"; trusted = true; }
+      { name = "pear-devs/pear"; trusted = true; }
+      { name = "anomalyco/tap"; trusted = true; }
+      { name = "steipete/tap"; trusted = true; }
+      { name = "nikitabobko/tap"; trusted = true; }
     ];
     brews = [
       "borders" "cups" "opencode"
