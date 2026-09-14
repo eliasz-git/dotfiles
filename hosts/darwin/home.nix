@@ -8,6 +8,7 @@
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
     ../../modules/darwin/terminal.nix
+    ../../modules/darwin/sketchybar.nix
   ];
 
   home.stateVersion = "25.05";

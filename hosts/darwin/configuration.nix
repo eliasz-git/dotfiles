@@ -31,7 +31,7 @@
       { name = "nikitabobko/tap"; trusted = true; }
     ];
     brews = [
-      "borders" "cups" "opencode"
+      "borders" "cups" "opencode" "sketchybar"
       "pcre2" "ripgrep"
       "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       "imsg" "remindctl"
