@@ -9,7 +9,7 @@
     extra-platforms = x86_64-darwin aarch64-darwin
   '';
 
-  environment.systemPackages = with pkgs; let extraPrinting = if stdenv.isLinux then [ gutenprint ] else []; in [
+  environment.systemPackages = with pkgs; let extraPrinting = if stdenv.hostPlatform.isLinux then [ gutenprint ] else []; in [
     cups
     ghostscript
     hermes-agent

@@ -35,10 +35,10 @@
     duf dust ncdu
     # Misc TUI
     cmatrix cbonsai pipes
-  ] ++ lib.optionals (!stdenv.isDarwin) [
+  ] ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
     # LibreWolf removed on macOS (kept on Linux hosts)
     librewolf
-  ] ++ lib.optionals stdenv.isLinux [
+  ] ++ lib.optionals stdenv.hostPlatform.isLinux [
     veracrypt
   ];
 }
