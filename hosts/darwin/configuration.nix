@@ -1,8 +1,12 @@
-{ pkgs, hermes-agent, ... }:
+{ pkgs, lib, hermes-agent, ... }:
 
 {
   system.stateVersion = 6;
   system.primaryUser = "elias";
+
+  documentation.man.enable = false;
+  documentation.doc.enable = false;
+  system.build.manual = lib.mkForce {};
 
   nix.enable = false;
   nix.extraOptions = ''

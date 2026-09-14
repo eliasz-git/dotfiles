@@ -13,6 +13,7 @@
 
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
+  manual.manpages.enable = false;
 
   # Same for karabiner — keeps keyboard remaps under version control
   home.file.".config/karabiner".source =
