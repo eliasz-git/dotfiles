@@ -105,6 +105,7 @@
       cmd-ctrl-f = 'fullscreen'
       cmd-ctrl-w = 'close'
       cmd-ctrl-enter = 'exec-and-forget open -b com.mitchellh.ghostty'
+      cmd-ctrl-space = 'exec-and-forget open -g raycast://'
       cmd-ctrl-b = 'exec-and-forget open -b app.zen-browser.zen'
       cmd-ctrl-tab = 'focus dfs-next'
       cmd-ctrl-shift-tab = 'focus dfs-prev'
