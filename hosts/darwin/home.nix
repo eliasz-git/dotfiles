@@ -24,13 +24,13 @@
       config-version = 2
       start-at-login = true
 
-      # 8px gaps between windows and at monitor edges
-      gaps.inner.horizontal = 8
-      gaps.inner.vertical = 8
-      gaps.outer.left = 8
-      gaps.outer.bottom = 8
-      gaps.outer.top = 8
-      gaps.outer.right = 8
+      # 16px gaps between windows and at monitor edges
+      gaps.inner.horizontal = 16
+      gaps.inner.vertical = 16
+      gaps.outer.left = 16
+      gaps.outer.bottom = 16
+      gaps.outer.top = 16
+      gaps.outer.right = 16
 
       # Default layout for new workspaces
       default-root-container-layout = 'tiles'
