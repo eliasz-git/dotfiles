@@ -4,20 +4,17 @@
   system.stateVersion = 6;
   system.primaryUser = "elias";
 
-  # Nix settings
   nix.enable = false;
   nix.extraOptions = ''
     extra-platforms = x86_64-darwin aarch64-darwin
   '';
 
-  # System-wide packages (only essential system tools)
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.isLinux then [ gutenprint ] else []; in [
     cups
     ghostscript
     hermes-agent
   ] ++ extraPrinting;
 
-  # Homebrew integration
   homebrew = {
     enable = true;
     onActivation = {
@@ -35,33 +32,28 @@
     ];
     brews = [
       "borders" "cups" "opencode"
-      #"yabai"
       "pcre2" "ripgrep"
       "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
-      # Apple Reminders CLI + iMessage CLI (steipete/tap)
       "imsg" "remindctl"
       "mole"
+      "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
+      "docker" "blueutil"
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "signal" "firefox" "keepassxc"
+      "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
-      "knockknock" "oversight" "tuta-mail" "boring-notch" "bitwarden" "pear-desktop"
-      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "loop"
-      "tor-browser" "utm" "veracrypt" "jan" "jetbrains-toolbox" "stats" "microsoft-teams"
+      "knockknock" "oversight" "tuta-mail" "boring-notch" "pear-desktop"
+      "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "fuse-t" "loop"
+      "tor-browser" "utm" "veracrypt" "stats" "microsoft-teams"
       "opencode-desktop"
-      # Apps installed manually (DMG) that have brew casks — catch-up so a
-      # rebuild can restore them without re-downloading DMGs
       "calibre" "discord" "gramps" "openwork" "protonvpn"
       "copilot-cli"
       "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
-      "termius" "zed" "zen" "balenaetcher" "tinymediamanager"
-      # Tiling WM + menu bar toolkit
+ "zen" "balenaetcher" "tinymediamanager" "godot"
       "aerospace" "vorssaint"
-      # Media stack: music library + ripping/tagging
-      "foobar2000" "xld" "musicbrainz-picard"
-      #"makemkv"  # pending: makemkv.com down (525), re-enable when reachable
-      # Catch-up: installed manually/via CLI, not yet declared
+      "foobar2000" "xld" "musicbrainz-picard" "soulseek"
+      "ghostty" "betterdisplay" "keysmith" "openlogi"
       "browseros" "hermes-desktop" "wakatime"
     ];
   };
@@ -106,7 +98,6 @@
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  # Fonts
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
@@ -130,17 +121,14 @@
     order = "below"; # below = stable with AeroSpace
   };
 
-  # User
   users.users.elias = {
     name = "elias";
     home = "/Users/elias";
     shell = pkgs.zsh;
   };
 
-  # Add system PATH for Homebrew
   environment.systemPath = [ "/opt/homebrew/bin" "/opt/homebrew/sbin" ];
 
-  # Enable zsh at system level
   programs.zsh.enable = true;
 
   home-manager.backupFileExtension = "backup";

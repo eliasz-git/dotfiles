@@ -25,7 +25,7 @@
     glow zk nb mdcat
     # Browser — Firefox
     w3m lynx elinks browsh
-    # Editor — VSCodium/Zed (nano kept, add helix)
+    # Editor — VSCodium (nano kept, add helix)
     helix micro
     # Password — KeePassXC/Yubico (pass/gopass disabled on macOS 26 Tahoe libredirect bug)
     keepassxc yubikey-manager
