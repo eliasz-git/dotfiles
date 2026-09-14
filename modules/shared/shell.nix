@@ -27,6 +27,10 @@
       eval "$(pay-respects zsh --alias)"
       export PATH="$HOME/.npm-global/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
+      if command -v terminal-wakatime >/dev/null 2>&1; then
+        export PATH="$HOME/.wakatime:$PATH"
+        eval "$(terminal-wakatime init)"
+      fi
       FPATH="$HOME/.docker/completions:$FPATH"
       autoload -Uz compinit
       compinit
