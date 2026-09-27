@@ -126,6 +126,23 @@
       ];
     };
 
+    # ── NEW: GAMING PC ───────────────────────────────────────────
+    nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      pkgs = linuxPkgs;
+      specialArgs = { inherit hermes-agent; };
+      modules = [
+        ./hosts/gaming/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.users.elias = import ./hosts/gaming/home.nix;
+        }
+      ];
+    };
+
     # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
     homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {
       pkgs = linuxPkgs;

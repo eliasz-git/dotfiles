@@ -47,18 +47,18 @@
       "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc"
       "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
-      "knockknock" "oversight" "tuta-mail" "boring-notch" "pear-desktop"
+      "knockknock" "oversight" "tuta-mail" "boring-notch"
       "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "fuse-t" "loop"
       "tor-browser" "utm" "veracrypt" "stats" "microsoft-teams"
       "opencode-desktop"
       "calibre" "discord" "gramps" "openwork" "protonvpn"
       "copilot-cli"
-      "burn" "crossover" "docker-desktop" "grayjay" "rustdesk" "tailscale-app"
- "zen" "balenaetcher" "tinymediamanager" "godot"
+      "burn" "crossover" "tailscale-app"
+      "zen" "balenaetcher" "tinymediamanager" "godot"
       "aerospace" "vorssaint"
       "foobar2000" "xld" "musicbrainz-picard" "soulseek"
-      "ghostty" "betterdisplay" "keysmith" "openlogi"
-      "browseros" "hermes-desktop" "wakatime"
+      "ghostty" "betterdisplay" "openlogi"
+      "hermes-desktop" "wakatime"
     ];
   };
 
