@@ -29,11 +29,6 @@ in {
     input = {
       KB = {
         loader = "keyboards/us.json";
-        # Disable touchpad while typing
-        touchpad {
-          naturalScroll = false;
-          tapToClick = true;
-        };
       };
       mouse = {
         accelerate = true;
