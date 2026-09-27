@@ -63,22 +63,20 @@ in {
 
   # ── GAMES & STEAM ──────────────────────────────────────────
   home.packages = with pkgs; [
-    steam
-    # Gaming overlays
-    mangohud
-    gamescope
-    radeon-profile
-    gamemode
-    libstrangle
-    # Utility tools
-    wofi           # Application launcher (dmenu alternative)
-    bemenu         # Wayland menu
-    foot           # Terminal (Wayland-native)
-    # Media/ audio
-    pulsemixer
-    # File management (Wayland)
-    nnn
-    lf
+      steam
+      # Gaming overlays
+      mangohud
+      gamescope
+      radeon-profile
+      gamemode
+      libstrangle
+      # Utility tools
+      wofi
+      bemenu
+      foot
+      pulsemixer
+      nnn
+      lf
   ];
 
   # Steam launch options / Proton config
