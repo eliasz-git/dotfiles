@@ -59,7 +59,7 @@ in {
   # Essential Hyprland controls
 
   # Focus/manage
-  home.packages += [ "hyprland" "hyprpaper" "wofi" ];
+  home.packages = with pkgs; [
 
   # ── GAMES & STEAM ──────────────────────────────────────────
   home.packages = with pkgs; [
