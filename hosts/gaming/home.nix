@@ -80,7 +80,7 @@ in {
       bind = [
         "$mod, Return, exec, $terminal"
         "$mod, Space, exec, $menu"
-        "$mod, B, exec, firefox"
+        "$mod, B, exec, zen-browser"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
         "$mod, F, fullscreen,"
@@ -210,7 +210,7 @@ in {
   # (configuration.nix); they don't belong here.
   home.packages = with pkgs; [
     # Apps
-    firefox discord
+    zen-browser discord
     # Desktop utilities
     swaybg wl-clipboard grim slurp playerctl
     pulsemixer pavucontrol

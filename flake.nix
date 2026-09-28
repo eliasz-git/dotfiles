@@ -12,6 +12,10 @@
 
     hermes-agent.url = "github:NousResearch/hermes-agent";
     hermes-agent.inputs.nixpkgs.follows = "nixpkgs";
+    
+    # Zen Browser — community flake
+    zen-browser = { url = "github:0xc000022070/zen-browser-flake"; };
+    zen-browser.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, darwin, home-manager, hermes-agent, ... }:
