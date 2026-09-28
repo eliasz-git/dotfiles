@@ -9,7 +9,17 @@
     description = "Toggle Hyprland animations";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-animations\" ''\n        #!/usr/bin/env bash\n        CURRENT=$(hyprctl getoption animations:enabled -j | jq -r '.int')\n        if [ \"$CURRENT\" = \"1\" ]; then\n          hyprctl keyword animations:enabled 0\n          notify-send \"Animations disabled\"\n        else\n          hyprctl keyword animations:enabled 1\n          notify-send \"Animations enabled\"\n        fi\n      ''}/bin/hypr-toggle-animations";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-animations" ''
+        #!/usr/bin/env bash
+        CURRENT=$(hyprctl getoption animations:enabled -j | jq -r '.int')
+        if [ "$CURRENT" = "1" ]; then
+          hyprctl keyword animations:enabled 0
+          notify-send "Animations disabled"
+        else
+          hyprctl keyword animations:enabled 1
+          notify-send "Animations enabled"
+        fi
+      ''}/bin/hypr-toggle-animations";
     };
   };
 
@@ -18,7 +28,17 @@
     description = "Toggle Hyprland blur";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-blur\" ''\n        #!/usr/bin/env bash\n        CURRENT=$(hyprctl getoption decoration:blur:enabled -j | jq -r '.int')\n        if [ \"$CURRENT\" = \"1\" ]; then\n          hyprctl keyword decoration:blur:enabled 0\n          notify-send \"Blur disabled\"\n        else\n          hyprctl keyword decoration:blur:enabled 1\n          notify-send \"Blur enabled\"\n        fi\n      ''}/bin/hypr-toggle-blur";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-blur" ''
+        #!/usr/bin/env bash
+        CURRENT=$(hyprctl getoption decoration:blur:enabled -j | jq -r '.int')
+        if [ "$CURRENT" = "1" ]; then
+          hyprctl keyword decoration:blur:enabled 0
+          notify-send "Blur disabled"
+        else
+          hyprctl keyword decoration:blur:enabled 1
+          notify-send "Blur enabled"
+        fi
+      ''}/bin/hypr-toggle-blur";
     };
   };
 
@@ -27,7 +47,19 @@
     description = "Toggle Hyprland gaps";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-gaps\" ''\n        #!/usr/bin/env bash\n        CURRENT_IN=$(hyprctl getoption general:gaps_in -j | jq -r '.int')\n        if [ \"$CURRENT_IN\" = \"0\" ]; then\n          hyprctl keyword general:gaps_in 5\n          hyprctl keyword general:gaps_out 10\n          notify-send \"Gaps enabled\"\n        else\n          hyprctl keyword general:gaps_in 0\n          hyprctl keyword general:gaps_out 0\n          notify-send \"Gaps disabled\"\n        fi\n      ''}/bin/hypr-toggle-gaps";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-gaps" ''
+        #!/usr/bin/env bash
+        CURRENT_IN=$(hyprctl getoption general:gaps_in -j | jq -r '.int')
+        if [ "$CURRENT_IN" = "0" ]; then
+          hyprctl keyword general:gaps_in 5
+          hyprctl keyword general:gaps_out 10
+          notify-send "Gaps enabled"
+        else
+          hyprctl keyword general:gaps_in 0
+          hyprctl keyword general:gaps_out 0
+          notify-send "Gaps disabled"
+        fi
+      ''}/bin/hypr-toggle-gaps";
     };
   };
 
@@ -36,7 +68,19 @@
     description = "Toggle window opacity";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-opacity\" ''\n        #!/usr/bin/env bash\n        CURRENT=$(hyprctl getoption decoration:active_opacity -j | jq -r '.float')\n        if [ \"$CURRENT\" = \"1\" ]; then\n          hyprctl keyword decoration:active_opacity 0.9\n          hyprctl keyword decoration:inactive_opacity 0.8\n          notify-send \"Opacity reduced\"\n        else\n          hyprctl keyword decoration:active_opacity 1.0\n          hyprctl keyword decoration:inactive_opacity 0.9\n          notify-send \"Opacity normal\"\n        fi\n      ''}/bin/hypr-toggle-opacity";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-opacity" ''
+        #!/usr/bin/env bash
+        CURRENT=$(hyprctl getoption decoration:active_opacity -j | jq -r '.float')
+        if [ "$CURRENT" = "1" ]; then
+          hyprctl keyword decoration:active_opacity 0.9
+          hyprctl keyword decoration:inactive_opacity 0.8
+          notify-send "Opacity reduced"
+        else
+          hyprctl keyword decoration:active_opacity 1.0
+          hyprctl keyword decoration:inactive_opacity 0.9
+          notify-send "Opacity normal"
+        fi
+      ''}/bin/hypr-toggle-opacity";
     };
   };
 
@@ -45,7 +89,17 @@
     description = "Toggle VRR (FreeSync)";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-vrr\" ''\n        #!/usr/bin/env bash\n        CURRENT=$(hyprctl getoption misc:vrr -j | jq -r '.int')\n        if [ \"$CURRENT\" = \"2\" ]; then\n          hyprctl keyword misc:vrr 0\n          notify-send \"VRR disabled\"\n        else\n          hyprctl keyword misc:vrr 2\n          notify-send \"VRR enabled (fullscreen only)\"\n        fi\n      ''}/bin/hypr-toggle-vrr";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-vrr" ''
+        #!/usr/bin/env bash
+        CURRENT=$(hyprctl getoption misc:vrr -j | jq -r '.int')
+        if [ "$CURRENT" = "2" ]; then
+          hyprctl keyword misc:vrr 0
+          notify-send "VRR disabled"
+        else
+          hyprctl keyword misc:vrr 2
+          notify-send "VRR enabled (fullscreen only)"
+        fi
+      ''}/bin/hypr-toggle-vrr";
     };
   };
 
@@ -54,7 +108,16 @@
     description = "Toggle idle management";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-idle\" ''\n        #!/usr/bin/env bash\n        if systemctl --user is-active hypridle >/dev/null 2>&1; then\n          systemctl --user stop hypridle\n          notify-send \"Idle management stopped\"\n        else\n          systemctl --user start hypridle\n          notify-send \"Idle management started\"\n        fi\n      ''}/bin/hypr-toggle-idle";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-idle" ''
+        #!/usr/bin/env bash
+        if systemctl --user is-active hypridle >/dev/null 2>&1; then
+          systemctl --user stop hypridle
+          notify-send "Idle management stopped"
+        else
+          systemctl --user start hypridle
+          notify-send "Idle management started"
+        fi
+      ''}/bin/hypr-toggle-idle";
     };
   };
 
@@ -63,7 +126,16 @@
     description = "Toggle night light (hyprsunset)";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.writeScriptBin \"hypr-toggle-nightlight\" ''\n        #!/usr/bin/env bash\n        if systemctl --user is-active hyprsunset >/dev/null 2>&1; then\n          systemctl --user stop hyprsunset\n          notify-send \"Night light disabled\"\n        else\n          systemctl --user start hyprsunset\n          notify-send \"Night light enabled\"\n        fi\n      ''}/bin/hypr-toggle-nightlight";
+      ExecStart = "${pkgs.writeScriptBin "hypr-toggle-nightlight" ''
+        #!/usr/bin/env bash
+        if systemctl --user is-active hyprsunset >/dev/null 2>&1; then
+          systemctl --user stop hyprsunset
+          notify-send "Night light disabled"
+        else
+          systemctl --user start hyprsunset
+          notify-send "Night light enabled"
+        fi
+      ''}/bin/hypr-toggle-nightlight";
     };
   };
 }

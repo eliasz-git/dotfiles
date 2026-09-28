@@ -37,9 +37,9 @@
       themes = "tundra-theme list";
       # AI
       ai = "opencode";
-      claude = "claude-code";
+      # claude = "claude-code";  # Not in nixpkgs - install via npm: npm i -g @anthropic-ai/claude-code
       gemini = "gemini-cli";
-      copilot = "copilot-cli";
+      # copilot = "copilot-cli";  # Not in nixpkgs - install via npm: npm i -g @github/copilot-cli
     };
     sessionVariables = {
       NPM_CONFIG_PREFIX = "$HOME/.npm-global";
@@ -48,7 +48,7 @@
     };
     initContent = lib.mkOrder 550 ''
       eval "$(zoxide init zsh)"
-      eval "$(pay-respects zsh --alias)"
+      # eval "$(pay-respects zsh --alias)"  # Not in nixpkgs
       eval "$(atuin init zsh)"
       export PATH="$HOME/.npm-global/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
