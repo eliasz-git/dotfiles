@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Extended Gaming Tools for Omarchy-like experience
+  # Extended Gaming Tools for Omarchy-like experience (Home Manager user-level)
 
   # Heroic Games Launcher (Epic Games, GOG, Amazon Prime)
   programs.heroic = {
@@ -18,7 +18,7 @@
     enable = true;
   };
 
-  # Steam (already in configuration.nix) - enhanced
+  # Steam - enhanced (already enabled in configuration.nix)
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -55,22 +55,9 @@
   ];
 
   # Game controllers
-  services.udev.packages = with pkgs; [
-    game-devices-udev
-    hidapi
-  ];
-
-  # Input remapper for controllers
   programs.input-remapper = {
     enable = true;
   };
-
-  # Anti-cheat support (for games that need it)
-  # Note: Most kernel-level anti-cheats don't work on Linux
-  # This is for user-space anti-cheat like Easy Anti-Cart (some work via Wine)
-  environment.systemPackages = with pkgs; [
-    gamescope
-  ];
 
   # Gaming-specific environment variables (home-manager level)
   home.sessionVariables = {
