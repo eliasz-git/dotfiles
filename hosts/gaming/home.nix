@@ -80,7 +80,7 @@ in {
       bind = [
         "$mod, Return, exec, $terminal"
         "$mod, Space, exec, $menu"
-        "$mod, B, exec, firefox"
+        "$mod, B, exec, zen-browser"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
         "$mod, F, fullscreen,"
@@ -207,6 +207,11 @@ in {
   # ── PACKAGES ───────────────────────────────────────────────
   # Steam, gamemode, gamescope, and Proton-GE are enabled system-wide
   # (configuration.nix); they don't belong here.
+  # zen-browser available via flake:
+  #   github:0xc000022070/zen-browser-flake
+  # To use Zen Browser in Home Manager, add to system packages:
+  #   inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped
+  # Or keep firefox (in nixpkgs) for guaranteed compatibility:
   home.packages = with pkgs; [
     # Apps
     firefox discord
