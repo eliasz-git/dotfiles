@@ -8,12 +8,10 @@
     enable = true;
   };
 
-  # Bottles (Windows apps/games via Wine)
-  programs.bottles = {
-    enable = true;
-  };
+  # Bottles (Windows apps/games via Wine) - managed via Home Manager packages
+  # programs.bottles removed - see home.packages instead
 
-  # Lutris (Game manager)
+  # Lutris (Game manager) - managed via Home Manager packages
   programs.lutris = {
     enable = true;
   };
