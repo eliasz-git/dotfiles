@@ -1,7 +1,9 @@
 { config, lib, pkgs, ... }:
 
 {
-  # AI Development Tools
+  # AI Development Tools (Home Manager user-level)
+
+  # AI packages
   home.packages = with pkgs; [
     # OpenCode - AI coding agent
     (pkgs.nodePackages.opencode or pkgs.opencode)
@@ -20,7 +22,7 @@
     openFirewall = false;
   };
 
-  # Environment variables for AI tools
+  # Environment variables for AI tools (system-level, always available)
   environment.sessionVariables = {
     # Ollama
     OLLAMA_HOST = "127.0.0.1:11434";

@@ -3,10 +3,11 @@
 # Gaming PC — Ryzen 5 5600 + AMD Radeon GPU, Hyprland (Wayland), Steam.
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc
 {
-  imports = [ 
-    ../../modules/system/themes.nix
-    ../../modules/nixos/themes.nix
-  ];
+  imports = [
+      ../../modules/system/themes.nix
+      ../../modules/nixos/themes.nix
+      ./configuration/hardware-configuration.nix
+    ];
 
   # ── BOOT ──────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
