@@ -39,7 +39,16 @@ in {
   programs.foot = { enable = true; font = "JetBrainsMono Nerd Font:size=11"; immediate = true; bell = "none"; };
 
   # ── ROFI / WOFI MENU ──────────────────────────────────────
-  programs.wofi = { enable = true; theme = '* { background: #181825; foreground: #c0caf5; selected-background: #7aa2f7; }'; };
+  programs.wofi = {
+    enable = true;
+    theme = ''
+      * {
+        background: #181825;
+        foreground: #c0caf5;
+        selected-background: #7aa2f7;
+      }
+    '';
+  };
 
   # ── POWER & PERFORMANCE ───────────────────────────────────
   services.tlp.enable = true; services.tlp.autoEnable = true;
