@@ -440,15 +440,8 @@
     }
   '';
 
-  home.file.".config/mpdscribble/mpdscribble.conf".text = ''
-    verbose = 1
-
-    [last.fm]
-    url = https://post.audioscrobbler.com/
-    username = quasar327
-    password = Ag!2hCFrUfGwpeHvVve_
-    journal = ~/.cache/mpdscribble/lastfm.journal
-  '';
+  # mpdscribble config is generated at service start (see systemd.user.services.mpdscribble
+  # below) so the Last.fm password never lives in this repo.
 
   home.file.".config/rmpc/config.ron".text = ''
     #![enable(implicit_some)]
@@ -784,10 +777,33 @@
     Install = { WantedBy = [ "default.target" ]; };
   };
 
+  # Last.fm password lives OUTSIDE the repo, in ~/.config/mpdscribble/lastfm-password
+  # (chmod 600, just the password on one line). ExecStartPre builds the real config
+  # into the runtime dir from it; if the file is missing the service fails loudly.
   systemd.user.services.mpdscribble = {
     Unit = { Description = "mpdscribble Last.fm scrobbler"; };
     Service = {
-      ExecStart = "${pkgs.mpdscribble}/bin/mpdscribble";
+      ExecStartPre = "${pkgs.writeShellScript "mpdscribble-gen-conf" ''
+        set -eu
+        export PATH=${lib.makeBinPath [ pkgs.coreutils ]}
+        pw_file="$HOME/.config/mpdscribble/lastfm-password"
+        if [ ! -r "$pw_file" ]; then
+          echo "mpdscribble: missing $pw_file (put your Last.fm password in it, chmod 600)" >&2
+          exit 1
+        fi
+        umask 077
+        mkdir -p "$HOME/.cache/mpdscribble"
+        cat > "$XDG_RUNTIME_DIR/mpdscribble.conf" <<EOF
+        verbose = 1
+
+        [last.fm]
+        url = https://post.audioscrobbler.com/
+        username = quasar327
+        password = $(head -n1 "$pw_file")
+        journal = $HOME/.cache/mpdscribble/lastfm.journal
+        EOF
+      ''}";
+      ExecStart = "${pkgs.mpdscribble}/bin/mpdscribble --conf %t/mpdscribble.conf";
       Restart = "always";
     };
     Install = { WantedBy = [ "default.target" ]; };

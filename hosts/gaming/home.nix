@@ -1,88 +1,215 @@
 { config, pkgs, lib, ... }:
+
+# Home Manager config for the gaming PC (user: elias).
+# System-level stuff (Steam, Hyprland package, drivers, TLP/PPD, ssh, avahi,
+# bluetooth) lives in configuration.nix — Home Manager has no options for those.
 let
-  uconfig = config.users.elias;
+  wallpaper = ../../wallpapers/wallpaper.jpg;
 in {
+  imports = [
+    ../../modules/shared/shell.nix
+    ../../modules/shared/git.nix
+    ../../modules/shared/multiplexer.nix
+    ../../modules/shared/fastfetch.nix
+  ];
+
   home.stateVersion = "25.11";
-  home-manager.enable = true;
-  home-manager.useUserPackages = true;
-  home-manager.useGlobalPkgs = true;
 
   # ── WINDOW MANAGER: HYPRLAND ────────────────────────────────
-  programs.hyprland = {
+  wayland.windowManager.hyprland = {
     enable = true;
-    mainMonitor = "eDP-1";
-    col.active_border = "#c0caf5";
-    col.inactive_border = "#181825";
-    col.separating_border = "#565f89";
-    col.workspace_button = "#7aa2f7";
-    general = { gap = 0; border = 2; col.active_opacity = 1; col.inactive_opacity = 0.9; };
-    input = { KB = { loader = "keyboards/us.json"; }; mouse = { accelerate = true; accelerateFactor = 0.2; accelerateFPS = 60; }; };
-    decoration = { roundCorners = true; blur = { enabled = true; size = 10; fps = 60; }; };
-    monitor = { eDP-1 = { model = "FHD 120Hz"; refreshRate = 120; scale = 1; }; };
+    # Hyprland itself comes from programs.hyprland in configuration.nix;
+    # null here avoids a second, possibly mismatched copy.
+    package = null;
+    portalPackage = null;
+
+    # Settings below are hyprlang. HM's default flips to Lua at stateVersion 26.05,
+    # so pin it — otherwise a future stateVersion bump would silently break this config.
+    configType = "hyprlang";
+
+    settings = {
+      "$mod" = "SUPER";
+      "$terminal" = "foot";
+      "$menu" = "wofi --show drun";
+
+      # Any monitor, native resolution, highest refresh rate (120Hz on the FHD panel).
+      monitor = [ ",highrr,auto,1" ];
+
+      exec-once = [
+        "${pkgs.swaybg}/bin/swaybg -i ${wallpaper} -m fill"
+      ];
+
+      env = [
+        "XCURSOR_SIZE,24"
+        "HYPRCURSOR_SIZE,24"
+      ];
+
+      input = {
+        kb_layout = "us";
+        kb_options = "caps:escape";
+        follow_mouse = 1;
+        accel_profile = "flat"; # no mouse acceleration for games
+        sensitivity = 0;
+      };
+
+      general = {
+        gaps_in = 0;
+        gaps_out = 0;
+        border_size = 2;
+        "col.active_border" = "rgb(c0caf5)";
+        "col.inactive_border" = "rgb(181825)";
+        layout = "dwindle";
+      };
+
+      decoration = {
+        rounding = 8;
+        active_opacity = 1.0;
+        inactive_opacity = 0.9;
+        blur = {
+          enabled = true;
+          size = 10;
+          passes = 2;
+        };
+      };
+
+      misc = {
+        vrr = 2; # FreeSync only while a window is fullscreen (avoids desktop flicker)
+        disable_hyprland_logo = true;
+      };
+
+      bind = [
+        "$mod, Return, exec, $terminal"
+        "$mod, Space, exec, $menu"
+        "$mod, B, exec, librewolf"
+        "$mod, Q, killactive,"
+        "$mod SHIFT, E, exit,"
+        "$mod, F, fullscreen,"
+        "$mod, T, togglefloating,"
+
+        "$mod, left, movefocus, l"
+        "$mod, right, movefocus, r"
+        "$mod, up, movefocus, u"
+        "$mod, down, movefocus, d"
+
+        ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+      ] ++ (builtins.concatLists (builtins.genList (i:
+        let ws = toString (i + 1); in [
+          "$mod, ${ws}, workspace, ${ws}"
+          "$mod SHIFT, ${ws}, movetoworkspace, ${ws}"
+        ]) 9));
+
+      # mouse: drag = move, right-drag = resize
+      bindm = [
+        "$mod, mouse:272, movewindow"
+        "$mod, mouse:273, resizewindow"
+      ];
+
+      bindel = [
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+      ];
+
+      bindl = [
+        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        ", XF86AudioPlay, exec, playerctl play-pause"
+        ", XF86AudioNext, exec, playerctl next"
+        ", XF86AudioPrev, exec, playerctl previous"
+      ];
+    };
   };
-
-  # ── HYPRLAND KEYBINDINGS ─────────────────────────────────
-
-  # ── GAMES & STEAM ──────────────────────────────────────────
-  programs.steam = {
-    enable = true;
-    enableProton = true;
-    launchOptions = { default = { protonVersion = "proton-ge-custom"; }; };
-  };
-
-  # ── APPLE/ICLOUD INTEGRATION ──────────────────────────────
-  programs.nowplaying-cli = { enable = true; player = "apple-music"; };
 
   # ── TERMINAL ───────────────────────────────────────────────
-  programs.foot = { enable = true; font = "JetBrainsMono Nerd Font:size=11"; immediate = true; bell = "none"; };
+  programs.foot = {
+    enable = true;
+    settings = {
+      main = {
+        font = "JetBrainsMono Nerd Font:size=11";
+        pad = "12x12";
+      };
+      colors = {
+        background = "181825";
+        foreground = "c0caf5";
+      };
+    };
+  };
 
-  # ── ROFI / WOFI MENU ──────────────────────────────────────
+  # ── LAUNCHER ───────────────────────────────────────────────
   programs.wofi = {
     enable = true;
-    theme = ''
+    settings = {
+      show = "drun";
+      width = 500;
+      allow_images = true;
+    };
+    style = ''
       * {
-        background: #181825;
-        foreground: #c0caf5;
-        selected-background: #7aa2f7;
+        font-family: "JetBrainsMono Nerd Font";
+      }
+      window {
+        background-color: #181825;
+        color: #c0caf5;
+        border: 2px solid #7aa2f7;
+        border-radius: 8px;
+      }
+      #input {
+        background-color: #181825;
+        color: #c0caf5;
+        border: none;
+        margin: 8px;
+      }
+      #entry:selected {
+        background-color: #7aa2f7;
+        color: #181825;
       }
     '';
   };
 
-  # ── POWER & PERFORMANCE ───────────────────────────────────
-  services.tlp.enable = true; services.tlp.autoEnable = true;
+  # ── NOTIFICATIONS ──────────────────────────────────────────
+  services.dunst.enable = true;
 
-  # ── NOTIFICATIONS ─────────────────────────────────────────
-  programs.hyprland.rules = {
-    float = [ "mpv" "pinentry" "feh" "qalculate-gtk" ];
-    moveToWorkspace = [ { class = "Firefox"; workspace = 1; } { class = "Steam"; workspace = 2; } ];
+  # ── GAME OVERLAY ───────────────────────────────────────────
+  programs.mangohud.enable = true;
+
+  # ── CURSOR & GTK ───────────────────────────────────────────
+  home.pointerCursor = {
+    enable = true;
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
   };
 
-  # ── FONT & APPEARANCE ─────────────────────────────────────
-  gtk = { enable = true; theme = "Orchis-Dark"; cursorTheme = { name = "Bibata-Modern-Classic"; size = 24; }; iconTheme = { name = "Papirus-Dark"; }; };
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Orchis-Dark";
+      package = pkgs.orchis-theme;
+    };
+    gtk4.theme = config.gtk.theme; # keep GTK4 apps themed too
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+  };
 
-  # ── SYSTEM SERVICES ───────────────────────────────────────
-  services.openssh.enable = true;
-  services.avahi.enable = true; services.avahi.nssmdns = true;
-  services.power-profiles-daemon.enable = true;
+  # ── SHELL ──────────────────────────────────────────────────
+  programs.zsh.shellAliases = {
+    rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc";
+    rbu = "cd ~/.config/nix-config && nix flake update && sudo nixos-rebuild switch --flake .#gaming-pc";
+  };
 
-  # ── STEAM LIBRARY PATH ────────────────────────────────────
-  home.file.".local/share/Steam".ensure = "directory";
-
-  # ── ALL PACKAGES CONSOLIDATED INTO ONE ASSIGNMENT ──────────────
+  # ── PACKAGES ───────────────────────────────────────────────
+  # Steam, gamemode, gamescope, and Proton-GE are enabled system-wide
+  # (configuration.nix); they don't belong here.
   home.packages = with pkgs; [
-    # Hyprland WM
-    hyprland hyprpaper wofi
-    # Gaming & Steam
-    steam mangohud gamescope radeon-profile gamemode libstrangle
-    # Utility tools
-    wofi bemenu foot pulsemixer nnn lf
-    # Apple integration
-    blueutil bluefish nowplaying-cli
-    # Fonts
-    nerd-fonts.jetbrains-mono nerd-fonts.fira-code ttf-ubuntu-font-family
-    # Notifications
-    dunst
+    # Apps
+    librewolf discord
+    # Desktop utilities
+    swaybg wl-clipboard grim slurp playerctl
+    pulsemixer pavucontrol
+    nnn lf
+    # Needed by modules/shared/shell.nix (aliases + init hook)
+    eza pay-respects
   ];
-
-  system.stateVersion = "25.11";
 }
