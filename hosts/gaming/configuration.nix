@@ -49,6 +49,10 @@ in {
     pulse.enable = true;
   };
 
+  # ── BLUETOOTH ─────────────────────────────────────────────────
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   # ── POWER MANAGEMENT ────────────────────────────────────────
   # TLP is managed via Home Manager only (home.nix)
   # No system-level TLP configuration needed

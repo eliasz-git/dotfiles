@@ -31,8 +31,6 @@ in {
   };
 
   # ── APPLE/ICLOUD INTEGRATION ──────────────────────────────
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
   programs.nowplaying-cli = { enable = true; player = "apple-music"; };
 
   # ── TERMINAL ───────────────────────────────────────────────
