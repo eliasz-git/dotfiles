@@ -86,7 +86,7 @@ in {
     launchOptions = {
       default = {
         protonVersion = "proton-ge-custom";
-        %};
+      };
     };
   };
 
