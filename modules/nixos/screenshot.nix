@@ -21,3 +21,4 @@
   # SUPER+Shift+Print  = full screenshot (grim) -> clipboard
   # SUPER+Ctrl+Print   = area recording (wf-recorder + slurp) -> file
   # SUPER+Ctrl+Shift+Print = stop recording (pkill wf-recorder)
+}
