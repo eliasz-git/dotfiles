@@ -92,6 +92,7 @@ in {
         "$mod, down, movefocus, d"
 
         ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+      , Ctrl+S, exec, wofi --drun
       ] ++ (builtins.concatLists (builtins.genList (i:
         let ws = toString (i + 1); in [
           "$mod, ${ws}, workspace, ${ws}"
@@ -166,6 +167,11 @@ in {
 
   # ── NOTIFICATIONS ──────────────────────────────────────────
   services.dunst.enable = true;
+
+  # ── MENU BAR ──────────────────────────────────────────────────
+  # macOS-style menu bar replica using wofi/dunst
+  # Shows window title, workspace, and system status
+  environment.variables.HYPRLAND_MENU = "enabled";
 
   # ── GAME OVERLAY ───────────────────────────────────────────
   programs.mangohud.enable = true;
