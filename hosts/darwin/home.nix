@@ -154,9 +154,9 @@
     themes = "tundra-theme list";
     # AI
     ai = "opencode";
-    claude = "claude-code";
+    # claude = "claude-code";  # Not in Homebrew - install via npm: npm i -g @anthropic-ai/claude-code
     gemini = "gemini-cli";
-    copilot = "copilot-cli";
+    # copilot = "copilot-cli";  # Not in Homebrew - install via npm: npm i -g @github/copilot-cli
   };
 
   # macOS-specific update function
