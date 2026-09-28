@@ -4,9 +4,7 @@
   # Extended Gaming Tools for Omarchy-like experience (Home Manager user-level)
 
   # Heroic Games Launcher (Epic Games, GOG, Amazon Prime)
-  programs.heroic = {
-    enable = true;
-  };
+  # programs.heroic removed - handled via Home Manager home.packages
 
   # Bottles (Windows apps/games via Wine) - managed via Home Manager packages
   # programs.bottles removed - see home.packages instead
