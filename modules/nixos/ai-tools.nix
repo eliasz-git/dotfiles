@@ -22,8 +22,8 @@
     openFirewall = false;
   };
 
-  # Environment variables for AI tools (system-level, always available)
-  environment.sessionVariables = {
+  # Environment variables for AI tools (home-manager level, since module included via Home Manager)
+  home.sessionVariables = {
     # Ollama
     OLLAMA_HOST = "127.0.0.1:11434";
 
