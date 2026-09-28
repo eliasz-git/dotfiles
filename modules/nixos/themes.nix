@@ -1,10 +1,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  options.tundra = {
-    enable = lib.mkEnableOption "Tundra theme system (NixOS-specific)";
-  };
-
   config = lib.mkIf config.tundra.enable {
     # NixOS-specific: create theme state directory via systemd-tmpfiles
     systemd.tmpfiles.rules = [
