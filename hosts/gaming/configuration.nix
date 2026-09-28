@@ -6,7 +6,7 @@
   imports = [
       ../../modules/system/themes.nix
       ../../modules/nixos/themes.nix
-      ./configuration/hardware-configuration.nix
+      # ./configuration/hardware-configuration.nix  # Removed - not tracked in git
     ];
 
   # ── BOOT ──────────────────────────────────────────────────────
