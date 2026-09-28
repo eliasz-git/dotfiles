@@ -23,11 +23,6 @@
       gl = "git pull";
       gco = "git checkout";
       gb = "git branch";
-      # Nix
-      rb = "sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc";
-      rbu = "cd ~/.config/nix-config && nix flake update && sudo nixos-rebuild switch --flake .#gaming-pc";
-      drb = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
-      drbu = "cd ~/.config/nix-config && nix flake update && sudo darwin-rebuild switch --flake .#macbook";
       # Utils
       sc = "sconnect";
       v = "nvim";
