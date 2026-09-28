@@ -31,8 +31,7 @@
     enable = true;
   };
 
-  # Proton-GE (already) + Proton-GE-Custom
-  # ProtonUp-Qt for managing Proton versions
+  # Proton-GE + Proton-GE-Custom + ProtonUp-Qt
   home.packages = with pkgs; [
     proton-ge-bin
     proton-ge-custom
@@ -42,11 +41,11 @@
     # DXVK, VKD3D latest
     dxvk
     vkd3d
-    # GameMode, MangoHUD, Gamescope (already in configuration.nix)
+    # GameMode, MangoHUD, Gamescope
     gamemode
     mangohud
     gamescope
-    # LACT for AMD GPU control (already in configuration.nix)
+    # LACT for AMD GPU control
     lact
     # Steam TUI
     steam-tui
@@ -72,6 +71,7 @@
   # This is for user-space anti-cheat like Easy Anti-Cart (some work via Wine)
   environment.systemPackages = with pkgs; [
     wine-ge-custom
+    gamescope
   ];
 
   # Gaming-specific environment variables
@@ -114,10 +114,4 @@
       ExecStart = "${pkgs.gamemode}/bin/gamemoded";
     };
   };
-
-  # Gamescope session (already enabled in steam)
-  # Additional gamescope configs for non-steam games
-  environment.systemPackages = with pkgs; [
-    gamescope
-  ];
 }
