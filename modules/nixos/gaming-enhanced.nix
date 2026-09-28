@@ -72,8 +72,8 @@
     gamescope
   ];
 
-  # Gaming-specific environment variables
-  environment.sessionVariables = {
+  # Gaming-specific environment variables (home-manager level)
+  home.sessionVariables = {
     # Proton
     PROTON_USE_SYSTEM_VULKAN = "1";
     PROTON_NO_ESYNC = "0";
