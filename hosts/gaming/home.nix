@@ -165,7 +165,7 @@ in {
 
   # ── NOTIFICATIONS ────────────────────────────────────────
   # Dunst or Wayland-native notification daemon
-  home.packages += [ "dunst" ];
+  home.packages = with pkgs; [ "dunst" ];
 
   # Hyprland specific: rule for notifications
   programs.hyprland.rules = {
@@ -184,7 +184,7 @@ in {
   };
 
   # ── FONT & APPEARANCE ─────────────────────────────────────
-  home.packages += with pkgs; [
+  home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
     ttf-ubuntu-font-family
