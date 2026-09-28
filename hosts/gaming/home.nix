@@ -23,7 +23,7 @@ in {
 
   # ── HYPRLAND KEYBINDINGS ─────────────────────────────────
 
-# ── GAMES & STEAM ──────────────────────────────────────────
+  # ── GAMES & STEAM ──────────────────────────────────────────
   programs.steam = {
     enable = true;
     enableProton = true;
@@ -68,7 +68,7 @@ in {
   services.power-profiles-daemon.enable = true;
 
   # ── STEAM LIBRARY PATH ────────────────────────────────────
-  home.file".local/share/Steam".ensure = "directory";
+  home.file.".local/share/Steam".ensure = "directory";
 
   # ── ALL PACKAGES CONSOLIDATED INTO ONE ASSIGNMENT ──────────────
   home.packages = with pkgs; [
@@ -85,9 +85,6 @@ in {
     # Notifications
     dunst
   ];
-
-  # Steam library path
-  home.file".local/share/Steam".ensure = "directory";
 
   system.stateVersion = "25.11";
 }
