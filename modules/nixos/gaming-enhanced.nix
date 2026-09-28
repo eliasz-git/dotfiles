@@ -37,7 +37,7 @@
     proton-ge-custom
     protonup-qt
     # Wine-GE for non-Steam games
-    wine-ge-custom
+    wine-ge
     # DXVK, VKD3D latest
     dxvk
     vkd3d
@@ -70,7 +70,7 @@
   # Note: Most kernel-level anti-cheats don't work on Linux
   # This is for user-space anti-cheat like Easy Anti-Cart (some work via Wine)
   environment.systemPackages = with pkgs; [
-    wine-ge-custom
+    wine-ge
     gamescope
   ];
 
