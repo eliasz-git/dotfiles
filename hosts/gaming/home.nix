@@ -80,7 +80,7 @@ in {
       bind = [
         "$mod, Return, exec, $terminal"
         "$mod, Space, exec, $menu"
-        "$mod, B, exec, librewolf"
+        "$mod, B, exec, zen"
         "$mod, Q, killactive,"
         "$mod SHIFT, E, exit,"
         "$mod, F, fullscreen,"
@@ -204,7 +204,7 @@ in {
   # (configuration.nix); they don't belong here.
   home.packages = with pkgs; [
     # Apps
-    librewolf discord
+    zen discord
     # Desktop utilities
     swaybg wl-clipboard grim slurp playerctl
     pulsemixer pavucontrol
