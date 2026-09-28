@@ -32,6 +32,7 @@
     extraGroups = [ "wheel" "networkmanager" "video" "render" "input" ];
     shell = pkgs.zsh;
     initialPassword = "changeme";
+    xkbOptions = "caps:hyper";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
     ];
