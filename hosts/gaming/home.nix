@@ -62,7 +62,6 @@ in {
   home.packages = with pkgs; [
 
   # ── GAMES & STEAM ──────────────────────────────────────────
-  home.packages = with pkgs; [
       steam
       # Gaming overlays
       mangohud
