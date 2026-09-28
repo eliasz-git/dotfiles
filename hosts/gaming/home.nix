@@ -3,9 +3,6 @@ let
   uconfig = config.users.elias;
 in {
   home.stateVersion = "25.11";
-  home-manager.enable = true;
-  home-manager.useUserPackages = true;
-  home-manager.useGlobalPkgs = true;
 
   # ── WINDOW MANAGER: HYPRLAND ────────────────────────────────
   programs.hyprland = {
@@ -60,11 +57,6 @@ in {
   # ── FONT & APPEARANCE ─────────────────────────────────────
   gtk = { enable = true; theme = "Orchis-Dark"; cursorTheme = { name = "Bibata-Modern-Classic"; size = 24; }; iconTheme = { name = "Papirus-Dark"; }; };
 
-  # ── SYSTEM SERVICES ───────────────────────────────────────
-  services.openssh.enable = true;
-  services.avahi.enable = true; services.avahi.nssmdns = true;
-  services.power-profiles-daemon.enable = true;
-
   # ── STEAM LIBRARY PATH ────────────────────────────────────
   home.file.".local/share/Steam".ensure = "directory";
 
@@ -83,6 +75,4 @@ in {
     # Notifications
     dunst
   ];
-
-  system.stateVersion = "25.11";
 }
