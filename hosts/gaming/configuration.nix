@@ -69,12 +69,5 @@ in {
   services.avahi.enable = true;
   services.avahi.nssmdns = true;
 
-  # ── HOME-MANAGER MODULE ─────────────────────────────────────
-  home-manager = {
-    enable = true;
-    useUserPackages = true;
-    useGlobalPkgs = true;
-  };
-
   system.stateVersion = "25.11";
 }
