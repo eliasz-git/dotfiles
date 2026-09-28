@@ -18,7 +18,7 @@
 
     # Everyday - beginner friendly, big icons
     librewolf brave
-    vscodium obsidian libreoffice-fresh vlc celluloid gimp inkscape
+    vscodium obsidian libreoffice vlc celluloid gimp inkscape
     kdePackages.kcalc kdePackages.kcharselect
     nextcloud-client bitwarden-desktop signal-desktop thunderbird
 
@@ -69,6 +69,7 @@
   '';
 
   home.pointerCursor = {
+    enable = true;
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
     size = 24;
@@ -82,6 +83,7 @@
     theme = { name = "Everforest-Dark-BL"; package = pkgs.everforest-gtk-theme; };
     gtk3.extraConfig = { gtk-application-prefer-dark-theme = true; };
     gtk4.extraConfig = { gtk-application-prefer-dark-theme = true; };
+    gtk4.theme = config.gtk.theme;
   };
 
   # KDE theming - Tundra Dark via Breeze Dark + Papirus

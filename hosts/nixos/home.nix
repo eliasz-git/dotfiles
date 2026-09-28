@@ -7,6 +7,7 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/slskd.nix
     ../../modules/nixos/terminal.nix
   ];
 
@@ -18,7 +19,7 @@
     powertop brightnessctl playerctl
     bluetuith netop
     wl-clipboard grim slurp swappy
-    dunst rofi-wayland swaybg
+    dunst rofi swaybg
     librewolf thunderbird vscodium signal-desktop
     bitwarden-desktop obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
@@ -55,6 +56,7 @@
   '';
 
   home.pointerCursor = {
+    enable = true;
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
     size = 24;
@@ -83,11 +85,12 @@
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
     };
+    gtk4.theme = config.gtk.theme; # keep the pre-26.05 behaviour explicitly (silences HM warning)
   };
 
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
+    package = pkgs.rofi;
     theme = let
       inherit (config.lib.formats.rasi) mkLiteral;
     in {
@@ -168,11 +171,15 @@
   };
 
   programs.niri = {
+    # Use nixpkgs' niri (same one programs.niri.enable installs system-wide), not
+    # niri-flake's own build — that one pins libdisplay-info_0_2, which nixpkgs removed.
+    package = pkgs.niri;
     settings = {
       input = {
         keyboard = {
           xkb = {
             layout = "us";
+            options = "caps:super"; # Caps Lock acts as Mod (Super)
           };
         };
         touchpad = {
@@ -186,8 +193,8 @@
         center-focused-column = "never";
         focus-ring = {
           width = 3;
-          active-color = "#116FAEff";
-          inactive-color = "#06467Eaa";
+          active.color = "#116FAEff";
+          inactive.color = "#06467Eaa";
         };
         border.enable = false;
       };
@@ -256,15 +263,15 @@
         "Mod+8".action = focus-workspace 8;
         "Mod+9".action = focus-workspace 9;
 
-        "Mod+Shift+1".action = move-window-to-workspace 1;
-        "Mod+Shift+2".action = move-window-to-workspace 2;
-        "Mod+Shift+3".action = move-window-to-workspace 3;
-        "Mod+Shift+4".action = move-window-to-workspace 4;
-        "Mod+Shift+5".action = move-window-to-workspace 5;
-        "Mod+Shift+6".action = move-window-to-workspace 6;
-        "Mod+Shift+7".action = move-window-to-workspace 7;
-        "Mod+Shift+8".action = move-window-to-workspace 8;
-        "Mod+Shift+9".action = move-window-to-workspace 9;
+        "Mod+Shift+1".action.move-window-to-workspace = 1;
+        "Mod+Shift+2".action.move-window-to-workspace = 2;
+        "Mod+Shift+3".action.move-window-to-workspace = 3;
+        "Mod+Shift+4".action.move-window-to-workspace = 4;
+        "Mod+Shift+5".action.move-window-to-workspace = 5;
+        "Mod+Shift+6".action.move-window-to-workspace = 6;
+        "Mod+Shift+7".action.move-window-to-workspace = 7;
+        "Mod+Shift+8".action.move-window-to-workspace = 8;
+        "Mod+Shift+9".action.move-window-to-workspace = 9;
 
         "XF86MonBrightnessUp".action = spawn "brightnessctl" [ "set" "+5%" ];
         "XF86MonBrightnessDown".action = spawn "brightnessctl" [ "set" "5%-" ];
@@ -809,33 +816,7 @@
     Install = { WantedBy = [ "default.target" ]; };
   };
 
-  # slskd — headless Soulseek daemon (web UI :5030). Lowest-resource client;
-  # only ONE instance should log in with the account at a time (run on the
-  # always-on homelab and reach it from elsewhere via the web UI).
-  home.file.".config/slskd/slskd.yml".text = ''
-    slskd:
-      username: "CHANGEME"
-      password: "CHANGEME"
-
-    shares:
-      directories:
-        - "~/Music"
-
-    web:
-      username: slskd
-      password: slskd
-      port: 5030
-      https: false
-  '';
-
-  systemd.user.services.slskd = {
-    Unit = { Description = "slskd Soulseek daemon (headless, web UI :5030)"; };
-    Service = {
-      ExecStart = "${pkgs.slskd}/bin/slskd";
-      Restart = "always";
-    };
-    Install = { WantedBy = [ "default.target" ]; };
-  };
+  # slskd lives in modules/shared/slskd.nix (secrets: ~/.config/slskd/slskd.env)
 
   # sconnect — fuzzy SSH host picker (same as macOS). Hosts: ~/.config/ssh/devices;
   # add a host with: sconnect --add "name user@host"

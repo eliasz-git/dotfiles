@@ -79,7 +79,7 @@ in {
 
     librewolf       # browser with sync
     keepassxc       # password vault GUI
-    xfce.thunar
+    thunar
 
     # ---- Fonts  (apk has jetbrains-mono-nerd for Sway/Waybar boot;
     #              Nix provides it for apps launched after HM activates)

@@ -7,6 +7,7 @@
     ../../../modules/shared/git.nix
     ../../../modules/shared/multiplexer.nix
     ../../../modules/shared/fastfetch.nix
+    ../../../modules/shared/slskd.nix
   ];
 
   home.username = "elias";
@@ -48,34 +49,9 @@
 
   programs.git = {
     enable = true;
-    userName = "tundra-node";
-    userEmail = "117379918+tundra-node@users.noreply.github.com";
+    settings.user.name = "tundra-node";
+    settings.user.email = "117379918+tundra-node@users.noreply.github.com";
   };
 
-  # slskd — headless Soulseek daemon (web UI :5030). Only one instance should
-  # log in with the account at a time; the always-on homelab is the natural host.
-  home.file.".config/slskd/slskd.yml".text = ''
-    slskd:
-      username: "CHANGEME"
-      password: "CHANGEME"
-
-    shares:
-      directories:
-        - "~/Music"
-
-    web:
-      username: slskd
-      password: slskd
-      port: 5030
-      https: false
-  '';
-
-  systemd.user.services.slskd = {
-    Unit = { Description = "slskd Soulseek daemon (headless, web UI :5030)"; };
-    Service = {
-      ExecStart = "${pkgs.slskd}/bin/slskd";
-      Restart = "always";
-    };
-    Install = { WantedBy = [ "default.target" ]; };
-  };
+  # slskd lives in modules/shared/slskd.nix (secrets: ~/.config/slskd/slskd.env)
 }

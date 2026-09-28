@@ -1,6 +1,11 @@
 { pkgs, lib, hermes-agent, ... }:
 
 {
+  imports = [
+    ../../modules/system/themes.nix
+    ../../modules/darwin/themes.nix
+  ];
+
   system.stateVersion = 6;
   system.primaryUser = "elias";
 
@@ -42,6 +47,12 @@
       "mole"
       "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
       "docker" "blueutil"
+      # AI tools
+      "claude-code" "copilot-cli" "ollama"
+      # Theme tools
+      "eza" "bat" "fd" "zoxide" "atuin" "pay-respects"
+      # Utils
+      "jq" "yq" "git-delta" "lazygit" "btop" "dust" "procs" "tealdeer"
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc"
@@ -59,6 +70,10 @@
       "foobar2000" "xld" "musicbrainz-picard" "soulseek"
       "ghostty" "betterdisplay" "openlogi"
       "hermes-desktop" "wakatime"
+      # Fonts
+      "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font" "font-sf-mono-nerd-font"
+      # Additional tools
+      "rectangle" "hiddenbar" "monitorcontrol" "karabiner-elements"
     ];
   };
 

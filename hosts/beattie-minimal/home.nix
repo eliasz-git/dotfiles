@@ -14,7 +14,7 @@
   home.packages = with pkgs; [
     kdePackages.kate kdePackages.konsole kdePackages.yakuake kdePackages.okular kdePackages.gwenview kdePackages.ark kdePackages.spectacle
     kdePackages.kcalc
-    librewolf brave vscodium obsidian libreoffice-fresh vlc celluloid gimp inkscape
+    librewolf brave vscodium obsidian libreoffice vlc celluloid gimp inkscape
     nextcloud-client bitwarden-desktop signal-desktop thunderbird
     kitty tldr eza bat fzf zoxide ripgrep fastfetch yq tree htop btop gh lazygit python312 nodejs_22
     cowsay fortune lolcat hollywood pipes
@@ -49,7 +49,7 @@
     }
   '';
 
-  home.pointerCursor = { name = "Bibata-Modern-Classic"; package = pkgs.bibata-cursors; size = 24; gtk.enable = true; x11.enable = true; };
+  home.pointerCursor = { enable = true; name = "Bibata-Modern-Classic"; package = pkgs.bibata-cursors; size = 24; gtk.enable = true; x11.enable = true; };
   gtk = {
     enable = true;
     cursorTheme = { name = "Bibata-Modern-Classic"; package = pkgs.bibata-cursors; size = 24; };
@@ -57,6 +57,7 @@
     theme = { name = "Everforest-Dark-BL"; package = pkgs.everforest-gtk-theme; };
     gtk3.extraConfig = { gtk-application-prefer-dark-theme = true; };
     gtk4.extraConfig = { gtk-application-prefer-dark-theme = true; };
+    gtk4.theme = config.gtk.theme;
   };
   home.file.".config/nix-config/wallpapers/wallpaper.jpg".source = ../../wallpapers/wallpaper.jpg;
 }

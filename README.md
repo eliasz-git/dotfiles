@@ -101,7 +101,7 @@ sudo nixos-rebuild switch --flake .#laptop
 - **Login**: SDDM with Chili theme
 - **Audio**: PipeWire + WirePlumber
 - **Power**: TLP + thermald (configured for HP ProBook 450 G8 / Intel)
-- **Extras**: Dunst, rofi-wayland, swaybg, screenshot tools
+- **Extras**: Dunst, rofi, swaybg, screenshot tools
 - **User env**: Fully managed by Home Manager (standalone, via Nix)
 
 ### NixOS (Niri + Waybar)

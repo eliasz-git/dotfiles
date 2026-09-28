@@ -329,6 +329,33 @@
     };
   };
 
+  # Secrets for Paperless live in /var/lib/secrets/paperless.env (root-only, never in git
+  # or the Nix store). Created once with a random SECRET_KEY; delete the file and restart
+  # to rotate the key (everyone is logged out, no data is lost).
+  # PAPERLESS_DBPASS / POSTGRES_PASSWORD are kept at "paperless" because Postgres only reads
+  # POSTGRES_PASSWORD when it first initialises its data dir, so changing the file alone would
+  # lock paperless out of the existing DB. The DB is only reachable on the docker network. To
+  # rotate it: `ALTER USER paperless PASSWORD '...'` in the db container, then update this file.
+  systemd.services.paperless-secrets = {
+    description = "Create Paperless secrets env file (not in git)";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "docker-paperless.service" "docker-paperless-db.service" ];
+    path = [ pkgs.openssl pkgs.coreutils ];
+    serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
+    script = ''
+      f=/var/lib/secrets/paperless.env
+      install -d -m 0700 /var/lib/secrets
+      if [ ! -e "$f" ]; then
+        umask 077
+        {
+          echo "PAPERLESS_SECRET_KEY=$(openssl rand -hex 32)"
+          echo "PAPERLESS_DBPASS=paperless"
+          echo "POSTGRES_PASSWORD=paperless"
+        } > "$f"
+      fi
+    '';
+  };
+
   virtualisation.oci-containers.containers.paperless-redis = {
     image = "redis:7";
     volumes = [ "/mnt/storage/paperless/pgdata-redis:/data" ];
@@ -339,8 +366,8 @@
     environment = {
       POSTGRES_DB = "paperless";
       POSTGRES_USER = "paperless";
-      POSTGRES_PASSWORD = "paperless";
     };
+    environmentFiles = [ "/var/lib/secrets/paperless.env" ]; # POSTGRES_PASSWORD
     volumes = [ "/mnt/storage/paperless/pgdata:/var/lib/postgresql/data" ];
     extraOptions = [ "--network=paperless" "--pull=always" ];
   };
@@ -353,13 +380,12 @@
     image = "ghcr.io/paperless-ngx/paperless-ngx:latest";
     ports = [ "8010:8000" ];
     dependsOn = [ "paperless-db" "paperless-redis" "paperless-gotenberg" ];
+    environmentFiles = [ "/var/lib/secrets/paperless.env" ]; # PAPERLESS_SECRET_KEY, PAPERLESS_DBPASS
     environment = {
       PAPERLESS_REDIS = "redis://paperless-redis:6379";
       PAPERLESS_DBHOST = "paperless-db";
       PAPERLESS_DBNAME = "paperless";
       PAPERLESS_DBUSER = "paperless";
-      PAPERLESS_DBPASS = "paperless";
-      PAPERLESS_SECRET_KEY = "d12835f54bbd6283df54883d45a6cc6a228ef102d468110ed6cdc90654d4cd54";
       PAPERLESS_URL = "https://paperless.adal-matrix.ts.net";
       PAPERLESS_OCR_LANGUAGE = "eng";
       PAPERLESS_TIME_ZONE = "America/New_York";
@@ -382,11 +408,13 @@
   # ensure paperless network exists before containers start
   systemd.services.docker-paperless-redis.after = [ "docker-network-paperless.service" ];
   systemd.services.docker-paperless-redis.wants = [ "docker-network-paperless.service" ];
-  systemd.services.docker-paperless-db.after = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless-db.after = [ "docker-network-paperless.service" "paperless-secrets.service" ];
+  systemd.services.docker-paperless-db.requires = [ "paperless-secrets.service" ];
   systemd.services.docker-paperless-db.wants = [ "docker-network-paperless.service" ];
   systemd.services.docker-paperless-gotenberg.after = [ "docker-network-paperless.service" ];
   systemd.services.docker-paperless-gotenberg.wants = [ "docker-network-paperless.service" ];
-  systemd.services.docker-paperless.after = [ "docker-network-paperless.service" ];
+  systemd.services.docker-paperless.after = [ "docker-network-paperless.service" "paperless-secrets.service" ];
+  systemd.services.docker-paperless.requires = [ "paperless-secrets.service" ];
   systemd.services.docker-paperless.wants = [ "docker-network-paperless.service" ];
 
   # Tailscale serve svc:paperless -> Paperless 8010 (see modules/nixos/tailscale-serve.nix)

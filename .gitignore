@@ -23,4 +23,9 @@ hosts/mini/**/stacks/**/.env
 hosts/mini/secrets.yaml
 
 # Logs
-*.logpi-session*.html
+*.log
+pi-session*.html
+
+# Hand-made backups
+*.bak
+*.bak[0-9]*

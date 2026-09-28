@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, zen-browser, ... }:
 
 # Home Manager config for the gaming PC (user: elias).
 # System-level stuff (Steam, Hyprland package, drivers, TLP/PPD, ssh, avahi,
@@ -11,9 +11,25 @@ in {
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/home/themes.nix
+    ../../modules/nixos/hyprland/monitors.nix
+    ../../modules/nixos/hyprland/input.nix
+    ../../modules/nixos/hyprland/bindings.nix
+    ../../modules/nixos/hyprland/looknfeel.nix
+    ../../modules/nixos/hyprland/autostart.nix
+    ../../modules/nixos/hyprland/toggles.nix
+    ../../modules/nixos/rofi.nix
+    ../../modules/nixos/clipboard.nix
+    ../../modules/nixos/screenshot.nix
+    ../../modules/nixos/ai-tools.nix
+    ../../modules/nixos/gaming-enhanced.nix
   ];
 
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
+
+  # Enable theme system
+  tundra.enable = true;
+  tundra.theme = "catppuccin-mocha";
 
   # ── WINDOW MANAGER: HYPRLAND ────────────────────────────────
   wayland.windowManager.hyprland = {
@@ -27,94 +43,44 @@ in {
     # so pin it — otherwise a future stateVersion bump would silently break this config.
     configType = "hyprlang";
 
+    # Settings are now imported from modular files:
+    # - monitors.nix
+    # - input.nix
+    # - bindings.nix
+    # - looknfeel.nix
+    # - autostart.nix
+    # - toggles.nix
+    #
+    # Keep minimal overrides here if needed:
     settings = {
       "$mod" = "SUPER";
       "$terminal" = "foot";
-      "$menu" = "wofi --show drun";
+      "$menu" = "rofi -show drun";
 
-      # Any monitor, native resolution, highest refresh rate (120Hz on the FHD panel).
-      monitor = [ ",highrr,auto,1" ];
+      # Monitor config from monitors.nix (override if needed)
+      # monitor = [ ",highrr,auto,1" ];
 
-      exec-once = [
-        "${pkgs.swaybg}/bin/swaybg -i ${wallpaper} -m fill"
-      ];
+      # Input config from input.nix
 
+      # Keybindings from bindings.nix
+
+      # Look & feel from looknfeel.nix
+
+      # Autostart from autostart.nix
+
+      # Env vars
       env = [
         "XCURSOR_SIZE,24"
         "HYPRCURSOR_SIZE,24"
-      ];
-
-      input = {
-        kb_layout = "us";
-        kb_options = "caps:escape";
-        follow_mouse = 1;
-        accel_profile = "flat"; # no mouse acceleration for games
-        sensitivity = 0;
-      };
-
-      general = {
-        gaps_in = 0;
-        gaps_out = 0;
-        border_size = 2;
-        "col.active_border" = "rgb(c0caf5)";
-        "col.inactive_border" = "rgb(181825)";
-        layout = "dwindle";
-      };
-
-      decoration = {
-        rounding = 8;
-        active_opacity = 1.0;
-        inactive_opacity = 0.9;
-        blur = {
-          enabled = true;
-          size = 10;
-          passes = 2;
-        };
-      };
-
-      misc = {
-        vrr = 2; # FreeSync only while a window is fullscreen (avoids desktop flicker)
-        disable_hyprland_logo = true;
-      };
-
-      bind = [
-        "$mod, Return, exec, $terminal"
-        "$mod, Space, exec, $menu"
-        "$mod, B, exec, zen-browser"
-        "$mod, Q, killactive,"
-        "$mod SHIFT, E, exit,"
-        "$mod, F, fullscreen,"
-        "$mod, T, togglefloating,"
-
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
-
-        ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
-      ", Ctrl+S, exec, wofi --drun"
-      ] ++ (builtins.concatLists (builtins.genList (i:
-        let ws = toString (i + 1); in [
-          "$mod, ${ws}, workspace, ${ws}"
-          "$mod SHIFT, ${ws}, movetoworkspace, ${ws}"
-        ]) 9));
-
-      # mouse: drag = move, right-drag = resize
-      bindm = [
-        "$mod, mouse:272, movewindow"
-        "$mod, mouse:273, resizewindow"
-      ];
-
-      bindel = [
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
-        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-      ];
-
-      bindl = [
-        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        ", XF86AudioPlay, exec, playerctl play-pause"
-        ", XF86AudioNext, exec, playerctl next"
-        ", XF86AudioPrev, exec, playerctl previous"
+        "XCURSOR_THEME,Bibata-Modern-Classic"
+        "HYPRCURSOR_THEME,Bibata-Modern-Classic"
+        "QT_QPA_PLATFORMTHEME,qt5ct"
+        "QT_STYLE_OVERRIDE,kvantum"
+        "GTK_THEME,Orchis-Dark"
+        "ICON_THEME,Papirus-Dark"
+        "CURSOR_THEME,Bibata-Modern-Classic"
+        "MOZ_ENABLE_WAYLAND,1"
+        "NIXOS_OZONE_WL,1"
       ];
     };
   };
@@ -134,43 +100,89 @@ in {
     };
   };
 
-  # ── LAUNCHER ───────────────────────────────────────────────
-  programs.wofi = {
-    enable = true;
-    settings = {
-      show = "drun";
-      width = 500;
-      allow_images = true;
-    };
-    style = ''
-      * {
-        font-family: "JetBrainsMono Nerd Font";
-      }
-      window {
-        background-color: #181825;
-        color: #c0caf5;
-        border: 2px solid #7aa2f7;
-        border-radius: 8px;
-      }
-      #input {
-        background-color: #181825;
-        color: #c0caf5;
-        border: none;
-        margin: 8px;
-      }
-      #entry:selected {
-        background-color: #7aa2f7;
-        color: #181825;
-      }
-    '';
-  };
+  # ── LAUNCHER: ROFI (replaces wofi) ─────────────────────────
+  # Configured in rofi.nix
 
   # ── NOTIFICATIONS ──────────────────────────────────────────
   services.dunst.enable = true;
 
-  # ── MENU BAR ──────────────────────────────────────────────────
-  # macOS-style menu bar replica using wofi/dunst
-  # Shows window title, workspace, and system status
+  # ── TOP BAR ────────────────────────────────────────────────
+  # Waybar: workspaces + window title on the left, clock in the middle,
+  # cpu, memory, network, volume, tray on the right.
+  programs.waybar = {
+    enable = true;
+    systemd.enable = true;
+    settings.main = {
+      layer = "top";
+      position = "top";
+      height = 32;
+      modules-left = [ "hyprland/workspaces" "hyprland/window" ];
+      modules-center = [ "clock" ];
+      modules-right = [ "cpu" "memory" "network" "pulseaudio" "tray" ];
+      "hyprland/window".max-length = 60;
+      clock.format = "{:%a %b %d  %I:%M %p}";
+      cpu = {
+        format = "󰻠 {usage}%";
+        interval = 5;
+      };
+      memory = {
+        format = "󰍛 {percentage_used}%";
+        interval = 5;
+      };
+      network = {
+        format-wifi = "󰖨 {signalStrength}%";
+        format-ethernet = "󰈀 {ipaddr}";
+        format-disconnected = "󰖪 Disconnected";
+        interval = 10;
+      };
+      pulseaudio = {
+        format = "vol {volume}%";
+        format-muted = "muted";
+        on-click = "pavucontrol";
+      };
+    };
+    style = ''
+      * {
+        font-family: "JetBrainsMono Nerd Font";
+        font-size: 13px;
+        border: none;
+      }
+      window#waybar {
+        background-color: #181825;
+        color: #c0caf5;
+      }
+      #workspaces button {
+        padding: 0 8px;
+        color: #c0caf5;
+        background: transparent;
+      }
+      #workspaces button.active {
+        background-color: #7aa2f7;
+        color: #181825;
+      }
+      #clock,
+      #cpu,
+      #memory,
+      #network,
+      #pulseaudio,
+      #tray,
+      #window {
+        padding: 0 12px;
+      }
+      #cpu.warning {
+        color: #f9e2af;
+      }
+      #cpu.critical {
+        color: #f38ba8;
+      }
+      #memory.warning {
+        color: #f9e2af;
+      }
+      #memory.critical {
+        color: #f38ba8;
+      }
+    '';
+  };
 
   # ── GAME OVERLAY ───────────────────────────────────────────
   programs.mangohud.enable = true;
@@ -199,27 +211,28 @@ in {
   };
 
   # ── SHELL ──────────────────────────────────────────────────
-  programs.zsh.shellAliases = {
-    rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc";
-    rbu = "cd ~/.config/nix-config && nix flake update && sudo nixos-rebuild switch --flake .#gaming-pc";
-  };
+  # Aliases defined in modules/shared/shell.nix
 
   # ── PACKAGES ───────────────────────────────────────────────
   # Steam, gamemode, gamescope, and Proton-GE are enabled system-wide
   # (configuration.nix); they don't belong here.
-  # zen-browser available via flake:
-  #   github:0xc000022070/zen-browser-flake
-  # To use Zen Browser in Home Manager, add to system packages:
-  #   inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped
-  # Or keep firefox (in nixpkgs) for guaranteed compatibility:
+  # Zen Browser comes from the zen-browser flake input (it isn't in nixpkgs);
+  # the binary is `zen-beta`, which is what Super+B launches.
   home.packages = with pkgs; [
     # Apps
-    firefox discord
+    zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    discord
     # Desktop utilities
     swaybg wl-clipboard grim slurp playerctl
     pulsemixer pavucontrol
     nnn lf
+    # Clipboard
+    cliphist
+    # Screenshot/recording
+    swappy wf-recorder
     # Needed by modules/shared/shell.nix (aliases + init hook)
     eza pay-respects
+    # AI tools (also in ai-tools.nix)
+    # opencode claude-code gemini-cli copilot-cli
   ];
 }

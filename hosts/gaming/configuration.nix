@@ -3,7 +3,10 @@
 # Gaming PC — Ryzen 5 5600 + AMD Radeon GPU, Hyprland (Wayland), Steam.
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ 
+    ../../modules/system/themes.nix
+    ../../modules/nixos/themes.nix
+  ];
 
   # ── BOOT ──────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
@@ -115,10 +118,15 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
+    nerd-fonts.victor-mono
   ];
 
   environment.systemPackages = with pkgs; [
     git vim nano curl wget htop pciutils usbutils
+    # Theme system
+    tundra-theme
+    # CLI tool
+    (pkgs.writeScriptBin "tundra" (builtins.readFile ./scripts/tundra-cli.sh))
   ];
 
   # ── NIX ───────────────────────────────────────────────────────
@@ -132,5 +140,5 @@
     options = "--delete-older-than 14d";
   };
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 }

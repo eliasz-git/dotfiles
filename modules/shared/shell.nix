@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   programs.zsh = {
@@ -6,25 +6,50 @@
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    dotDir = lib.mkDefault (config.xdg.configHome + "/zsh");
     shellAliases = {
+      # Core
       ls = "eza --icons";
       ll = "eza -la --icons";
+      lt = "eza --tree --icons";
       cat = "bat --paging=never";
       cd = "z";
+      # Git
       g = "git";
       gs = "git status";
       gd = "git diff";
       gc = "git commit";
-      sc = "sconnect";
       gp = "git push";
       gl = "git pull";
+      gco = "git checkout";
+      gb = "git branch";
+      # Nix
+      rb = "sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc";
+      rbu = "cd ~/.config/nix-config && nix flake update && sudo nixos-rebuild switch --flake .#gaming-pc";
+      drb = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
+      drbu = "cd ~/.config/nix-config && nix flake update && sudo darwin-rebuild switch --flake .#macbook";
+      # Utils
+      sc = "sconnect";
+      v = "nvim";
+      vi = "nvim";
+      # Theme
+      theme = "tundra-theme";
+      themes = "tundra-theme list";
+      # AI
+      ai = "opencode";
+      claude = "claude-code";
+      gemini = "gemini-cli";
+      copilot = "copilot-cli";
     };
     sessionVariables = {
       NPM_CONFIG_PREFIX = "$HOME/.npm-global";
+      BAT_THEME = "base16";
+      FZF_DEFAULT_OPTS = "--height 40% --layout=reverse --border";
     };
     initContent = lib.mkOrder 550 ''
       eval "$(zoxide init zsh)"
       eval "$(pay-respects zsh --alias)"
+      eval "$(atuin init zsh)"
       export PATH="$HOME/.npm-global/bin:$PATH"
       export PATH="$HOME/.local/bin:$PATH"
       if command -v terminal-wakatime >/dev/null 2>&1; then
@@ -39,6 +64,12 @@
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
+  };
+  programs.atuin = {
+    enable = true;
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+    # sync is not a valid option; daemon handles sync
   };
   programs.starship = {
     enable = true;
@@ -71,6 +102,8 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    # Disable fzf's Ctrl-R binding since atuin owns it
+    historyWidget.zsh.command = "";
     colors = {
       bg = "#04182F";
       "bg+" = "#06467E";
