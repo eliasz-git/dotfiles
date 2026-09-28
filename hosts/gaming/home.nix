@@ -60,22 +60,29 @@ in {
 
   # Focus/manage
   home.packages = with pkgs; [
+    hyprland
+    hyprpaper
+    wofi
+  ];
 
   # ── GAMES & STEAM ──────────────────────────────────────────
-      steam
-      # Gaming overlays
-      mangohud
-      gamescope
-      radeon-profile
-      gamemode
-      libstrangle
-      # Utility tools
-      wofi
-      bemenu
-      foot
-      pulsemixer
-      nnn
-      lf
+  home.packages = with pkgs; [
+    steam
+    # Gaming overlays
+    mangohud
+    gamescope
+    radeon-profile
+    gamemode
+    libstrangle
+    # Utility tools
+    wofi           # Application launcher (dmenu alternative)
+    bemenu         # Wayland menu
+    foot           # Terminal (Wayland-native)
+    # Media/ audio
+    pulsemixer
+    # File management (Wayland)
+    nnn
+    lf
   ];
 
   # Steam launch options / Proton config
@@ -91,14 +98,29 @@ in {
   };
 
   # ── APPLE/ICLOUD INTEGRATION ──────────────────────────────
-  # iPhone/icloud support tools
-  home.packages += with pkgs; [
+  # iPhone/icloud support tools (all under single home.packages assignment)
+  home.packages = with pkgs; [
+    steam
+    # Gaming overlays
+    mangohud
+    gamescope
+    radeon-profile
+    gamemode
+    libstrangle
+    # Utility tools
+    wofi
+    bemenu
+    foot
+    pulsemixer
+    nnn
+    lf
+    # Apple integration
     blueutil       # Bluetooth CLI control
     bluefish       # Bluetooth device manager
     nowplaying-cli # Show now-playing from Apple devices
   ];
 
-  # Bluetooth configuration for iPhone
+  # Bluetooth configuration for iPhone (not in home.packages, system-level)
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
@@ -195,7 +217,7 @@ in {
   # ── STEAM LIBRARY PATH ────────────────────────────────────
   # Configure Steam to store games on appropriate partition
   # This is typically set within Steam UI, but we can hint
-  home.file.".local/share/Steam".ensure = "directory";
+  home.file".local/share/Steam".ensure = "directory";
 
   system.stateVersion = "25.11";
 }
