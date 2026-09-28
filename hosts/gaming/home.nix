@@ -92,7 +92,7 @@ in {
         "$mod, down, movefocus, d"
 
         ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
-      , Ctrl+S, exec, wofi --drun
+      ", Ctrl+S, exec, wofi --drun"
       ] ++ (builtins.concatLists (builtins.genList (i:
         let ws = toString (i + 1); in [
           "$mod, ${ws}, workspace, ${ws}"
