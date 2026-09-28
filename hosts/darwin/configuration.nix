@@ -47,10 +47,13 @@
       "mole"
       "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
       "docker" "blueutil"
-      # AI tools
-      "claude-code" "copilot-cli" "ollama"
+      # AI tools - not in Homebrew, install via npm:
+      # "claude-code" -> npm i -g @anthropic-ai/claude-code
+      # "copilot-cli" -> npm i -g @github/copilot-cli
+      "ollama"
       # Theme tools
-      "eza" "bat" "fd" "zoxide" "atuin" "pay-respects"
+      "eza" "bat" "fd" "zoxide" "atuin"
+      # "pay-respects" not in Homebrew
       # Utils
       "jq" "yq" "git-delta" "lazygit" "btop" "dust" "procs" "tealdeer"
     ];
@@ -63,7 +66,7 @@
       "tor-browser" "utm" "veracrypt" "stats" "microsoft-teams"
       "opencode-desktop"
       "calibre" "discord" "gramps" "openwork" "protonvpn"
-      "copilot-cli"
+      # "copilot-cli" not in Homebrew casks - install via npm
       "burn" "crossover" "tailscale-app"
       "zen" "balenaetcher" "tinymediamanager" "godot"
       "aerospace" "vorssaint"
@@ -71,7 +74,8 @@
       "ghostty" "betterdisplay" "openlogi"
       "hermes-desktop" "wakatime"
       # Fonts
-      "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font" "font-sf-mono-nerd-font"
+      "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font"
+      # "font-sf-mono-nerd-font" not available in Homebrew
       # Additional tools
       "rectangle" "hiddenbar" "monitorcontrol" "karabiner-elements"
     ];
