@@ -14,7 +14,7 @@
         selected = mkLiteral "#7aa2f7";
         border = mkLiteral "#313244";
       };
-      window {
+      window = {
         location = mkLiteral "center";
         width = 600;
         background-color = mkLiteral "@bg";
@@ -22,29 +22,29 @@
         border-radius = 8;
         border-color = mkLiteral "@border";
       };
-      #input {
+      input = {
         background-color = mkLiteral "@bg-alt";
         border = mkLiteral "none";
         margin = 8;
         padding = 12;
       };
-      #entry:selected {
+      "entry:selected" = {
         background-color = mkLiteral "@selected";
         color = mkLiteral "@bg";
       };
-      listview {
+      listview = {
         lines = 10;
         columns = 1;
         fixed-height = false;
       };
-      element {
+      element = {
         padding = mkLiteral "12px 16px";
         spacing = 8;
       };
-      element-text {
+      "element-text" = {
         color = mkLiteral "@fg";
       };
-      element-icon {
+      "element-icon" = {
         size = mkLiteral "1.2em";
       };
     };
