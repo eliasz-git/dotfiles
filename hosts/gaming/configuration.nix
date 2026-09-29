@@ -4,10 +4,17 @@
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc
 {
   imports = [
-      ../../modules/system/themes.nix
-      ../../modules/nixos/themes.nix
-      # ./configuration/hardware-configuration.nix  # Removed - not tracked in git
-    ];
+    ./hardware-configuration.nix
+    ../../modules/system/themes.nix
+    ../../modules/nixos/themes.nix
+  ];
+
+  # System-level theme switcher (swaylock, swayidle, /etc/tundra/themes, the
+  # `tundra-theme` binary) is gated behind this flag in modules/system/themes.nix
+  # and modules/nixos/themes.nix — without it those modules are dead code even
+  # though they're imported. home.nix sets the matching HM-level flag.
+  tundra.enable = true;
+  tundra.theme = "catppuccin-mocha";
 
   # ── BOOT ──────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
@@ -76,6 +83,12 @@
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
 
+  # Controller/keyboard remapping. Udev rules for hotplug are left off (upstream
+  # default): https://github.com/sezanzeb/input-remapper/issues/140 — devices
+  # plugged in before the service starts still work; hotplugged ones need
+  # `sudo systemctl restart input-remapper` until that's fixed.
+  services.input-remapper.enable = true;
+
   # ── SOUND ─────────────────────────────────────────────────────
   security.rtkit.enable = true;
   services.pipewire = {
@@ -124,11 +137,19 @@
 
   environment.systemPackages = with pkgs; [
     git vim nano curl wget htop pciutils usbutils
-    # Theme system
-    tundra-theme
-    # CLI tool
-    (pkgs.writeScriptBin "tundra" (builtins.readFile ./scripts/tundra-cli.sh))
+    # `tundra-theme` itself comes from modules/system/themes.nix, gated on
+    # tundra.enable above — it isn't a plain pkgs.* attribute, so it can't be
+    # listed here directly (that's what made this line fail to evaluate).
+    (pkgs.writeScriptBin "tundra" (builtins.readFile ../../scripts/tundra-cli.sh))
   ];
+
+  # ── SECOND SSD: Steam Games Library ─────────────────────────────
+  # nvme0n1p2 — the first SSD (gaming drive) with existing Steam games
+  fileSystems."/Games" = {
+    device = "/dev/disk/by-uuid/14882C93882C7580";
+    fsType = "ntfs3";
+    options = [ "uid=1000" "gid=1000" "umask=022" ];
+  };
 
   # ── NIX ───────────────────────────────────────────────────────
   nix.settings = {

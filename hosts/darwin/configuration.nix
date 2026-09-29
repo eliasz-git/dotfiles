@@ -77,7 +77,7 @@
       "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font"
       # "font-sf-mono-nerd-font" not available in Homebrew
       # Additional tools
-      "rectangle" "hiddenbar" "monitorcontrol" "karabiner-elements"
+      "rectangle" "hiddenbar" "monitorcontrol"
     ];
   };
 

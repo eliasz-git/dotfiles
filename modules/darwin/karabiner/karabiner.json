@@ -10,9 +10,11 @@
                         "manipulators": [
                             {
                                 "description": "Caps hold -> Left Command, tap -> Escape",
-                                "from": { "key_code": "caps_lock", "modifiers": { "optional": ["any"] } },
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": { "optional": ["any"] }
+                                },
                                 "to": [{ "key_code": "left_command" }],
-                                "to_if_alone": [{ "key_code": "escape" }],
                                 "type": "basic"
                             }
                         ]
@@ -24,9 +26,17 @@
                                 "description": "Left Command + Left Control -> Hyper (cmd+ctrl+opt+shift)",
                                 "from": {
                                     "key_code": "left_command",
-                                    "modifiers": { "mandatory": ["left_control"], "optional": ["any"] }
+                                    "modifiers": {
+                                        "mandatory": ["left_control"],
+                                        "optional": ["any"]
+                                    }
                                 },
-                                "to": [{ "key_code": "left_command", "modifiers": ["left_control", "left_option", "left_shift"] }],
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "modifiers": ["left_control", "left_option", "left_shift"]
+                                    }
+                                ],
                                 "type": "basic"
                             }
                         ]
@@ -35,7 +45,11 @@
             },
             "devices": [
                 {
-                    "identifiers": { "is_keyboard": true, "product_id": 50495, "vendor_id": 1133 },
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 50495,
+                        "vendor_id": 1133
+                    },
                     "ignore_vendor_events": true
                 }
             ],
