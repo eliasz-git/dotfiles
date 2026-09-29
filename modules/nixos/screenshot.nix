@@ -10,11 +10,12 @@
     wl-clipboard # Wayland clipboard
   ];
 
-  # Screenshot directory
-  systemd.tmpfiles.rules = [
-    "d ${config.users.users.elias.home}/Pictures/Screenshots 0755 ${config.users.users.elias.name} users -"
-    "d ${config.users.users.elias.home}/Videos 0755 ${config.users.users.elias.name} users -"
-  ];
+  # Screenshot/recording directories. This file is imported at the Home-Manager
+  # level (home.nix), where systemd.tmpfiles and config.users.users don't exist
+  # — those are NixOS-only. home.file with a placeholder is the HM-native way
+  # to make sure a directory exists.
+  home.file."Pictures/Screenshots/.keep".text = "";
+  home.file."Videos/.keep".text = "";
 
   # Screenshot keybindings are in bindings.nix:
   # SUPER+Print        = area screenshot (grim + slurp) -> clipboard

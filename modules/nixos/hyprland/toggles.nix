@@ -6,8 +6,8 @@
 
   # Animation toggle
   systemd.user.services.hypr-toggle-animations = {
-    description = "Toggle Hyprland animations";
-    serviceConfig = {
+    Unit.Description = "Toggle Hyprland animations";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-animations" ''
         #!/usr/bin/env bash
@@ -25,8 +25,8 @@
 
   # Blur toggle
   systemd.user.services.hypr-toggle-blur = {
-    description = "Toggle Hyprland blur";
-    serviceConfig = {
+    Unit.Description = "Toggle Hyprland blur";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-blur" ''
         #!/usr/bin/env bash
@@ -44,8 +44,8 @@
 
   # Gaps toggle
   systemd.user.services.hypr-toggle-gaps = {
-    description = "Toggle Hyprland gaps";
-    serviceConfig = {
+    Unit.Description = "Toggle Hyprland gaps";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-gaps" ''
         #!/usr/bin/env bash
@@ -65,8 +65,8 @@
 
   # Opacity toggle
   systemd.user.services.hypr-toggle-opacity = {
-    description = "Toggle window opacity";
-    serviceConfig = {
+    Unit.Description = "Toggle window opacity";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-opacity" ''
         #!/usr/bin/env bash
@@ -86,8 +86,8 @@
 
   # VRR toggle
   systemd.user.services.hypr-toggle-vrr = {
-    description = "Toggle VRR (FreeSync)";
-    serviceConfig = {
+    Unit.Description = "Toggle VRR (FreeSync)";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-vrr" ''
         #!/usr/bin/env bash
@@ -105,8 +105,8 @@
 
   # Idle/suspend toggle
   systemd.user.services.hypr-toggle-idle = {
-    description = "Toggle idle management";
-    serviceConfig = {
+    Unit.Description = "Toggle idle management";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-idle" ''
         #!/usr/bin/env bash
@@ -123,8 +123,8 @@
 
   # Night light toggle (hyprsunset)
   systemd.user.services.hypr-toggle-nightlight = {
-    description = "Toggle night light (hyprsunset)";
-    serviceConfig = {
+    Unit.Description = "Toggle night light (hyprsunset)";
+    Service = {
       Type = "oneshot";
       ExecStart = "${pkgs.writeScriptBin "hypr-toggle-nightlight" ''
         #!/usr/bin/env bash

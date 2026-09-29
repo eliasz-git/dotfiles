@@ -1,7 +1,9 @@
 { config, lib, pkgs, ... }:
 
 let
-  wallpaper = ../../wallpapers/wallpaper.jpg;
+  # This file is 3 levels deep (modules/nixos/hyprland/), so it takes 3 "../" to
+  # reach the repo root — 2 landed on modules/wallpapers/, which doesn't exist.
+  wallpaper = ../../../wallpapers/wallpaper.jpg;
 in {
   wayland.windowManager.hyprland.settings.exec-once = [
     # Wallpaper

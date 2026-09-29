@@ -5,22 +5,17 @@
 
   # AI packages
   home.packages = with pkgs; [
-    # OpenCode - AI coding agent
-    (pkgs.nodePackages.opencode or pkgs.opencode)
-
-    # Gemini CLI - Google's CLI
-    (pkgs.nodePackages.gemini-cli or pkgs.gemini-cli)
-
-    # Additional AI tools
-    pkgs.ollama
-    pkgs.llama-cpp
+    opencode      # AI coding agent
+    gemini-cli    # Google's CLI
+    llama-cpp
+    # ollama isn't listed here: services.ollama.enable below already
+    # installs the ollama package as part of the service.
   ];
 
-  # Ollama service for local LLMs
-  services.ollama = {
-    enable = true;
-    openFirewall = false;
-  };
+  # Ollama service for local LLMs. Home-Manager's services.ollama has no
+  # openFirewall knob (that's NixOS-only) — it's moot anyway, since the
+  # default host (127.0.0.1) never touches the firewall.
+  services.ollama.enable = true;
 
   # Environment variables for AI tools (home-manager level, since module included via Home Manager)
   home.sessionVariables = {
@@ -36,9 +31,9 @@
 
   # User service for loading AI API keys from secure file
   systemd.user.services.ai-keys = {
-    description = "Load AI API keys from secure file";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
+    Unit.Description = "Load AI API keys from secure file";
+    Install.WantedBy = [ "default.target" ];
+    Service = {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStartPre = "${pkgs.writeShellScript "ai-keys-setup" ''
