@@ -193,7 +193,7 @@
     requiredMounts = [ "/mnt/storage" ];
   };
 
-  # Enable only after the gaming PC has a restricted SSH destination and this
+  # Enable only after the desktop has a restricted SSH destination and this
   # root-only password file exists: /var/lib/homelab-backup/restic-password.
   services.homelabBackup.enable = false;
 

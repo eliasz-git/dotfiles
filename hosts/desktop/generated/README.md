@@ -1,6 +1,6 @@
-# Generated Gaming PC snapshots
+# Generated desktop snapshots
 
-These files are raw snapshots produced by `nixos-generate-config` on the Gaming PC.
+These files are raw snapshots produced by `nixos-generate-config` on the desktop.
 They are kept for hardware provenance and comparison only; the active configuration
 is `../configuration.nix` and the active hardware module is `../hardware-configuration.nix`.
 

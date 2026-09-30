@@ -1,6 +1,6 @@
 # Omarchy Alignment Plan
 
-**Goal:** Bring gaming PC and MacBook configs closer to Omarchy's philosophy while preserving personalized configs (homelab, Beattie, etc.)
+**Goal:** Bring desktop and MacBook configs closer to Omarchy's philosophy while preserving personalized configs (homelab, Beattie, etc.)
 
 ---
 
@@ -30,7 +30,7 @@ For Gaming, the login surface now follows that direction with **graphical SDDM**
 
 ## Current State vs Target
 
-| Area | Gaming PC (Current) | MacBook (Current) | Omarchy Target | Gap |
+| Area | Desktop (Current) | MacBook (Current) | Omarchy Target | Gap |
 |------|---------------------|-------------------|----------------|-----|
 | WM | Hyprland (hyprlang) | AeroSpace (i3-style) | Hyprland (Lua-like modular source) | Keep the validated hyprlang output while preserving a future migration path |
 | Config format | hyprlang inline | AeroSpace TOML | Lua modules | Both need migration |
@@ -39,7 +39,7 @@ For Gaming, the login surface now follows that direction with **graphical SDDM**
 | Launcher | wofi | Raycast | rofi | Mac: rofi or keep Raycast |
 | Theme | Everforest Blue + dark GTK/Qt | System + custom | Cohesive switchable themes | Extend the canonical palette to every consumer |
 | Keybindings | SUPER mod, basic | cmd+ctrl (hyper) | SUPER mod, extensive | Unify to SUPER mod |
-| Gaming | Steam, Proton-GE, gamescope | Steam, Crossover, PrismLauncher | Steam, Proton-GE, gamescope | Gaming PC ✅, Mac: add Proton |
+| Gaming | Steam, Proton-GE, gamescope | Steam, Crossover, PrismLauncher | Steam, Proton-GE, gamescope | Desktop ✅, Mac: add Proton |
 | AI tools | hermes-agent | opencode, claude, gemini, copilot | opencode, claude, gemini | Both need opencode |
 | Fonts | JetBrainsMono, FiraCode | + VictorMono | JetBrainsMono Nerd Font | Add VictorMono to gaming |
 | Notifications | dunst | native | dunst | Mac: add dunst |
@@ -71,7 +71,7 @@ For Gaming, the login surface now follows that direction with **graphical SDDM**
 
 ---
 
-### Phase 2: Gaming PC (NixOS + Hyprland)
+### Phase 2: Desktop (NixOS + Hyprland)
 
 **2.1 Migrate Hyprland Config to Lua Modules**
 ```
@@ -236,7 +236,7 @@ Create `omarchy-cli` (or `tundra-cli`) with:
 
 ## Migration Strategy
 
-### Gaming PC (Priority 1)
+### Desktop (Priority 1)
 1. Create theme system module
 2. Restructure Hyprland config into modular Lua-like files (generate hyprlang)
 3. Expand keybindings to match Omarchy
@@ -284,7 +284,7 @@ modules/darwin/
 ├── karabiner-caps.nix      # Caps Lock → cmd
 └── macos-apps.nix          # Additional Homebrew apps
 
-hosts/gaming/
+hosts/desktop/
 ├── home.nix                # Updated imports
 └── hyprland-config/        # Source Lua-like configs (optional)
 
@@ -295,8 +295,8 @@ hosts/darwin/
 
 ### Modified Files
 - `flake.nix` — add new modules, ensure unstable packages for latest tools
-- `hosts/gaming/configuration.nix` — add new system packages/services
-- `hosts/gaming/home.nix` — import new modules, remove wofi, add rofi
+- `hosts/desktop/configuration.nix` — add new system packages/services
+- `hosts/desktop/home.nix` — import new modules, remove wofi, add rofi
 - `hosts/darwin/configuration.nix` — add brews/casks
 - `hosts/darwin/home.nix` — import new modules
 - `modules/shared/shell.nix` — enhance aliases, add atuin
@@ -306,9 +306,9 @@ hosts/darwin/
 
 ## Testing Checklist
 
-### Gaming PC
+### Desktop
 - [ ] `nix flake check --impure` passes
-- [ ] `sudo nixos-rebuild switch --flake .#gaming-pc` succeeds
+- [ ] `sudo nixos-rebuild switch --flake .#desktop` succeeds
 - [ ] Hyprland starts, keybindings work
 - [ ] Waybar shows all modules
 - [ ] Rofi launches apps
@@ -346,15 +346,15 @@ hosts/darwin/
 
 6. **Flatpak on NixOS?** → **Minimal. Nixpkgs has most things. Flatpak only for proprietary (Discord, Signal, Steam - but Steam in nixpkgs).**
 
-7. **Claude Code / opencode on gaming PC?** → **Yes, via nixpkgs or npm**
+7. **Claude Code / opencode on desktop?** → **Yes, via nixpkgs or npm**
 
-8. **VictorMono on gaming PC?** → **Yes, add to fonts.packages**
+8. **VictorMono on desktop?** → **Yes, add to fonts.packages**
 
 ---
 
 ## Rollback Plan
 
-- Each host config is in git — `git revert` or `nixos-rebuild switch --flake .#gaming-pc --rollback`
+- Each host config is in git — `git revert` or `nixos-rebuild switch --flake .#desktop --rollback`
 - Old configs preserved in `home-manager` generations
 - Theme system is additive — disable by not importing
 
@@ -365,7 +365,7 @@ hosts/darwin/
 | Phase | Effort | Risk |
 |-------|--------|------|
 | 1: Shared Foundation | 2-3 hrs | Low |
-| 2: Gaming PC Hyprland | 4-6 hrs | Medium (hardware test needed) |
+| 2: Desktop Hyprland | 4-6 hrs | Medium (hardware test needed) |
 | 3: MacBook Enhancement | 2-3 hrs | Low |
 | 4: Shared CLI | 1-2 hrs | Low |
 | 5-6: Homelab/Beattie | 30 min | Very Low |
@@ -377,6 +377,6 @@ hosts/darwin/
 
 1. Review this plan — confirm/modify priorities
 2. Start with Phase 1 (themes, shared shell)
-3. Phase 2 (gaming PC) — test on hardware
+3. Phase 2 (desktop) — test on hardware
 4. Phase 3 (MacBook)
 5. Phase 4 (CLI tooling)

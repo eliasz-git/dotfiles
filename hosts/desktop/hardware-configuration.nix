@@ -1,6 +1,6 @@
 { config, lib, pkgs, modulesPath, ... }:
 
-# Hardware configuration for the Ryzen 5 5600 gaming PC. These UUIDs were
+# Hardware configuration for the Ryzen 5 5600 desktop. These UUIDs were
 # verified on the machine; do not replace them with generic labels.
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];

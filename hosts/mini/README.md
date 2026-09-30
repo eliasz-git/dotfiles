@@ -1,6 +1,6 @@
 # Homelab minis — NixOS headless
 
-> Docs: [`STACKS.md`](./STACKS.md) (what runs where + Compose) · [`BACKUPS.md`](./BACKUPS.md) (gaming PC Restic target + iCloud scope) · [`SECRETS.md`](./SECRETS.md) (sops-nix / .env) · stacks: [`1/stacks/infra/`](./1/stacks/infra/) · [`2/stacks/media/`](./2/stacks/media/)
+> Docs: [`STACKS.md`](./STACKS.md) (what runs where + Compose) · [`BACKUPS.md`](./BACKUPS.md) (desktop Restic target + iCloud scope) · [`SECRETS.md`](./SECRETS.md) (sops-nix / .env) · stacks: [`1/stacks/infra/`](./1/stacks/infra/) · [`2/stacks/media/`](./2/stacks/media/)
 
 **Spec (confirmed 16GB each, spare 16GB DDR4 laptop stick optional):**
 
@@ -9,7 +9,7 @@
 | **mini1** | HP ProDesk 600 G1 DM | i3-4160T 2C/4T 3.1GHz Haswell 35W | 16GB DDR3L (max 16GB — spare DDR4 won't fit here) | 256GB SATA SSD | 192.168.1.75 | **infra** |
 | **mini2** | HP ProDesk 405 G4 DM | R5 PRO 2400GE 4C/8T + Vega 11 | 16GB DDR4 (max 32GB — spare 16GB stick → 32GB if DDR4) | 256GB NVMe; NFS client of mini1 | 192.168.1.76 | **media** |
 
-Both headless, Tailscale for remote (replaces WireGuard), Docker+Compose for stacks. Mini1 owns the 2TB storage/NAS; mini2 consumes `/mnt/storage` over NFS. The gaming PC is the secondary encrypted backup target; iCloud protects selected personal files. Don't count on spare — configs assume 16GB with 25% zram.
+Both headless, Tailscale for remote (replaces WireGuard), Docker+Compose for stacks. Mini1 owns the 2TB storage/NAS; mini2 consumes `/mnt/storage` over NFS. The desktop is the secondary encrypted backup target; iCloud protects selected personal files. Don't count on spare — configs assume 16GB with 25% zram.
 
 ## What changed
 - `flake.nix`: added `nixosConfigurations.mini1/mini2` (primary) alongside existing `homeConfigurations.mini1/mini2` (legacy standalone Home Manager fallbacks only).
@@ -62,7 +62,7 @@ hms  # home-manager switch --flake .#mini1
 ## Storage notes
 - mini1: 256GB SSD = OS only. No media mount needed.
 - mini2: no authoritative data disk; `/mnt/storage` is an NFS4 automount from mini1 at `192.168.1.75:/mnt/storage`.
-- gaming PC: use its existing drive as the encrypted Restic repository first; do not move the boot disk until a replacement and migration plan exist.
+- desktop: use its existing drive as the encrypted Restic repository first; do not move the boot disk until a replacement and migration plan exist.
 - APC Smart-UPS 2200XL: if plugged via USB to mini1, set `services.apcupsd.enable = true` + `configText` in configuration.nix.
 
 ## Keeping old behavior

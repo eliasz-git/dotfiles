@@ -18,7 +18,7 @@
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     # niri — provides the home-manager `programs.niri.settings` option used by
-    # hosts/nixos/home.nix (the laptop). Without it that host cannot evaluate.
+    # hosts/laptop/home.nix (the laptop). Without it that host cannot evaluate.
     niri.url = "github:sodiboo/niri-flake";
     niri.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -55,17 +55,17 @@
       pkgs    = linuxPkgs;
       specialArgs = { inherit hermes-agent; };
       modules = [
-        ./hosts/nixos/configuration.nix
+        ./hosts/laptop/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs           = true;
           home-manager.useUserPackages         = true;
           home-manager.backupFileExtension     = "backup";
-          # `programs.niri.settings` / `config.lib.niri` (used by hosts/nixos/home.nix).
+          # `programs.niri.settings` / `config.lib.niri` (used by hosts/laptop/home.nix).
           # Config-only module: the niri binary still comes from nixpkgs via
           # programs.niri.enable in configuration.nix.
           home-manager.sharedModules           = [ niri.homeModules.config ];
-          home-manager.users.tundra            = import ./hosts/nixos/home.nix;
+          home-manager.users.tundra            = import ./hosts/laptop/home.nix;
         }
       ];
     };
@@ -122,20 +122,20 @@
       ];
     };
 
-    # ── NEW: GAMING PC ───────────────────────────────────────────
-    nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
+    # ── DESKTOP (formerly Gaming PC) ───────────────────────────
+    nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
       pkgs = linuxPkgs;
       specialArgs = { inherit hermes-agent; };
       modules = [
-        ./hosts/gaming/configuration.nix
+        ./hosts/desktop/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
           home-manager.extraSpecialArgs = { inherit zen-browser; };
-          home-manager.users.elias = import ./hosts/gaming/home.nix;
+          home-manager.users.elias = import ./hosts/desktop/home.nix;
         }
       ];
     };

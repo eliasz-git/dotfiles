@@ -18,7 +18,7 @@ The wrapper delegates to the explicit Tundra CLI:
   --boot     build and add a NixOS boot generation without switching
   (default)  switch the explicitly selected host
 
-Supported hosts: macbook laptop gaming-pc beattie mini1 mini2
+Supported hosts: macbook laptop desktop beattie mini1 mini2
 EOF
 }
 
@@ -32,7 +32,7 @@ while (($#)); do
     -b|--boot) mode='boot' ;;
     -d|--dry-run) mode='eval' ;;
     -n|--no-pull|--offline) no_pull=true ;;
-    macbook|laptop|gaming-pc|beattie|mini1|mini2) host="$1" ;;
+    macbook|laptop|desktop|beattie|mini1|mini2) host="$1" ;;
     *) echo "Unknown option or host: $1" >&2; usage >&2; exit 2 ;;
   esac
   shift

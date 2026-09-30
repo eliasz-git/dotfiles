@@ -9,7 +9,7 @@ result-*
 *.backup
 
 # NixOS hardware configuration (system-specific)
-hosts/nixos/hardware-configuration.nix
+hosts/laptop/hardware-configuration.nix
 
 # Editor files
 .vscode/

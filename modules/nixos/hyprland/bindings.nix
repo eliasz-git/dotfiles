@@ -140,7 +140,7 @@ let
 
     # ── System ──────────────────────────────────────────────────────
     "SUPER SHIFT, Q, exec, wlogout"
-    "SUPER CTRL SHIFT, R, exec, sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc"
+    "SUPER CTRL SHIFT, R, exec, sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop"
     "SUPER SHIFT, U, exec, foot -e tundra rbu"
 
     # ── Mouse Bindings ──────────────────────────────────────────────

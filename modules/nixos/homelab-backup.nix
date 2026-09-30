@@ -8,8 +8,8 @@ in
     enable = lib.mkEnableOption "the homelab Restic backup job";
     repository = lib.mkOption {
       type = lib.types.str;
-      default = "sftp:homelab-backup@gaming-pc:/srv/backups/homelab-restic";
-      description = "Restic repository on the separate gaming-PC backup target.";
+      default = "sftp:homelab-backup@desktop:/srv/backups/homelab-restic";
+      description = "Restic repository on the separate desktop backup target.";
     };
     passwordFile = lib.mkOption {
       type = lib.types.path;

@@ -128,14 +128,14 @@ elif [[ "$OS" == "nixos" ]]; then
     print_info "Running NixOS-specific setup..."
     
     # Check for hardware-configuration.nix
-    if [[ ! -f "$CONFIG_DIR/hosts/nixos/hardware-configuration.nix" ]]; then
+    if [[ ! -f "$CONFIG_DIR/hosts/laptop/hardware-configuration.nix" ]]; then
         print_warning "hardware-configuration.nix not found!"
         if [[ -f "/etc/nixos/hardware-configuration.nix" ]]; then
             print_info "Copying from /etc/nixos/hardware-configuration.nix..."
-            cp /etc/nixos/hardware-configuration.nix "$CONFIG_DIR/hosts/nixos/hardware-configuration.nix"
+            cp /etc/nixos/hardware-configuration.nix "$CONFIG_DIR/hosts/laptop/hardware-configuration.nix"
             print_success "hardware-configuration.nix copied"
         else
-            print_error "Please copy your hardware-configuration.nix to $CONFIG_DIR/hosts/nixos/"
+            print_error "Please copy your hardware-configuration.nix to $CONFIG_DIR/hosts/laptop/"
             exit 1
         fi
     fi
@@ -145,14 +145,14 @@ elif [[ "$OS" == "nixos" ]]; then
         echo ""
         print_info "Replacing placeholders in configuration files..."
         
-        if [[ -f "$CONFIG_DIR/hosts/nixos/replace.sh" ]]; then
-            cd "$CONFIG_DIR/hosts/nixos"
+        if [[ -f "$CONFIG_DIR/hosts/laptop/replace.sh" ]]; then
+            cd "$CONFIG_DIR/hosts/laptop"
             chmod +x replace.sh
             ./replace.sh "$USER_NAME" "$GITHUB_USERNAME" "$USER_EMAIL"
             cd "$CONFIG_DIR"
             print_success "Placeholders replaced successfully!"
         else
-            print_error "replace.sh not found in hosts/nixos/"
+            print_error "replace.sh not found in hosts/laptop/"
             exit 1
         fi
     fi
@@ -187,8 +187,8 @@ elif [[ "$OS" == "nixos" ]]; then
     
     echo ""
     print_info "Next steps for NixOS:"
-    echo "  1. Verify hardware-configuration.nix is in hosts/nixos/ directory"
-    echo "  2. Update timezone in hosts/nixos/configuration.nix if needed"
+    echo "  1. Verify hardware-configuration.nix is in hosts/laptop/ directory"
+    echo "  2. Update timezone in hosts/laptop/configuration.nix if needed"
     echo "  3. Validate: cd /etc/nixos && ./scripts/validate.sh --all"
     echo "  4. Build without activation: ./scripts/tundra-cli.sh build laptop"
     echo "  5. Activate after review: ./scripts/tundra-cli.sh switch laptop"

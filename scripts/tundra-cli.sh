@@ -28,13 +28,13 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 usage_host() {
-  echo "Hosts: macbook, laptop, gaming-pc, beattie, mini1, mini2" >&2
+  echo "Hosts: macbook, laptop, desktop, beattie, mini1, mini2" >&2
 }
 
 host_kind() {
   case "$1" in
     macbook) echo darwin ;;
-    laptop|gaming-pc|beattie|mini1|mini2) echo nixos ;;
+    laptop|desktop|beattie|mini1|mini2) echo nixos ;;
     *) return 1 ;;
   esac
 }
@@ -57,7 +57,7 @@ resolve_host() {
     Darwin) [[ "$machine" == "macbook" ]] && printf '%s\n' macbook && return 0 ;;
     Linux)
       case "$machine" in
-        laptop|gaming-pc|beattie|mini1|mini2) printf '%s\n' "$machine"; return 0 ;;
+        laptop|desktop|beattie|mini1|mini2) printf '%s\n' "$machine"; return 0 ;;
       esac
       ;;
   esac
@@ -163,7 +163,7 @@ cmd_rebuild() {
     argument="$1"
     case "$argument" in
       --no-pull|--offline) pull=false ;;
-      macbook|laptop|gaming-pc|beattie|mini1|mini2) host="$argument" ;;
+      macbook|laptop|desktop|beattie|mini1|mini2) host="$argument" ;;
       *) log_error "Unknown rebuild option or host: $argument"; echo "Usage: tundra rb [--no-pull|--offline] [host]" >&2; exit 2 ;;
     esac
     shift
@@ -206,7 +206,7 @@ cmd_update() {
     argument="$1"
     case "$argument" in
       --no-pull|--offline) pull=false ;;
-      macbook|laptop|gaming-pc|beattie|mini1|mini2) host="$argument" ;;
+      macbook|laptop|desktop|beattie|mini1|mini2) host="$argument" ;;
       *) log_error "Unknown update option or host: $argument"; echo "Usage: tundra rbu [--no-pull|--offline] [host]" >&2; exit 2 ;;
     esac
     shift
@@ -404,15 +404,15 @@ INPUTS AND OTHER:
   help                         Show this help
 
 SUPPORTED HOSTS:
-  macbook laptop gaming-pc beattie mini1 mini2
+  macbook laptop desktop beattie mini1 mini2
 
 Examples:
-  tundra eval gaming-pc
-  tundra build gaming-pc
-  tundra rb gaming-pc
-  tundra rb --no-pull gaming-pc
-  tundra rbu gaming-pc
-  tundra rbu --no-pull gaming-pc
+  tundra eval desktop
+  tundra build desktop
+  tundra rb desktop
+  tundra rb --no-pull desktop
+  tundra rbu desktop
+  tundra rbu --no-pull desktop
   tundra rbu macbook
 EOF
 }

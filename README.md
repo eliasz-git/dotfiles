@@ -8,7 +8,7 @@ Multi-host Nix configuration for macOS, NixOS desktop systems, a showcase workst
 |---|---|---|
 | MacBook | `darwinConfigurations.macbook` | AeroSpace, SketchyBar, Ghostty, Homebrew |
 | Laptop | `nixosConfigurations.laptop` | Niri + Waybar |
-| Gaming PC | `nixosConfigurations.gaming-pc` | Hyprland + Waybar + Steam/gaming stack |
+| Desktop | `nixosConfigurations.desktop` | Hyprland + Waybar + Steam/gaming stack |
 | Beattie | `nixosConfigurations.beattie` | Showcase/lab workstation |
 | Mini 1 | `nixosConfigurations.mini1` | Headless infrastructure |
 | Mini 2 | `nixosConfigurations.mini2` | Headless media services |
@@ -49,21 +49,21 @@ See [the host inventory](docs/HOSTS.md) for architecture, ownership boundaries, 
    tundra switch <host>
    ```
 
-For NixOS installation, use the host output directly, for example `nixos-install --flake .#mini1` or `nixos-install --flake .#gaming-pc`. For macOS, use `darwin-rebuild switch --flake .#macbook` after nix-darwin is installed.
+For NixOS installation, use the host output directly, for example `nixos-install --flake .#mini1` or `nixos-install --flake .#desktop`. For macOS, use `darwin-rebuild switch --flake .#macbook` after nix-darwin is installed.
 
 ## Daily operations
 
 ```sh
 tundra doctor                 # read-only environment and output checks
-tundra eval gaming-pc         # evaluate without building
-tundra build gaming-pc        # build without activation
-tundra rb gaming-pc           # pull origin/main, then activate
-tundra rb --no-pull gaming-pc # activate current checkout only
-tundra test gaming-pc         # temporary NixOS activation
-tundra switch gaming-pc       # activate explicitly
-tundra boot gaming-pc         # add a boot generation without switching
-tundra rollback gaming-pc     # rollback where supported
-tundra rbu gaming-pc          # pull, update lockfile, show diff, build; no activation
+tundra eval desktop           # evaluate without building
+tundra build desktop          # build without activation
+tundra rb desktop             # pull origin/main, then activate
+tundra rb --no-pull desktop   # activate current checkout only
+tundra test desktop           # temporary NixOS activation
+tundra switch desktop         # activate explicitly
+tundra boot desktop           # add a boot generation without switching
+tundra rollback desktop       # rollback where supported
+tundra rbu desktop            # pull, update lockfile, show diff, build; no activation
 ```
 
 Host detection is deliberately fail-closed. If you omit a host, the command will refuse to guess unless the local hostname is an exact supported host name. Routine builds never run `nix flake update`.
@@ -81,7 +81,7 @@ The wallpaper collection includes public-domain painting sources and attribution
 ./scripts/wallpaper.sh wallpapers/saal-forest-landscape-moonlight.jpg
 ```
 
-On the gaming PC, Hyprland rotates the painting set every 15 minutes and hides the wallpaper while any active window is fullscreen, including fullscreen media and games.
+On the desktop, Hyprland rotates the painting set every 15 minutes and hides the wallpaper while any active window is fullscreen, including fullscreen media and games.
 
 ## Repository layout
 

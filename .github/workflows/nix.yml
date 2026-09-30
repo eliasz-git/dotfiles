@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        host: [laptop, mini1, mini2, beattie, gaming-pc]
+        host: [laptop, mini1, mini2, beattie, desktop]
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v19

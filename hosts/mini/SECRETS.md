@@ -63,5 +63,5 @@ For now, skip this and use `.env` — you can migrate when the homelab is stable
 
 - `hosts/mini/*/stacks/*/.env`
 - `hosts/mini/secrets.yaml` (if you use sops, commit the encrypted version — it's safe — but not the plaintext)
-- `hosts/nixos/hardware-configuration.nix` (already gitignored, example is `*.example`)
+- `hosts/laptop/hardware-configuration.nix` (already gitignored, example is `*.example`)
 - Any `*.age` private keys

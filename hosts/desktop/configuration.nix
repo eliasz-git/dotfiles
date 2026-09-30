@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
-# Gaming PC — Ryzen 5 5600 + AMD Radeon GPU, Hyprland (Wayland), Steam.
-# Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc
+# Desktop — Ryzen 5 5600 + AMD Radeon GPU, Hyprland (Wayland), Steam.
+# Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop
 {
   imports = [
     ./hardware-configuration.nix
@@ -26,7 +26,7 @@
   boot.kernelParams = [ "amd_pstate=active" ];
 
   # ── NETWORK ───────────────────────────────────────────────────
-  networking.hostName = "gaming-pc";
+  networking.hostName = "desktop";
   networking.networkmanager.enable = true;
 
   # ── LOCALE ────────────────────────────────────────────────────

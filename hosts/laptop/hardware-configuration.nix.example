@@ -1,5 +1,5 @@
 # Placeholder — flake check needs a file here. Real hardware config generated on device:
-# nixos-generate-config --show-hardware-config > hosts/nixos/hardware-configuration.nix
+# nixos-generate-config --show-hardware-config > hosts/laptop/hardware-configuration.nix
 { config, lib, pkgs, modulesPath, ... }:
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];

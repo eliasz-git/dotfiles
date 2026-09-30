@@ -10,7 +10,7 @@ Internet
       ├─ mini1 (192.168.1.75) — infra + NAS — 256GB SSD + 2TB STORAGE — always-on
       │  └─ /mnt/storage/media/{downloads,tv,movies,music,photos}
       ├─ mini2 (192.168.1.76) — media — 256GB NVMe — NFS client of mini1
-      └─ gaming PC — encrypted Restic backup repository; boot disk stays in place
+      └─ desktop — encrypted Restic backup repository; boot disk stays in place
   Tailscale tailnet (100.x.y.z) — no port forwarding, `tailscale up` on both
 ```
 

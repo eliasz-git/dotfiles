@@ -28,7 +28,7 @@ tundra boot <host>      # add a boot generation without switching now
 tundra rollback <host>  # roll back the active system where supported
 ```
 
-Host names are explicit: `macbook`, `laptop`, `gaming-pc`, `beattie`, `mini1`, and `mini2`. Unknown hostnames fail closed; the tool never silently assumes `gaming-pc`.
+Host names are explicit: `macbook`, `laptop`, `desktop`, `beattie`, `mini1`, and `mini2`. Unknown hostnames fail closed; the tool never silently assumes `desktop`.
 
 Every supported Home Manager profile installs the same `tundra` CLI and aliases:
 
