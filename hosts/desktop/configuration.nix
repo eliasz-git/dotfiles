@@ -68,6 +68,7 @@
     wayland.enable = true;
     autoNumlock = true;
   };
+  services.seatd.enable = true;
   services.displayManager.defaultSession = "hyprland";
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1"; # Electron/Chromium apps on Wayland
