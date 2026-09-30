@@ -45,12 +45,13 @@
     brews = [
       "borders" "cups" "opencode" "sketchybar"
       "pcre2" "ripgrep"
-      "deno" "antigravity-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
+      "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       "imsg" "remindctl"
       "mole"
       "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
       "docker" "blueutil"
       # AI tools - not in Homebrew, install via npm:
+      # "antigravity-cli" -> npm i -g
       # "claude-code" -> npm i -g @anthropic-ai/claude-code
       # "copilot-cli" -> npm i -g @github/copilot-cli
       "ollama"

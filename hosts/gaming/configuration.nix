@@ -65,6 +65,7 @@
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
+    autoNumlock = true;
     theme = "${pkgs.sddm-sugar-dark}/share/sddm/themes/sugar-dark";
   };
   services.displayManager.defaultSession = "hyprland";
