@@ -75,6 +75,9 @@ in {
     ../../modules/nixos/screenshot.nix
     ../../modules/nixos/ai-tools.nix
     ../../modules/nixos/launchers.nix
+    # Runtime theme engine: the palette catalogue, the colour-fragment applier
+    # and the units that keep it current. Imports modules/home/themes.nix itself.
+    ../../modules/nixos/theme-runtime.nix
     ../../modules/nixos/gaming-enhanced.nix
   ];
 

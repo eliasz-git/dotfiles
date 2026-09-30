@@ -504,86 +504,123 @@ let
     };
   };
 
-  # Theme switcher script - properly escaped for Nix
+  # Theme switcher.
+  #
+  # Where the runtime theme engine is installed this is a thin front end for
+  # tundra-theme-apply, which owns the colour fragments and is the only thing
+  # that has to understand how a theme is applied. The older file-scanning path
+  # is kept for the hosts that have no applier, so laptop and darwin keep
+  # working, but it is no longer the primary route.
   themeSwitcher = pkgs.writeScriptBin "tundra-theme" ''
     #!/usr/bin/env bash
     set -euo pipefail
 
-    THEMES_DIR="''${HOME}/.config/tundra/themes"
-    STATE_FILE="''${HOME}/.config/tundra/theme"
-    mkdir -p "''${HOME}/.config/tundra"
+    CONFIG_DIR="''${XDG_CONFIG_HOME:-$HOME/.config}/tundra"
+    STATE_FILE="$CONFIG_DIR/theme"
+    CATALOGUE_SH="$CONFIG_DIR/themes.sh"
+    APPLIER="''${TUNDRA_THEME_APPLY:-tundra-theme-apply}"
+    mkdir -p "$CONFIG_DIR"
 
-    # List available themes
+    has_catalogue() { [ -r "$CATALOGUE_SH" ]; }
+    has_applier() { command -v "$APPLIER" >/dev/null 2>&1; }
+
     list_themes() {
       echo "Available themes:"
-      for theme in "''${THEMES_DIR}"/*.nix; do
-        [ -f "''$theme" ] || continue
-        basename "''$theme" .nix | sed 's/^/  /'
+      if has_catalogue; then
+        # shellcheck source=/dev/null
+        . "$CATALOGUE_SH"
+        for name in $TUNDRA_THEME_NAMES; do
+          printf '  %-22s %s\n' "$name" "$(tundra_theme_label "$name")"
+        done
+        return 0
+      fi
+      for theme in "$CONFIG_DIR"/themes/*.nix; do
+        [ -f "$theme" ] || continue
+        basename "$theme" .nix | sed 's/^/  /'
       done
     }
 
-    # Apply theme
-    apply_theme() {
-      local theme_name="''$1"
-      local theme_file="''${THEMES_DIR}/''${theme_name}.nix"
-
-      if [ ! -f "''$theme_file" ]; then
-        echo "Theme not found: ''$theme_name"
-        list_themes
-        exit 1
-      fi
-
-      echo "''$theme_name" > "''$STATE_FILE"
-      echo "Theme set to: ''$theme_name"
-
-      # Trigger rebuild if on NixOS
-      if [ -f /etc/nixos/configuration.nix ] || [ -f /etc/nixos/flake.nix ]; then
-        echo "Run 'sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop' to apply"
-      elif [ -f /etc/nix-darwin/configuration.nix ] || [ -f ~/.config/nix-config/flake.nix ]; then
-        echo "Run 'darwin-rebuild switch --flake ~/.config/nix-config#macbook' to apply"
-      fi
-
-      # Apply runtime changes for Hyprland/Waybar/Rofi/Dunst if running
-      if command -v hyprctl >/dev/null 2>&1; then
-        hyprctl reload
-      fi
-      if command -v waybar >/dev/null 2>&1; then
-        pkill -SIGUSR2 waybar 2>/dev/null || true
-      fi
-      if command -v rofi >/dev/null 2>&1; then
-        # Rofi picks up theme on next launch
-        true
-      fi
-      if command -v dunst >/dev/null 2>&1; then
-        pkill dunst && dunst &
-      fi
-      # Update swaylock config for current theme
-      if command -v tundra-update-swaylock >/dev/null 2>&1; then
-        tundra-update-swaylock
-      fi
-    }
-
-    # Get current theme
     current_theme() {
-      if [ -f "''$STATE_FILE" ]; then
-        cat "''$STATE_FILE"
+      if [ -f "$STATE_FILE" ]; then
+        head -n 1 "$STATE_FILE" | tr -d '[:space:]'
+      elif has_catalogue; then
+        echo "(unset)"
       else
         echo "catppuccin-mocha"
       fi
     }
 
+    # Switching a theme is the applier's job on hosts that have it: it writes the
+    # active state, regenerates every colour fragment and reloads what is
+    # running. There is nothing useful for this script to add on top.
+    apply_theme() {
+      local name="''${1:-}"
+      if [ -z "$name" ]; then
+        echo "Usage: tundra-theme set <theme>" >&2
+        list_themes >&2
+        exit 1
+      fi
+
+      if has_applier; then
+        exec "$APPLIER" "$name"
+      fi
+
+      # Legacy path: no applier on this host, so the theme file has to exist.
+      local theme_file="$CONFIG_DIR/themes/$name.nix"
+      if [ ! -f "$theme_file" ]; then
+        echo "Theme not found: $name" >&2
+        list_themes >&2
+        exit 1
+      fi
+
+      echo "$name" > "$STATE_FILE"
+      echo "Theme set to: $name"
+      echo "This host has no runtime theme engine, so a rebuild is required:"
+      if [ -f /etc/nixos/configuration.nix ]; then
+        echo "  sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop"
+      else
+        echo "  darwin-rebuild switch --flake ~/.config/nix-config#macbook"
+      fi
+
+      if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl reload >/dev/null 2>&1 || true
+      fi
+      if command -v waybar >/dev/null 2>&1; then
+        pkill -SIGUSR2 waybar 2>/dev/null || true
+      fi
+    }
+
+    usage() {
+      echo "Usage: tundra-theme [current|list|set <theme>|apply]"
+      echo
+      echo "  current   print the active theme"
+      echo "  list      list available themes"
+      echo "  set       switch theme and re-apply it"
+      echo "  apply     re-apply the active theme without switching"
+    }
+
     case "''${1:-}" in
-      ""|current)
+      "" | current)
         current_theme
         ;;
-      list|ls)
+      list | ls)
         list_themes
         ;;
       set)
         apply_theme "''${2:-}"
         ;;
+      apply)
+        if has_applier; then
+          exec "$APPLIER"
+        fi
+        echo "No runtime theme engine on this host; nothing to re-apply." >&2
+        exit 1
+        ;;
+      -h | --help | help)
+        usage
+        ;;
       *)
-        echo "Usage: tundra-theme [current|list|set <theme>]"
+        usage >&2
         exit 1
         ;;
     esac

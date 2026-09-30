@@ -23,13 +23,12 @@ bind h select-pane -L
 bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
-set -g status-style "bg=${palette.base},fg=${palette.text}"
-set -g status-left "#[bg=${palette.blue},fg=${palette.base},bold] #S #[bg=${palette.surface0},fg=${palette.text}] #{pane_current_path} "
-set -g status-right "#[bg=${palette.surface0},fg=${palette.text}] %I:%M %p #[bg=${palette.blue},fg=${palette.base},bold] #h "
-set -g window-status-current-style "bg=${palette.blue},fg=${palette.base},bold"
-set -g window-status-style "fg=${palette.subtext0}"
-set -g pane-active-border-style "fg=${palette.blue}"
-set -g pane-border-style "fg=${palette.surface1}"
+
+# Colours come from the runtime theme engine rather than from Nix: the fragment
+# below is rewritten by tundra-theme-apply, so switching themes does not need a
+# rebuild. It is sourced with -q because it does not exist until the applier has
+# run at least once, and a first login must not fail on a missing file.
+source-file -q "$HOME/.config/tundra/colors/tmux.conf"
     '';
   };
   programs.lazygit = {
