@@ -7,6 +7,7 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/secrets.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
     ../../modules/darwin/terminal.nix
@@ -22,6 +23,11 @@
   # Enable theme system
   tundra.enable = true;
   tundra.theme = "everforest-blue";
+
+  # macOS runs the scrobbler, so it opts in to the Last.fm secret. The agenix
+  # Home Manager module decrypts it into the session runtime dir and symlinks
+  # ~/.config/mpdscribble/lastfm-password, which modules/darwin/music.nix reads.
+  age.secrets."lastfm-password".enable = true;
 
   # Karabiner — keeps keyboard remaps under version control
   # Caps Lock → Command+Control (AeroSpace Mod), tap → Escape
