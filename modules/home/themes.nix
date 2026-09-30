@@ -133,6 +133,10 @@ in {
       if [ ! -e "$HOME/.config/tundra/theme" ]; then
         printf '%s\n' "${config.tundra.theme}" > "$HOME/.config/tundra/theme"
       fi
+      mkdir -p "$HOME/.config/tundra/colors"
+      if [ ! -e "$HOME/.config/tundra/colors/hyprland.conf" ]; then
+        printf '# Default Tundra hyprland fragment - will be overwritten by tundra-theme-apply\ncol.active_border = rgb(7fbbb3)\ncol.inactive_border = rgb(313244)\ndecoration.shadow.color = rgba(242233cc)\n' > "$HOME/.config/tundra/colors/hyprland.conf"
+      fi
     '';
 
     # The SDDM greeter reads a theme.conf from the user's config dir. Seed it
