@@ -3,6 +3,7 @@
 let
   themeDir = "/etc/sddm/themes/tundra";
   userThemeConf = "/home/elias/.config/tundra/sddm/theme.conf";
+
   tundraSddmTheme = pkgs.stdenv.mkDerivation {
     pname = "tundra-sddm-theme";
     version = "1.0";
@@ -12,6 +13,12 @@ let
       cp -r $src/* $out/share/sddm/themes/tundra/
     '';
   };
+
+  sddmWithGreeter = pkgs.sddm.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
+      ln -sf sddm-greeter-qt6 $out/bin/sddm-greeter
+    '';
+  });
 in {
   systemd.tmpfiles.rules = [
     "d /var/lib/tundra 0755 root root - -"
@@ -25,6 +32,6 @@ in {
     ln -sfn "${userThemeConf}" "${themeDir}/theme.conf"
   '';
 
+  services.displayManager.sddm.package = lib.mkIf config.services.displayManager.sddm.enable sddmWithGreeter;
   services.displayManager.sddm.theme = lib.mkIf config.services.displayManager.sddm.enable themeDir;
-
 }
