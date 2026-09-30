@@ -14,7 +14,7 @@ let
     '';
   };
 
-  sddmWithGreeter = pkgs.sddm.overrideAttrs (old: {
+  sddmWithGreeter = pkgs.kdePackages.sddm.overrideAttrs (old: {
     postInstall = (old.postInstall or "") + ''
       ln -sf sddm-greeter-qt6 $out/bin/sddm-greeter
     '';
