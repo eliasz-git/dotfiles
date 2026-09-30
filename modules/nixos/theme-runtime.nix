@@ -21,6 +21,7 @@ let
   # A user unit gets a minimal PATH, and on NixOS the usual locations for these
   # tools do not exist, so the ones the applier shells out to are named here.
   applierPath = lib.makeBinPath [
+    pkgs.bash
     pkgs.coreutils
     pkgs.procps
     pkgs.gnused
