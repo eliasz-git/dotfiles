@@ -157,6 +157,35 @@ cmd_system_action() {
   log_success "$action completed for $host"
 }
 
+cmd_rebuild() {
+  local host="" pull=true argument
+  while (($#)); do
+    argument="$1"
+    case "$argument" in
+      --no-pull|--offline) pull=false ;;
+      macbook|laptop|gaming-pc|beattie|mini1|mini2) host="$argument" ;;
+      *) log_error "Unknown rebuild option or host: $argument"; echo "Usage: tundra rb [--no-pull|--offline] [host]" >&2; exit 2 ;;
+    esac
+    shift
+  done
+
+  host="$(resolve_host "$host")"
+  require_repo
+  if [[ "$pull" == true ]]; then
+    if [[ -n "$(git status --porcelain)" ]]; then
+      log_error "Refusing to pull with local changes in $NIX_CONFIG_DIR"
+      echo "Commit or stash them, or rerun as: tundra rb --no-pull $host" >&2
+      exit 1
+    fi
+    log_info "Pulling latest GitHub revision before rebuilding..."
+    git pull --ff-only
+  else
+    log_warn "Skipping GitHub pull; rebuilding the current checkout"
+  fi
+
+  cmd_system_action switch "$host"
+}
+
 cmd_rollback() {
   local host kind
   host="$(resolve_host "${1:-}")"
@@ -172,10 +201,30 @@ cmd_rollback() {
 }
 
 cmd_update() {
-  local host attr
-  host="$(resolve_host "${1:-}")"
+  local host="" attr pull=true argument
+  while (($#)); do
+    argument="$1"
+    case "$argument" in
+      --no-pull|--offline) pull=false ;;
+      macbook|laptop|gaming-pc|beattie|mini1|mini2) host="$argument" ;;
+      *) log_error "Unknown update option or host: $argument"; echo "Usage: tundra rbu [--no-pull|--offline] [host]" >&2; exit 2 ;;
+    esac
+    shift
+  done
+  host="$(resolve_host "$host")"
   attr="$(flake_attr "$host")"
   require_repo
+  if [[ "$pull" == true ]]; then
+    if [[ -n "$(git status --porcelain)" ]]; then
+      log_error "Refusing to pull with local changes in $NIX_CONFIG_DIR"
+      echo "Commit or stash them, or rerun as: tundra rbu --no-pull $host" >&2
+      exit 1
+    fi
+    log_info "Pulling latest GitHub revision before updating inputs..."
+    git pull --ff-only
+  else
+    log_warn "Skipping GitHub pull; updating the current checkout"
+  fi
   log_warn "Updating flake.lock; this is a reviewed repository mutation."
   nix flake update
   echo "--- flake.lock changes ---"
@@ -340,10 +389,11 @@ SYSTEM ACTIONS:
   switch <host>               Activate the selected host
   boot <host>                 Build and add a boot generation (NixOS only)
   rollback <host>             Roll back the active generation
-  rebuild <host>              Compatibility alias for switch; host is required
+  rb [--no-pull] <host>       Pull fast-forward from GitHub, then activate
 
 INPUTS AND OTHER:
-  update <host>               Update flake.lock, show diff, build; never activate
+  rbu [--no-pull] <host>      Pull fast-forward, update flake.lock, then build
+  rebuild/update              Compatibility aliases for rb/rbu
   theme [current|list]         Show declared theme information
   gaming [subcommand]          Gaming utilities
   wallpaper [list|set|reload]   List and switch wallpapers
@@ -359,8 +409,11 @@ SUPPORTED HOSTS:
 Examples:
   tundra eval gaming-pc
   tundra build gaming-pc
-  tundra switch gaming-pc
-  tundra update macbook
+  tundra rb gaming-pc
+  tundra rb --no-pull gaming-pc
+  tundra rbu gaming-pc
+  tundra rbu --no-pull gaming-pc
+  tundra rbu macbook
 EOF
 }
 
@@ -369,9 +422,9 @@ case "${1:-help}" in
   eval) cmd_eval "${2:-}" ;;
   build) cmd_build "${2:-}" ;;
   test|switch|boot) cmd_system_action "$1" "${2:-}" ;;
-  rebuild) cmd_system_action switch "${2:-}" ;;
+  rb|rebuild) shift; cmd_rebuild "$@" ;;
   rollback) cmd_rollback "${2:-}" ;;
-  update) cmd_update "${2:-}" ;;
+  rbu|update) shift; cmd_update "$@" ;;
   doctor) cmd_doctor ;;
   gaming) cmd_gaming "${2:-}" ;;
   github|gh) cmd_github "${2:-}" "${3:-}" ;;

@@ -101,8 +101,8 @@ pipes
 
 **Shared aliases on every supported host:**
 ```
-rb            → tundra switch
-rbu           → update flake.lock + build, no activation
+tundra rb     → pull GitHub + activate
+tundra rbu    → pull + update flake.lock + build, no activation
 rbb           → build only
 rbe           → evaluate only
 rbt           → temporary test activation

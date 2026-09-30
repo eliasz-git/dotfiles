@@ -32,8 +32,9 @@ cowsay "I use NixOS btw" | lolcat
 The shared Nix lifecycle aliases are consistent across hosts:
 
 ```text
-rb    = tundra switch       # activate after review
-rbu   = tundra update       # update lockfile + build; no activation
+tundra rb                    # pull GitHub fast-forward-only, then activate
+tundra rb --no-pull          # activate the current checkout without pulling
+tundra rbu                   # pull, update lockfile + build; no activation
 rbb   = tundra build        # build only
 rbe   = tundra eval         # evaluate only
 rbt   = tundra test         # temporary NixOS activation

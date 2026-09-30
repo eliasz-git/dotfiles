@@ -199,7 +199,7 @@ config/hypr/
 **4.1 Omarchy-like CLI Tool**
 Create `omarchy-cli` (or `tundra-cli`) with:
 - `tundra theme <name>` — switch theme
-- `tundra update` — flake update + rebuild
+- `tundra rbu` — pull, update flake inputs, and build without activation
 - `tundra apps` — list/install applications
 - `tundra gaming` — gaming utilities (proton, gamescope, etc.)
 - `tundra doctor` — health checks

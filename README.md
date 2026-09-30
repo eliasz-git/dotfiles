@@ -57,11 +57,13 @@ For NixOS installation, use the host output directly, for example `nixos-install
 tundra doctor                 # read-only environment and output checks
 tundra eval gaming-pc         # evaluate without building
 tundra build gaming-pc        # build without activation
+tundra rb gaming-pc           # pull origin/main, then activate
+tundra rb --no-pull gaming-pc # activate current checkout only
 tundra test gaming-pc         # temporary NixOS activation
 tundra switch gaming-pc       # activate explicitly
 tundra boot gaming-pc         # add a boot generation without switching
 tundra rollback gaming-pc     # rollback where supported
-tundra update gaming-pc        # update lockfile, show diff, build; no activation
+tundra rbu gaming-pc          # pull, update lockfile, show diff, build; no activation
 ```
 
 Host detection is deliberately fail-closed. If you omit a host, the command will refuse to guess unless the local hostname is an exact supported host name. Routine builds never run `nix flake update`.

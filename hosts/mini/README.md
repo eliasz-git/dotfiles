@@ -47,8 +47,9 @@ You asked. **Docker** = most tutorials, linuxserver.io images, gluetun docs, Por
 ## Daily use
 ```bash
 # On either mini, from ~/.config/nix-config
-rb   # sudo nixos-rebuild switch --flake .#mini1 (or mini2 per host)
-rbu  # flake update + rebuild
+tundra rb   # pull GitHub fast-forward-only, then rebuild the detected mini
+tundra rb --no-pull  # rebuild the current checkout without pulling
+tundra rbu  # pull, update the flake, and build without activation
 # legacy standalone Home Manager fallback only
 hms  # home-manager switch --flake .#mini1
 ```

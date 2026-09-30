@@ -141,7 +141,7 @@ let
     # ── System ──────────────────────────────────────────────────────
     "SUPER SHIFT, Q, exec, wlogout"
     "SUPER CTRL SHIFT, R, exec, sudo nixos-rebuild switch --flake ~/.config/nix-config#gaming-pc"
-    "SUPER SHIFT, U, exec, foot -e tundra update"
+    "SUPER SHIFT, U, exec, foot -e tundra rbu"
 
     # ── Mouse Bindings ──────────────────────────────────────────────
     # $mod + left click = move window

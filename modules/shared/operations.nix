@@ -8,9 +8,7 @@
   ];
 
   programs.zsh.shellAliases = {
-    # Nix lifecycle: rb activates, rbu updates inputs and builds without activation.
-    rb = "tundra switch";
-    rbu = "tundra update";
+    # Nix lifecycle: use explicit `tundra rb` / `tundra rbu` commands.
     rbb = "tundra build";
     rbe = "tundra eval";
     rbt = "tundra test";

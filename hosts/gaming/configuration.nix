@@ -63,10 +63,57 @@
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --user-menu --theme 'border=green;text=green;prompt=blue;time=yellow;action=blue;button=green;container=black;input=white;greet=green' --greeting 'TUNDRA // GAMING PC' --cmd start-hyprland";
+      command = "${pkgs.tuigreet}/bin/tuigreet --config /etc/tuigreet/config.toml --cmd start-hyprland";
       user = "greeter";
     };
   };
+
+  environment.etc."tuigreet/config.toml".text = ''
+    [display]
+    show_time = true
+    time_format = "%a %b %d  %H:%M"
+    greeting = "TUNDRA // GAMING PC"
+    align_greeting = "center"
+
+    [layout]
+    width = 64
+    window_padding = 2
+    container_padding = 2
+    prompt_padding = 1
+
+    [layout.widgets]
+    time_position = "top"
+    status_position = "bottom"
+
+    [remember]
+    username = true
+    session = false
+    user_session = true
+
+    [user_menu]
+    enabled = true
+    min_uid = 1000
+    max_uid = 60000
+
+    [secret]
+    mode = "characters"
+    characters = "*"
+
+    [background]
+    kind = "none"
+
+    [theme]
+    border = "bright-cyan"
+    text = "white"
+    time = "bright-yellow"
+    container = "black"
+    title = "bright-green"
+    greet = "bright-green"
+    prompt = "bright-cyan"
+    input = "white"
+    action = "bright-blue"
+    button = "bright-green"
+  '';
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1"; # Electron/Chromium apps on Wayland
 
@@ -124,6 +171,19 @@
     nssmdns4 = true;
     openFirewall = true;
   };
+
+  # Desktop Syncthing service for vault and selected workstation folders.
+  services.syncthing = {
+    enable = true;
+    user = "elias";
+    dataDir = "/home/elias/.config/syncthing";
+    configDir = "/home/elias/.config/syncthing";
+    openDefaultPorts = true;
+    guiAddress = "127.0.0.1:8384";
+    overrideDevices = false;
+    overrideFolders = false;
+  };
+  systemd.user.services.syncthing.enable = lib.mkForce false;
 
   # ── FONTS & PACKAGES ──────────────────────────────────────────
   fonts.packages = with pkgs; [
