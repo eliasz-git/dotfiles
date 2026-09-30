@@ -239,8 +239,23 @@ in {
         on-click = "pavucontrol";
       };
       "custom/media" = {
-        format = "♪ {}";
-        exec = "playerctl metadata --format '{artist} — {title}' 2>/dev/null";
+        format = "{}";
+        exec = ''
+          status=$(playerctl status 2>/dev/null) || exit 0
+          case "$status" in
+            Playing) icon="󰐊" ;;
+            Paused) icon="󰏔" ;;
+            *) exit 0 ;;
+          esac
+          title=$(playerctl metadata title 2>/dev/null)
+          artist=$(playerctl metadata artist 2>/dev/null)
+          [ -n "$title" ] || title="Unknown title"
+          if [ -n "$artist" ] && [ "$artist" != "$title" ]; then
+            printf "%s  %s — %s" "$icon" "$title" "$artist"
+          else
+            printf "%s  %s" "$icon" "$title"
+          fi
+        '';
         interval = 5;
         on-click = "playerctl play-pause";
         on-click-right = "playerctl next";
