@@ -188,6 +188,11 @@ in {
         halign = center
         valign = center
       }
+
+      # Sourced last, so the runtime colours win over the build-time ones above.
+      # Those stay as the declared default: the lock screen is the one surface
+      # that has to look right even on a session that has not applied a theme.
+      source = ~/.config/tundra/colors/hyprlock.conf
     '';
   };
 
@@ -202,6 +207,10 @@ in {
       main = {
         font = "JetBrainsMono Nerd Font:size=11";
         pad = "12x12";
+        # The colour half is a runtime fragment. foot keeps a [colors-dark]
+        # section below as the declared default, which is what a terminal shows
+        # if it somehow starts before the applier has run.
+        include = "~/.config/tundra/colors/foot.ini";
       };
       "colors-dark" = {
         background = lib.removePrefix "#" palette.base;
@@ -267,13 +276,18 @@ in {
     };
   };
 
-  # ── TOP BAR ────────────────────────────────────────────────
-  # Waybar: workspaces + window title on the left, clock in the middle,
-  # cpu, memory, network, volume, tray on the right.
-  programs.waybar = {
-    enable = true;
-    systemd.enable = true;
-    settings.main = {
+    # ── TOP BAR ────────────────────────────────────────────────
+    # Waybar: workspaces + window title on the left, clock in the middle,
+    # cpu, memory, network, volume, tray on the right.
+    #
+    # Every colour rule lives in the imported fragment, not here. The import is
+    # the first line, and a later rule of equal specificity beats it, so leaving
+    # a colour in this file would silently win over the theme and make the
+    # fragment dead. What stays here is structure: fonts, padding, borders.
+    programs.waybar = {
+      enable = true;
+      systemd.enable = true;
+      settings.main = {
       layer = "top";
       position = "top";
       height = 32;
@@ -324,24 +338,21 @@ in {
         on-click-right = "playerctl next";
       };
     };
+    # Colour rules come from a runtime fragment, imported as the very first
+    # line of the stylesheet because CSS requires @import to precede the rules.
+    # GTK expands nothing inside url(), hence an absolute path rather than a
+    # tilde one.
+    #
+    # The import is the one place where a missing fragment is fatal: waybar
+    # throws if the stylesheet fails to parse, which an unresolvable @import
+    # causes. theme-runtime.nix orders the theme unit before waybar so the file
+    # is always there by the time the bar reads it.
     style = ''
+      @import url("file://${config.home.homeDirectory}/.config/tundra/colors/waybar.css");
       * {
         font-family: "JetBrainsMono Nerd Font";
         font-size: 13px;
         border: none;
-      }
-      window#waybar {
-        background-color: ${palette.mantle};
-        color: ${palette.text};
-      }
-      #workspaces button {
-        padding: 0 8px;
-        color: ${palette.text};
-        background: transparent;
-      }
-      #workspaces button.active {
-        background-color: ${palette.blue};
-        color: ${palette.base};
       }
       #clock,
       #cpu,
@@ -352,18 +363,6 @@ in {
       #tray,
       #window {
         padding: 0 12px;
-      }
-      #cpu.warning {
-        color: ${palette.yellow};
-      }
-      #cpu.critical {
-        color: ${palette.red};
-      }
-      #memory.warning {
-        color: ${palette.yellow};
-      }
-      #memory.critical {
-        color: ${palette.red};
       }
     '';
   };

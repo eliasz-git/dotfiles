@@ -70,4 +70,20 @@ in {
     # starts after a switch costs one rewrite.
     Install.WantedBy = [ "default.target" ];
   };
+
+  # waybar is the one consumer that cannot start without its fragment. It loads
+  # style.css through Gtk::CssProvider, and a stylesheet with an unresolvable
+  # @import makes load_from_path return false, which waybar treats as fatal and
+  # throws out of. The others degrade instead: tmux ignores a missing source
+  # file, Hyprland and hyprlock warn, foot prints an error and starts anyway.
+  #
+  # So the bar waits for the applier. Requires rather than Wants, because After
+  # alone only orders the start, and the fragment has to exist by the time waybar
+  # reads it — a oneshot unit has only finished once it has been activated.
+  systemd.user.services.waybar = lib.mkIf cfg.enable {
+    Unit = {
+      After = [ "tundra-theme-apply.service" ];
+      Requires = [ "tundra-theme-apply.service" ];
+    };
+  };
 }
