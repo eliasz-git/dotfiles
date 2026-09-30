@@ -145,7 +145,7 @@
       [ -z "$CHOICE_RAW" ] && exit 0
       CHOICE="$(echo "$CHOICE_RAW" | awk -F'\t' '{print $2}')"
       [ -z "$CHOICE" ] && CHOICE="$(echo "$CHOICE_RAW" | awk '{print $NF}')"
-      if command -v "$CHOICE" >/dev/null 2>&1; then exec "$CHOICE"; else if open -a "$CHOICE" 2>/dev/null; then exit 0; fi; APP_PATH="$(mdfind "kMDItemDisplayName == '$CHOICE' && kMDItemKind == 'Application'" 2>/dev/null | head -n1)"; [ -n "$APP_PATH" ] && open "$APP_PATH" || open -a "$CHOICE"; fi
+      if open -a "$CHOICE" >/dev/null 2>&1; then exit 0; fi; if command -v "$CHOICE" >/dev/null 2>&1; then exec "$CHOICE"; fi; APP_PATH="$(mdfind "kMDItemDisplayName == '$CHOICE' && kMDItemKind == 'Application'" 2>/dev/null | head -n1)"; if [ -n "$APP_PATH" ]; then open "$APP_PATH"; else echo "launch: cannot launch '$CHOICE'" >&2; exit 1; fi
     '';
   };
   home.file.".local/bin/tui-launcher" = {

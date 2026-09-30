@@ -21,9 +21,14 @@
     # hosts/laptop/home.nix (the laptop). Without it that host cannot evaluate.
     niri.url = "github:sodiboo/niri-flake";
     niri.inputs.nixpkgs.follows = "nixpkgs";
+
+    # agenix — encrypted secrets. Used via agenix.decipher in
+    # modules/shared/secrets.nix, which is pure Nix, so one code path covers
+    # nix-darwin, NixOS, and standalone home-manager hosts.
+    agenix.url = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager, hermes-agent, zen-browser, niri, ... }:
+  outputs = { self, nixpkgs, darwin, home-manager, hermes-agent, zen-browser, niri, agenix, ... }:
   let
     darwinSystem   = "aarch64-darwin";
     linuxSystem    = "x86_64-linux";
@@ -44,6 +49,7 @@
         {
           home-manager.useGlobalPkgs   = true;
           home-manager.useUserPackages = true;
+          home-manager.sharedModules   = [ agenix.homeManagerModules.default ];
           home-manager.users.elias     = import ./hosts/darwin/home.nix;
         }
       ];
@@ -64,7 +70,10 @@
           # `programs.niri.settings` / `config.lib.niri` (used by hosts/laptop/home.nix).
           # Config-only module: the niri binary still comes from nixpkgs via
           # programs.niri.enable in configuration.nix.
-          home-manager.sharedModules           = [ niri.homeModules.config ];
+          home-manager.sharedModules           = [
+            niri.homeModules.config
+            agenix.homeManagerModules.default
+          ];
           home-manager.users.elias            = import ./hosts/laptop/home.nix;
         }
       ];
@@ -84,6 +93,7 @@
           home-manager.useGlobalPkgs       = true;
           home-manager.useUserPackages     = true;
           home-manager.backupFileExtension = "backup";
+          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
           home-manager.users.elias         = import ./hosts/mini/1/home.nix;
         }
       ];
@@ -99,6 +109,7 @@
           home-manager.useGlobalPkgs       = true;
           home-manager.useUserPackages     = true;
           home-manager.backupFileExtension = "backup";
+          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
           home-manager.users.elias         = import ./hosts/mini/2/home.nix;
         }
       ];
@@ -116,6 +127,7 @@
           home-manager.useGlobalPkgs           = true;
           home-manager.useUserPackages         = true;
           home-manager.backupFileExtension     = "backup";
+          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
           home-manager.users.demo   = import ./hosts/beattie/home.nix;
           home-manager.users.elias  = import ./hosts/beattie/home.nix;
         }
@@ -134,6 +146,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
+          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
           home-manager.extraSpecialArgs = { inherit zen-browser; };
           home-manager.users.elias = import ./hosts/desktop/home.nix;
         }
@@ -143,7 +156,10 @@
     # mini2 — HP ProDesk 405 G4 DM — desktop + gaming (AMD Vega)
     homeConfigurations.mini2 = home-manager.lib.homeManagerConfiguration {
       pkgs = linuxPkgs;
-      modules = [ ./hosts/mini/2/home.nix ];
+      modules = [
+        ./hosts/mini/2/home.nix
+        agenix.homeManagerModules.default
+      ];
     };
 
     # ── Standalone Home Manager fallbacks ─────────────────────────
@@ -151,7 +167,10 @@
     # do not replace the mini1/mini2 system outputs above.
     homeConfigurations.mini1 = home-manager.lib.homeManagerConfiguration {
       pkgs = unstablePkgs;
-      modules = [ ./hosts/mini/1/home.nix ];
+      modules = [
+        ./hosts/mini/1/home.nix
+        agenix.homeManagerModules.default
+      ];
     };
 
   };

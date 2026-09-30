@@ -6,37 +6,13 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Caps Lock -> Left Command (SUPER equivalent), tap -> Escape",
+                        "description": "Caps Lock -> Command+Control (AeroSpace Mod), tap -> Escape",
                         "manipulators": [
                             {
-                                "description": "Caps hold -> Left Command, tap -> Escape",
-                                "from": {
-                                    "key_code": "caps_lock",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "left_command" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Left Command + Left Control = Hyper (for AeroSpace mod)",
-                        "manipulators": [
-                            {
-                                "description": "Left Command + Left Control -> Hyper (cmd+ctrl+opt+shift)",
-                                "from": {
-                                    "key_code": "left_command",
-                                    "modifiers": {
-                                        "mandatory": ["left_control"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "left_command",
-                                        "modifiers": ["left_control", "left_option", "left_shift"]
-                                    }
-                                ],
+                                "description": "Caps Lock -> Left Command + Left Control, tap -> Escape",
+                                "from": { "key_code": "caps_lock" },
+                                "to": [{ "key_code": "left_command", "modifiers": ["left_control"] }],
+                                "to_if_alone": [{ "key_code": "escape" }],
                                 "type": "basic"
                             }
                         ]

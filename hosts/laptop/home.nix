@@ -7,6 +7,7 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/secrets.nix
     ../../modules/shared/slskd.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
@@ -782,11 +783,18 @@
     Install = { WantedBy = [ "default.target" ]; };
   };
 
-  # Last.fm password lives OUTSIDE the repo, in ~/.config/mpdscribble/lastfm-password
-  # (chmod 600, just the password on one line). ExecStartPre builds the real config
-  # into the runtime dir from it; if the file is missing the service fails loudly.
+  # Last.fm password lives OUTSIDE the repo as an agenix secret
+  # (secrets/lastfm-password.age, decrypted to ~/.config/mpdscribble/lastfm-password).
+  # ExecStartPre builds the real config into the runtime dir from it; if the file
+  # is missing the service fails loudly instead of scrobbling as nobody.
   systemd.user.services.mpdscribble = {
-    Unit = { Description = "mpdscribble Last.fm scrobbler"; };
+    Unit = {
+      Description = "mpdscribble Last.fm scrobbler";
+      # The password path is a symlink into the agenix runtime dir, so the decrypt
+      # agent has to run first or ExecStartPre reads a dangling link.
+      After = [ "agenix.service" ];
+      Requires = [ "agenix.service" ];
+    };
     Service = {
       ExecStartPre = "${pkgs.writeShellScript "mpdscribble-gen-conf" ''
         set -eu
@@ -813,6 +821,10 @@
     };
     Install = { WantedBy = [ "default.target" ]; };
   };
+
+  # This host runs the scrobbler, so it opts in to the Last.fm secret. The
+  # decrypt agent writes ~/.config/mpdscribble/lastfm-password.
+  age.secrets."lastfm-password".enable = true;
 
   # slskd lives in modules/shared/slskd.nix (secrets: ~/.config/slskd/slskd.env)
 

@@ -60,6 +60,10 @@ let
     "SUPER, down, movefocus, d"
     "SUPER, mouse_down, workspace, e+1"
     "SUPER, mouse_up, workspace, e-1"
+    # Hyprland 0.55+ does not deliver modifier + pointer binds, so the scroll
+    # wheel path above needs a keyboard equivalent.
+    "SUPER SHIFT, bracketright, workspace, e+1"
+    "SUPER SHIFT, bracketleft, workspace, e-1"
 
     "SUPER, h, movefocus, l"
     "SUPER, l, movefocus, r"
@@ -142,20 +146,8 @@ let
     "SUPER SHIFT, Q, exec, wlogout"
     "SUPER CTRL SHIFT, R, exec, sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop"
     "SUPER SHIFT, U, exec, foot -e tundra rbu"
-
-    # ── Mouse Bindings ──────────────────────────────────────────────
-    # $mod + left click = move window
-    # $mod + right click = resize window
-    # $mod + middle click = toggle floating
   ];
 
 in {
   wayland.windowManager.hyprland.settings.bind = bindings;
-
-  # Mouse bindings
-  wayland.windowManager.hyprland.settings.bindm = [
-    "SUPER, mouse:272, movewindow"
-    "SUPER, mouse:273, resizewindow"
-    "SUPER, mouse:274, togglefloating"
-  ];
 }

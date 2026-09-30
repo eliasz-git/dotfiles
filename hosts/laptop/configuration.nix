@@ -283,7 +283,20 @@
   programs.zsh.enable = true;
 
   services.openssh.enable = true;
-  
+
+  # Syncthing — system service so it autostarts at boot without a user session
+  services.syncthing = {
+    enable = true;
+    user = "elias";
+    dataDir = "/home/elias/.config/syncthing";
+    configDir = "/home/elias/.config/syncthing";
+    openDefaultPorts = true;
+    guiAddress = "127.0.0.1:8384";
+    overrideDevices = false;
+    overrideFolders = false;
+  };
+  systemd.user.services.syncthing.enable = lib.mkForce false;
+
   # ── NIX ──────────────────────────────────────────────────────
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
