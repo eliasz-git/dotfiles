@@ -60,60 +60,14 @@
   programs.hyprland.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
-  services.greetd = {
+  # Graphical SDDM login: a dark, image-capable surface fits the Omarchy/Tundra
+  # visual language much better than a terminal greeter with ANSI colors.
+  services.displayManager.sddm = {
     enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --config /etc/tuigreet/config.toml --cmd start-hyprland";
-      user = "greeter";
-    };
+    wayland.enable = true;
+    theme = "${pkgs.sddm-sugar-dark}/share/sddm/themes/sugar-dark";
   };
-
-  environment.etc."tuigreet/config.toml".text = ''
-    [display]
-    show_time = true
-    time_format = "%a %b %d  %H:%M"
-    greeting = "TUNDRA // GAMING PC"
-    align_greeting = "center"
-
-    [layout]
-    width = 64
-    window_padding = 2
-    container_padding = 2
-    prompt_padding = 1
-
-    [layout.widgets]
-    time_position = "top"
-    status_position = "bottom"
-
-    [remember]
-    username = true
-    session = false
-    user_session = true
-
-    [user_menu]
-    enabled = true
-    min_uid = 1000
-    max_uid = 60000
-
-    [secret]
-    mode = "characters"
-    characters = "*"
-
-    [background]
-    kind = "none"
-
-    [theme]
-    border = "bright-cyan"
-    text = "white"
-    time = "bright-yellow"
-    container = "black"
-    title = "bright-green"
-    greet = "bright-green"
-    prompt = "bright-cyan"
-    input = "white"
-    action = "bright-blue"
-    button = "bright-green"
-  '';
+  services.displayManager.defaultSession = "hyprland";
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1"; # Electron/Chromium apps on Wayland
 

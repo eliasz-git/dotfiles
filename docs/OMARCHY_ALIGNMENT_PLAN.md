@@ -20,18 +20,24 @@
 - **AI integration:** opencode, claude, gemini, copilot
 - **Beautiful defaults:** Bibata cursors, Orchis/Papirus themes, JetBrainsMono Nerd Font
 
+## Official reference update
+
+The implementation target is based on the [official Omarchy manual](https://omarchy.org/manual/), not screenshots or third-party dotfiles. The manual emphasizes a cohesive, beautiful Hyprland system built around intentional defaults, switchable themes, curated backgrounds, a CLI-first workflow, and consistent branding across boot unlock, login, screensaver, and desktop surfaces. It also identifies Quickshell as Omarchy's desktop construction kit; this repository will adopt the design principles without replacing the Nix-native Waybar stack prematurely.
+
+For Gaming, the login surface now follows that direction with **graphical SDDM**, a dark Sugar theme, and Hyprland as the default session. The old terminal-greeter experiment is retired because ANSI color tuning cannot provide the same visual hierarchy or branding surface.
+
 ---
 
 ## Current State vs Target
 
 | Area | Gaming PC (Current) | MacBook (Current) | Omarchy Target | Gap |
 |------|---------------------|-------------------|----------------|-----|
-| WM | Hyprland (hyprlang) | AeroSpace (i3-style) | Hyprland (Lua) | Mac needs Hyprland equivalent |
+| WM | Hyprland (hyprlang) | AeroSpace (i3-style) | Hyprland (Lua-like modular source) | Keep the validated hyprlang output while preserving a future migration path |
 | Config format | hyprlang inline | AeroSpace TOML | Lua modules | Both need migration |
 | Terminal | foot | Ghostty | foot (primary) | Mac: add foot, keep Ghostty |
 | Bar | waybar (top) | sketchybar + borders | waybar | Mac: waybar or sketchybar parity |
 | Launcher | wofi | Raycast | rofi | Mac: rofi or keep Raycast |
-| Theme | Orchis-Dark + Papirus | System + custom | 20+ themes, switchable | Add theme system |
+| Theme | Everforest Blue + dark GTK/Qt | System + custom | Cohesive switchable themes | Extend the canonical palette to every consumer |
 | Keybindings | SUPER mod, basic | cmd+ctrl (hyper) | SUPER mod, extensive | Unify to SUPER mod |
 | Gaming | Steam, Proton-GE, gamescope | Steam, Crossover, PrismLauncher | Steam, Proton-GE, gamescope | Gaming PC ✅, Mac: add Proton |
 | AI tools | hermes-agent | opencode, claude, gemini, copilot | opencode, claude, gemini | Both need opencode |
