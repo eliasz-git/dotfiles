@@ -4,45 +4,59 @@
   programs.rofi = {
     enable = true;
     package = pkgs.rofi;
+    plugins = with pkgs; [ rofi-calc rofi-emoji ];
+    settings = {
+      modi = "drun,run,window,ssh,calc,emoji";
+      show-icons = true;
+      drun-display-format = "{name}";
+      display-drun = "Apps";
+      display-window = "Windows";
+      display-ssh = "SSH";
+    };
     theme = let
       inherit (config.lib.formats.rasi) mkLiteral;
+      palette = config.tundra.palette;
     in {
       "*" = {
-        bg = mkLiteral "#181825";
-        bg-alt = mkLiteral "#1e1e2e";
-        fg = mkLiteral "#c0caf5";
-        selected = mkLiteral "#7aa2f7";
-        border = mkLiteral "#313244";
+        background-color = mkLiteral palette.base;
+        text-color = mkLiteral palette.text;
       };
       window = {
         location = mkLiteral "center";
         width = 600;
-        background-color = mkLiteral "@bg";
+        background-color = mkLiteral palette.base;
         border = mkLiteral "2px";
         border-radius = 8;
-        border-color = mkLiteral "@border";
+        border-color = mkLiteral palette.surface0;
+      };
+      mainbox = {
+        background-color = mkLiteral palette.base;
       };
       input = {
-        background-color = mkLiteral "@bg-alt";
+        background-color = mkLiteral palette.mantle;
+        text-color = mkLiteral palette.text;
         border = mkLiteral "none";
         margin = 8;
         padding = 12;
       };
-      "entry:selected" = {
-        background-color = mkLiteral "@selected";
-        color = mkLiteral "@bg";
+      "element selected" = {
+        background-color = mkLiteral palette.blue;
+        text-color = mkLiteral palette.base;
       };
       listview = {
+        background-color = mkLiteral "transparent";
         lines = 10;
         columns = 1;
         fixed-height = false;
       };
       element = {
+        background-color = mkLiteral "transparent";
+        text-color = mkLiteral palette.text;
         padding = mkLiteral "12px 16px";
         spacing = 8;
       };
       "element-text" = {
-        color = mkLiteral "@fg";
+        text-color = mkLiteral palette.text;
       };
       "element-icon" = {
         size = mkLiteral "1.2em";

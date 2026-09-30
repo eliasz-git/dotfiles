@@ -1,70 +1,72 @@
-# Welcome to Linux — Beattie KDE Plasma Showcase
-### NixOS + KDE Plasma — Tundra Dark — Beginner Friendly
+# Welcome to Beattie — KDE Plasma 6 Showcase
 
-You are on the **KDE Plasma** station — **beattie** (now the polished KDE showcase). The other two Linux stations are one KDE variant + Omarchy(Hyprland). All three are NixOS — same system, different desktops.
+You are on **beattie**, a NixOS workstation running **KDE Plasma 6 on Wayland**, with SDDM, PipeWire, Flatpak, and a cybersecurity lab toolkit.
 
-> Full wiki: Super → `Beattie Wiki` or `hosts/beattie/WIKI.md`
+> Full guide: open **Beattie Wiki** or `hosts/beattie/WIKI.md`.
 
----
+## Getting around
 
-### 1. Getting Around
-- **Super** (Windows key) — overview / search. Just start typing.
-- **Super + Tab** / **Alt + Tab** — switch apps / windows.
-- **Dash (bottom bar)** — favorite apps. Right-click any app -> Add to Favorites.
-- **Top bar** — time, network, sound, power. Click **Vitals** to see CPU/RAM.
-- **Workspaces** — Super + drag window to edge, or overview -> drag to new workspace.
+- **Meta/Super** opens KDE search; start typing an application name.
+- **Alt+Tab** switches windows.
+- **Meta+Tab** switches tasks/workspaces.
+- Use the **panel** for favorites, notifications, network, sound, and power.
+- Open **System Settings** to configure appearance, displays, keyboard, and touchpad.
 
-### 2. Must-Try Apps (all in the dash or Super search)
-- **KDE Plasma Software** — app store (Flatpaks). Install without terminal.
-- **System Settings** — customize KDE Plasma (dash, blur, etc.). Try toggling Blur My Shell.
-- **KDE Plasma Tweaks** — themes, fonts, window buttons.
-- **Files (Nautilus)** — file manager. Press `/` to type a path, `Ctrl+H` hidden files.
-- **Console + Kitty** — terminals. Console is simple, Kitty is powerful.
-- **VSCodium** — code editor.
-- **LibreWolf / Brave** — browsers.
-- **Obsidian, LibreOffice, VLC, GIMP, Inkscape** — already installed.
+## Installed essentials
 
-### 3. Terminal — 5 Commands to Try
-Open **Console** and run:
+- **Dolphin**, **Konsole**, **Kate**, **Spectacle**, **Okular**, **Gwenview**, and **Discover**
+- LibreWolf, Brave, VSCodium, Obsidian, LibreOffice, VLC, Celluloid, GIMP, and Inkscape
+- Docker, Wireshark, Nmap, Burp Suite, Ghidra, Metasploit, John, Hashcat, and forensic tools
+- `tldr`, `eza`, `bat`, `fzf`, `zoxide`, `btop`, and `fastfetch`
+
+## Terminal starters
+
 ```bash
-fastfetch              # system info (your wallpaper + specs)
-tldr ls                # beginner help for any command
-eza --icons            # pretty ls
-btop                   # better task manager (q to quit)
+fastfetch
+tldr ls
+eza --icons
+btop
 cowsay "I use NixOS btw" | lolcat
 ```
-Helpers: `tldr <command>` explains anything. `helpme` fuzzy-searches all tldrs.
 
-### 4. Customization
-- **Appearance:** Settings -> Appearance -> Style: Dark, Accent: Green.
-- **Extensions:** System Settings -> turn on/off Dash to Dock, Blur My Shell, Caffeine (prevents sleep), ArcMenu (start menu).
-- **Wallpaper:** Settings -> Appearance -> Add Picture. Original at `~/.config/nix-config/wallpapers/wallpaper.jpg`.
-- **Theme:** Tundra Dark BL + Papirus Dark icons + Bibata cursor — same family as the other stations.
+The shared Nix lifecycle aliases are consistent across hosts:
 
-### 5. Cybersecurity Lab (see Wiki for full recipes)
-```bash
-nmap -sV 10.0.2.15      # scanner (lab VM only)
-wireshark &            # packet analyzer (demo has NOPASSWD)
-gobuster dir -u http://10.0.2.15 -w /run/current-system/sw/share/seclists/Discovery/Web-Content/common.txt
-burpsuite &  zap & # web intercept
-hashcat --help ; john --help
-ghidra &  r2 -A binary
-msfconsole ; searchsploit apache
+```text
+rb    = tundra switch       # activate after review
+rbu   = tundra update       # update lockfile + build; no activation
+rbb   = tundra build        # build only
+rbe   = tundra eval         # evaluate only
+rbt   = tundra test         # temporary NixOS activation
+rbbt  = tundra boot         # add boot generation without switching
+rbr   = tundra rollback
 ```
-> Ask instructor before scanning the school network! Full toolkit in WIKI.md: masscan, amass, ffuf, nuclei, sqlmap, hydra, aircrack-ng, binwalk, foremost, sleuthkit, etc.
 
-### 6. NixOS Superpower
-This whole desktop is ONE flake: `hosts/beattie/configuration.nix` + `home.nix` → `beattie`.
-- `rb` — rebuild (`sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure`)
-- `update` — flake update + rebuild
-- Rollback: reboot -> pick older generation in boot menu. You can't break it.
+## Appearance and wallpapers
 
-### 7. How It Differs From the Other Two
-- **This (KDE Plasma):** macOS-like, simple, extensions. Best for beginners/creatives.
-- **KDE:** Windows-like, ultra-customizable, widgets.
-- **Omarchy:** Keyboard-driven tiling (Hyprland), for power users.
+- **Appearance:** System Settings → Colors & Themes → choose a dark Breeze variant.
+- **Icons:** Papirus-Dark.
+- **Cursor:** Bibata-Modern-Classic.
+- **Wallpaper:** choose a painting from `~/.config/nix-config/wallpapers`.
 
-Try all three — pick your favorite.
+## NixOS lifecycle
 
----
-**Tips:** Press **Super** and type `welcome` or `wiki` to reopen. Have fun and break things — you can rollback!
+Beattie is one flake output: `nixosConfigurations.beattie`.
+
+```bash
+./scripts/validate.sh --all
+./scripts/tundra-cli.sh eval beattie
+./scripts/tundra-cli.sh build beattie
+./scripts/tundra-cli.sh switch beattie
+```
+
+The actual hardware file belongs on the machine at `hosts/beattie/hardware-configuration.nix`; the checked-in `.example` is only an evaluation fallback. Before installing on new hardware, generate a real file with `nixos-generate-config`.
+
+Rollback by selecting an older systemd-boot generation or running:
+
+```bash
+sudo nixos-rebuild switch --rollback
+```
+
+## Safety
+
+The demo account is intentionally permissive for a showcase/lab machine. For a personal or network-exposed installation, replace the initial passwords with hashed passwords, remove broad sudo access, and do not scan networks without permission.

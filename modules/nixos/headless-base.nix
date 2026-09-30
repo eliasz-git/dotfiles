@@ -39,5 +39,8 @@
 
   # Keep the OS journal from consuming a small system disk during a container
   # failure. Application logs have their own Compose rotation policy.
-  services.journald.extraConfig = "SystemMaxUse=1G\nRuntimeMaxUse=256M";
+  services.journald.settings.Journal = {
+    SystemMaxUse = "1G";
+    RuntimeMaxUse = "256M";
+  };
 }

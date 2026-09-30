@@ -64,7 +64,6 @@ let
       subtext = "#939ab7";
       border = "#363a4f";
     };
-
     # Gruvbox variants
     gruvbox-dark = {
       name = "Gruvbox Dark";
@@ -96,7 +95,6 @@ let
       subtext = "#665c54";
       border = "#ebdbb2";
     };
-
     # Nord
     nord = {
       name = "Nord";
@@ -113,7 +111,6 @@ let
       subtext = "#d8dee9";
       border = "#434c5e";
     };
-
     # Tokyo Night variants
     tokyo-night = {
       name = "Tokyo Night";
@@ -160,7 +157,6 @@ let
       subtext = "#545c7e";
       border = "#e1e2e7";
     };
-
     # Kanagawa variants
     kanagawa-wave = {
       name = "Kanagawa Wave";
@@ -207,7 +203,6 @@ let
       subtext = "#7c7c9c";
       border = "#f2ecbc";
     };
-
     # Rose Pine variants
     rose-pine = {
       name = "Rose Pine";
@@ -254,7 +249,6 @@ let
       subtext = "#9893a5";
       border = "#f2e9e1";
     };
-
     # Everforest
     everforest-dark = {
       name = "Everforest Dark";
@@ -271,6 +265,21 @@ let
       subtext = "#a7a89c";
       border = "#3d464d";
     };
+    everforest-blue = {
+      name = "Everforest Dark Blue";
+      background = "#2d353b";
+      surface = "#272e33";
+      overlay = "#343f44";
+      primary = "#7fbbb3";
+      secondary = "#83c092";
+      accent = "#a7c080";
+      success = "#a7c080";
+      warning = "#dbbc7f";
+      error = "#e67e80";
+      text = "#d3c6aa";
+      subtext = "#a7a89c";
+      border = "#3d484d";
+    };
     everforest-light = {
       name = "Everforest Light";
       background = "#fdf6e3";
@@ -286,7 +295,6 @@ let
       subtext = "#8a8c7f";
       border = "#eddec9";
     };
-
     # Flexoki variants
     flexoki-dark = {
       name = "Flexoki Dark";
@@ -318,7 +326,6 @@ let
       subtext = "#575653";
       border = "#e6e4df";
     };
-
     # Matte Black (Omarchy default-ish)
     matte-black = {
       name = "Matte Black";
@@ -335,7 +342,6 @@ let
       subtext = "#888888";
       border = "#333333";
     };
-
     # Miasma (Omarchy)
     miasma = {
       name = "Miasma";
@@ -352,7 +358,6 @@ let
       subtext = "#8080a0";
       border = "#3a3a5a";
     };
-
     # Solitude (Omarchy)
     solitude = {
       name = "Solitude";
@@ -369,7 +374,6 @@ let
       subtext = "#707090";
       border = "#2e2e40";
     };
-
     # Ristretto (Omarchy)
     ristretto = {
       name = "Ristretto";
@@ -386,7 +390,6 @@ let
       subtext = "#888888";
       border = "#333333";
     };
-
     # Osaka Jade (Omarchy)
     osaka-jade = {
       name = "Osaka Jade";
@@ -403,7 +406,6 @@ let
       subtext = "#668877";
       border = "#2a3a32";
     };
-
     # Last Horizon (Omarchy)
     last-horizon = {
       name = "Last Horizon";
@@ -420,7 +422,6 @@ let
       subtext = "#6688aa";
       border = "#1a2a3a";
     };
-
     # Lupine (Omarchy)
     lupine = {
       name = "Lupine";
@@ -437,7 +438,6 @@ let
       subtext = "#aa77aa";
       border = "#3a2a3a";
     };
-
     # Hackerman (Omarchy)
     hackerman = {
       name = "Hackerman";
@@ -454,7 +454,6 @@ let
       subtext = "#00aa00";
       border = "#003300";
     };
-
     # Ethereal (Omarchy)
     ethereal = {
       name = "Ethereal";
@@ -471,7 +470,6 @@ let
       subtext = "#887799";
       border = "#d0c8e0";
     };
-
     # Lumon (Omarchy)
     lumon = {
       name = "Lumon";
@@ -488,7 +486,6 @@ let
       subtext = "#666666";
       border = "#cccccc";
     };
-
     # Retro 82 (Omarchy)
     retro-82 = {
       name = "Retro 82";
@@ -592,23 +589,28 @@ let
     esac
   '';
 
-  # Generate theme Nix files - use Python to avoid escaping issues
+  # Generate theme files - use Python to avoid escaping issues
   generateThemeFiles = pkgs.runCommand "tundra-themes" {
     # Pass themes as a JSON string, decode in builder
     themesJson = builtins.toJSON themes;
+    nativeBuildInputs = [ pkgs.python3 ];
   } ''
     mkdir -p $out/share/tundra/themes
     # Use a Python script to avoid Nix escaping issues
-    python3 -c "
-import json, os, sys
-themes = json.loads('''$themesJson''')
-for name, data in themes.items():
-    path = os.path.join('$out', 'share', 'tundra', 'themes', name + '.nix')
-    with open(path, 'w') as f:
-        f.write('{ lib, ... }:\\n')
-        f.write('  tundra.themes.' + name + ' = ' + json.dumps(data) + ';\\n')
-        f.write('}\\n')
-"
+    python3 - "$themesJson" "$out" <<'PY'
+    import json
+    import os
+    import sys
+
+    themes = json.loads(sys.argv[1])
+    output_dir = os.path.join(sys.argv[2], "share", "tundra", "themes")
+    for name, data in themes.items():
+        path = os.path.join(output_dir, name + ".nix")
+        with open(path, "w") as theme_file:
+            theme_file.write("{ lib, ... }:\n")
+            theme_file.write("  tundra.themes." + name + " = " + json.dumps(data) + ";\n")
+            theme_file.write("}\n")
+    PY
   '';
 
 in {
@@ -646,7 +648,6 @@ in {
   config = lib.mkIf config.tundra.enable {
     # Install theme switcher system-wide
     environment.systemPackages = [ themeSwitcher ];
-
     # Generate theme files to nix store
     environment.etc."tundra/themes".source = generateThemeFiles;
   };

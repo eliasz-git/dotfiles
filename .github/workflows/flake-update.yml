@@ -1,0 +1,38 @@
+name: Weekly flake update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: weekly-flake-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v19
+      - name: Update flake inputs
+        run: nix flake update
+      - name: Evaluate all outputs
+        run: nix flake check --all-systems --no-build
+      - name: Open or update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update flake inputs'
+          title: 'chore: update flake inputs'
+          body: |
+            Automated weekly flake input update.
+
+            The PR is opened for review and CI validation. No host activation occurs.
+          branch: automation/flake-update
+          delete-branch: true
+          labels: dependencies,nix

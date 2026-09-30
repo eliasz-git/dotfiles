@@ -1,7 +1,9 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
-{
-  # Mirror the macOS Ghostty setup — same navy palette, same font/opacity
+let
+  palette = config.tundra.palette;
+in {
+  # Share the same font and selected palette as the other desktop hosts.
   programs.ghostty = {
     enable = true;
     settings = {
@@ -13,29 +15,29 @@
       font-style-bold-italic = "Bold Italic";
       cursor-style = "bar";
       cursor-style-blink = true;
-      cursor-color = "#68A2C6";
-      cursor-text = "#04182F";
-      background = "#04182F";
-      foreground = "#68A2C6";
-      selection-background = "#06467E";
-      selection-foreground = "#68A2C6";
+      cursor-color = palette.blue;
+      cursor-text = palette.base;
+      background = palette.base;
+      foreground = palette.text;
+      selection-background = palette.surface1;
+      selection-foreground = palette.text;
       palette = [
-        "0=#04182F"
-        "1=#305561"
-        "2=#06467E"
-        "3=#7E8A94"
-        "4=#116FAE"
-        "5=#305561"
-        "6=#68A2C6"
-        "7=#7E8A94"
-        "8=#0a2a4a"
-        "9=#0e5a9a"
-        "10=#4a7a85"
-        "11=#9aadb8"
-        "12=#3d8bc9"
-        "13=#8ec0e0"
-        "14=#4a7a85"
-        "15=#c2d4e0"
+        "0=${palette.surface1}"
+        "1=${palette.red}"
+        "2=${palette.green}"
+        "3=${palette.yellow}"
+        "4=${palette.blue}"
+        "5=${palette.pink}"
+        "6=${palette.teal}"
+        "7=${palette.subtext1}"
+        "8=${palette.surface2}"
+        "9=${palette.red}"
+        "10=${palette.green}"
+        "11=${palette.yellow}"
+        "12=${palette.blue}"
+        "13=${palette.pink}"
+        "14=${palette.teal}"
+        "15=${palette.text}"
       ];
       window-padding-x = 20;
       window-padding-y = 20;

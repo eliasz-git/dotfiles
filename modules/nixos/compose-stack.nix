@@ -23,8 +23,6 @@ let
     };
   };
 
-  enabledStacks = lib.filterAttrs (_: stack: stack.enable) cfg.stacks;
-
   mkStack = name: stack:
     let
       composeFile = "/etc/stacks/${name}/compose.yaml";
@@ -63,5 +61,12 @@ in
     description = "Docker Compose stacks managed by systemd and NixOS.";
   };
 
-  config = lib.mkMerge (lib.mapAttrsToList mkStack enabledStacks);
+  config = {
+    environment.etc = lib.mkMerge (lib.mapAttrsToList
+      (name: stack: lib.mkIf stack.enable (mkStack name stack).environment.etc)
+      cfg.stacks);
+    systemd.services = lib.mkMerge (lib.mapAttrsToList
+      (name: stack: lib.mkIf stack.enable (mkStack name stack).systemd.services)
+      cfg.stacks);
+  };
 }

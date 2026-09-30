@@ -26,6 +26,9 @@ hosts/mini/secrets.yaml
 *.log
 pi-session*.html
 
+# Manus local runtime artifacts
+.manus/
+
 # Hand-made backups
 *.bak
 *.bak[0-9]*

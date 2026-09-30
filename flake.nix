@@ -121,23 +121,6 @@
         }
       ];
     };
-    # ── Beattie minimal — same host, no extensions, for black-screen debug ────
-    nixosConfigurations.beattie-minimal = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit hermes-agent; };
-      system = linuxSystem;
-      pkgs   = linuxPkgs;
-      modules = [
-        ./hosts/beattie-minimal/configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs           = true;
-          home-manager.useUserPackages         = true;
-          home-manager.backupFileExtension     = "backup";
-          home-manager.users.demo   = import ./hosts/beattie-minimal/home.nix;
-          home-manager.users.tundra = import ./hosts/beattie-minimal/home.nix;
-        }
-      ];
-    };
 
     # ── NEW: GAMING PC ───────────────────────────────────────────
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
@@ -163,13 +146,9 @@
       modules = [ ./hosts/mini/2/home.nix ];
     };
 
-    # ── Alpine Linux — OpenRC, Gruvbox Dark ────
-    # (artix host removed - dir deleted upstream)
-    # Ly display manager is intentionally kept in APK — it runs as root
-    # before any user nix profile is mounted, so can't come from nixpkgs.
-    #
-    # Apply:  home-manager switch --flake ~/.config/nix-config#alpine
-    # Update: hmu  (alias: nix flake update && home-manager switch ...)
+    # ── Standalone Home Manager fallbacks ─────────────────────────
+    # These are user-environment outputs only; they are not NixOS systems and
+    # do not replace the mini1/mini2 system outputs above.
     homeConfigurations.mini1 = home-manager.lib.homeManagerConfiguration {
       pkgs = unstablePkgs;
       modules = [ ./hosts/mini/1/home.nix ];

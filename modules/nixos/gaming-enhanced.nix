@@ -49,35 +49,8 @@
   # not a Home-Manager option — programs.input-remapper doesn't exist in HM,
   # which is what broke evaluation).
 
-  # Gaming-specific environment variables (home-manager level)
-  home.sessionVariables = {
-    # Proton
-    PROTON_USE_SYSTEM_VULKAN = "1";
-    PROTON_NO_ESYNC = "0";
-    PROTON_NO_FSYNC = "0";
-
-    # DXVK
-    DXVK_ASYNC = "1";
-    DXVK_STATE_CACHE = "1";
-    DXVK_STATE_CACHE_PATH = "$HOME/.cache/dxvk";
-
-    # VKD3D
-    VKD3D_CONFIG = "dxr11,multi_queue";
-
-    # MangoHUD
-    MANGOHUD = "1";
-    MANGOHUD_CONFIG = "gpu_temp,gpu_load,cpu_temp,cpu_load,ram,vram,fps,frame_timing=1";
-
-    # GameMode
-    GAMEMODE = "1";
-
-    # Steam
-    STEAM_COMPAT_CLIENT_INSTALL_PATH = "$HOME/.steam/steam";
-
-    # AMD GPU
-    RADV_PERFTEST = "aco,rt,sam,nggc";
-    AMD_DEBUG = "useaco,nowc";
-  };
+  # Game-specific compatibility and driver flags intentionally stay out of the
+  # global session. Configure them in Steam's per-game launch options instead.
 
   # No hand-rolled gamemode systemd unit here: programs.gamemode.enable in
   # configuration.nix already ships gamemoded's own D-Bus-activated service.

@@ -6,6 +6,9 @@
     ../../modules/darwin/themes.nix
   ];
 
+  tundra.enable = true;
+  tundra.theme = "everforest-blue";
+
   system.stateVersion = 6;
   system.primaryUser = "elias";
 
@@ -42,7 +45,7 @@
     brews = [
       "borders" "cups" "opencode" "sketchybar"
       "pcre2" "ripgrep"
-      "deno" "gemini-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
+      "deno" "antigravity-cli" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
       "imsg" "remindctl"
       "mole"
       "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
@@ -135,8 +138,8 @@
     enable = true;
     width = 6.0;
     hidpi = false; # 1920x1080 @1x - hidpi=on misaligns (left slightly, right off screen)
-    active_color = "0xff116FAE";
-    inactive_color = "0xff5E81AC"; # visible inactive to avoid ghost when window closed
+    active_color = "0xff7fbbb3"; # Everforest aqua-blue
+    inactive_color = "0xff3d484d"; # Everforest surface
     style = "round";
     background_color = "0x00000000";
     blur_radius = 0.0;

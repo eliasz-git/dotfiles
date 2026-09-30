@@ -6,7 +6,7 @@
   # AI packages
   home.packages = with pkgs; [
     opencode      # AI coding agent
-    gemini-cli    # Google's CLI
+    antigravity-cli
     llama-cpp
     # ollama isn't listed here: services.ollama.enable below already
     # installs the ollama package as part of the service.

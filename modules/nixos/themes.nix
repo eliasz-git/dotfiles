@@ -11,7 +11,6 @@
     # Theme-aware swaylock update script
     environment.systemPackages = with pkgs; [
       swaylock
-      swayidle
       (pkgs.writeScriptBin "tundra-update-swaylock" ''
         #!/usr/bin/env bash
         set -euo pipefail
@@ -52,6 +51,9 @@
             ;;
           everforest-dark)
             BG="2d353bff"; BS="7fbbb3ff"; RING="272e33ff"; INSIDE="2d353bff"; TEXT="d3c6aaff"; SEP="3d464dff"
+            ;;
+          everforest-blue)
+            BG="2d353bff"; BS="7fbbb3ff"; RING="272e33ff"; INSIDE="2d353bff"; TEXT="d3c6aaff"; SEP="3d484dff"
             ;;
           flexoki-dark)
             BG="1c1b1aff"; BS="4385beff"; RING="100f0fff"; INSIDE="1c1b1aff"; TEXT="cecdccff"; SEP="343331ff"
@@ -117,15 +119,5 @@ EOF
       font-size=48
     '';
 
-    # Idle management for Wayland
-    systemd.user.services.swayidle = {
-      enable = true;
-      script = ''
-        exec swayidle -w \
-          timeout 300 'swaylock -f' \
-          timeout 600 'hyprctl dispatch dpms off' \
-          before-sleep 'swaylock -f'
-      '';
-    };
   };
 }

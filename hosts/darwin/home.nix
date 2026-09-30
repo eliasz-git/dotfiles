@@ -7,6 +7,7 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
     ../../modules/darwin/terminal.nix
     ../../modules/darwin/sketchybar.nix
@@ -18,7 +19,7 @@
 
   # Enable theme system
   tundra.enable = true;
-  tundra.theme = "catppuccin-mocha";
+  tundra.theme = "everforest-blue";
 
   # Karabiner — keeps keyboard remaps under version control
   # Caps Lock → Left Command (feels like SUPER)
@@ -147,27 +148,21 @@
 
   # macOS-specific shell aliases
   programs.zsh.shellAliases = {
-    darwin-rebuild = "sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook";
-    darwin-update = "cd ~/.config/nix-config && nix flake update && sudo darwin-rebuild switch --flake .#macbook";
     # Theme
     theme = "tundra-theme";
     themes = "tundra-theme list";
     # AI
     ai = "opencode";
     # claude = "claude-code";  # Not in Homebrew - install via npm: npm i -g @anthropic-ai/claude-code
-    gemini = "gemini-cli";
+    antigravity = "agy";
+    gemini = "agy";
     # copilot = "copilot-cli";  # Not in Homebrew - install via npm: npm i -g @github/copilot-cli
   };
 
   # macOS-specific update function
   programs.zsh.initContent = lib.mkOrder 600 ''
     update-all() {
-        echo "Updating Nix flake..."
-        cd ~/.config/nix-config
-        nix flake update
-
-        echo "Rebuilding macOS system..."
-        sudo darwin-rebuild switch --flake ~/.config/nix-config#macbook
+        rbu
     }
 
     # Source AI keys if present

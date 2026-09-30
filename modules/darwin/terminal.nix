@@ -1,10 +1,12 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
-{
+let
+  palette = config.tundra.palette;
+in {
   programs.alacritty.enable = false;
 
   home.file.".config/ghostty/config".text = ''
-    # ── Ghostty — Navy (#04182F wallpaper palette) ──
+    # ── Ghostty — shared Tundra palette ──
     font-family = JetBrainsMono Nerd Font
     font-size = 14
     font-style = Regular
@@ -13,28 +15,28 @@
     font-style-bold-italic = Bold Italic
     cursor-style = bar
     cursor-style-blink = true
-    cursor-color = #68A2C6
-    cursor-text = #04182F
-    background = #04182F
-    foreground = #68A2C6
-    selection-background = #06467E
-    selection-foreground = #68A2C6
-    palette = 0=#04182F
-    palette = 1=#305561
-    palette = 2=#06467E
-    palette = 3=#7E8A94
-    palette = 4=#116FAE
-    palette = 5=#305561
-    palette = 6=#68A2C6
-    palette = 7=#7E8A94
-    palette = 8=#0a2a4a
-    palette = 9=#0e5a9a
-    palette = 10=#4a7a85
-    palette = 11=#9aadb8
-    palette = 12=#3d8bc9
-    palette = 13=#8ec0e0
-    palette = 14=#4a7a85
-    palette = 15=#c2d4e0
+    cursor-color = ${palette.blue}
+    cursor-text = ${palette.base}
+    background = ${palette.base}
+    foreground = ${palette.text}
+    selection-background = ${palette.surface1}
+    selection-foreground = ${palette.text}
+    palette = 0=${palette.surface1}
+    palette = 1=${palette.red}
+    palette = 2=${palette.green}
+    palette = 3=${palette.yellow}
+    palette = 4=${palette.blue}
+    palette = 5=${palette.pink}
+    palette = 6=${palette.teal}
+    palette = 7=${palette.subtext1}
+    palette = 8=${palette.surface2}
+    palette = 9=${palette.red}
+    palette = 10=${palette.green}
+    palette = 11=${palette.yellow}
+    palette = 12=${palette.blue}
+    palette = 13=${palette.pink}
+    palette = 14=${palette.teal}
+    palette = 15=${palette.text}
     window-padding-x = 20
     window-padding-y = 20
     window-decoration = none

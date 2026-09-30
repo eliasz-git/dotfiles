@@ -8,11 +8,15 @@
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
     ../../modules/shared/slskd.nix
+    ../../modules/shared/operations.nix
+    ../../modules/home/themes.nix
     ../../modules/nixos/terminal.nix
   ];
 
   home.stateVersion = "25.05";
   programs.home-manager.enable = true;
+  tundra.enable = true;
+  tundra.theme = "everforest-blue";
 
   home.packages = with pkgs; [
     ghostty
@@ -31,14 +35,8 @@
     gnome-online-accounts
     bibata-cursors
     papirus-icon-theme
-    orchis-theme
+    everforest-gtk-theme
   ];
-
-  programs.zsh.shellAliases = {
-    rb = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
-    nixos-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure";
-    nixos-update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#laptop --impure";
-  };
 
   programs.zsh.initContent = lib.mkOrder 600 ''
     eval "$(zoxide init zsh)"
@@ -46,12 +44,7 @@
     export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
 
     update-all() {
-        echo "Updating Nix flake..."
-        cd /etc/nixos
-        sudo nix flake update
-
-        echo "Rebuilding NixOS system..."
-        sudo nixos-rebuild switch --flake /etc/nixos#laptop --impure
+        rbu
     }
   '';
 
@@ -76,8 +69,8 @@
       package = pkgs.papirus-icon-theme;
     };
     theme = {
-      name = "Orchis-Dark";
-      package = pkgs.orchis-theme;
+      name = "Everforest-Dark-BL";
+      package = pkgs.everforest-gtk-theme;
     };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = true;
@@ -93,14 +86,11 @@
     package = pkgs.rofi;
     theme = let
       inherit (config.lib.formats.rasi) mkLiteral;
+      palette = config.tundra.palette;
     in {
       "*" = {
-        bg = mkLiteral "#04182F";
-        bg-alt = mkLiteral "#06467E";
-        fg = mkLiteral "#68A2C6";
-        fg-alt = mkLiteral "#7E8A94";
-        background-color = mkLiteral "transparent";
-        text-color = mkLiteral "@fg";
+        background-color = mkLiteral palette.base;
+        text-color = mkLiteral palette.text;
         margin = 0;
         padding = 0;
         spacing = 0;
@@ -108,24 +98,30 @@
       "window" = {
         location = mkLiteral "center";
         width = 640;
-        background-color = mkLiteral "@bg";
+        background-color = mkLiteral palette.base;
         border-radius = 8;
+        border = mkLiteral "2px";
+        border-color = mkLiteral palette.surface0;
+      };
+      "mainbox" = {
+        background-color = mkLiteral palette.base;
       };
       "inputbar" = {
         spacing = 8;
         padding = 12;
-        background-color = mkLiteral "@bg-alt";
+        background-color = mkLiteral palette.mantle;
         border-radius = mkLiteral "8px 8px 0 0";
       };
       "prompt, entry, element-icon, element-text" = {
         vertical-align = mkLiteral "0.5";
       };
       "prompt" = {
-        text-color = mkLiteral "#116FAE";
+        text-color = mkLiteral palette.blue;
       };
       "textbox" = {
         padding = 8;
-        background-color = mkLiteral "@bg-alt";
+        background-color = mkLiteral palette.mantle;
+        text-color = mkLiteral palette.text;
       };
       "listview" = {
         padding = mkLiteral "4px 0";
@@ -134,38 +130,39 @@
         fixed-height = false;
       };
       "element" = {
+        background-color = mkLiteral "transparent";
         padding = 8;
         spacing = 8;
       };
       "element normal normal" = {
-        text-color = mkLiteral "@fg";
+        text-color = mkLiteral palette.text;
       };
       "element normal urgent" = {
-        text-color = mkLiteral "#305561";
+        text-color = mkLiteral palette.red;
       };
       "element normal active" = {
-        text-color = mkLiteral "#68A2C6";
+        text-color = mkLiteral palette.green;
       };
       "element selected normal" = {
-        background-color = mkLiteral "#116FAE";
-        text-color = mkLiteral "@bg";
+        background-color = mkLiteral palette.blue;
+        text-color = mkLiteral palette.base;
         border-radius = 4;
       };
       "element selected urgent" = {
-        background-color = mkLiteral "#305561";
-        text-color = mkLiteral "@bg";
+        background-color = mkLiteral palette.red;
+        text-color = mkLiteral palette.base;
         border-radius = 4;
       };
       "element selected active" = {
-        background-color = mkLiteral "#68A2C6";
-        text-color = mkLiteral "@bg";
+        background-color = mkLiteral palette.green;
+        text-color = mkLiteral palette.base;
         border-radius = 4;
       };
       "element-icon" = {
         size = mkLiteral "1em";
       };
       "element-text" = {
-        text-color = mkLiteral "inherit";
+        text-color = mkLiteral palette.text;
       };
     };
   };
@@ -193,8 +190,8 @@
         center-focused-column = "never";
         focus-ring = {
           width = 3;
-          active.color = "#116FAEff";
-          inactive.color = "#06467Eaa";
+          active.color = "${config.tundra.palette.blue}ff";
+          inactive.color = "${config.tundra.palette.surface1}aa";
         };
         border.enable = false;
       };
@@ -369,22 +366,22 @@
 
       window#waybar {
         background-color: transparent;
-        color: #68A2C6;
+        color: ${config.tundra.palette.text};
       }
 
       #workspaces button {
         padding: 0 10px;
-        color: #68A2C6;
-        background-color: rgba(4, 24, 47, 0.6);
+        color: ${config.tundra.palette.text};
+        background-color: ${config.tundra.palette.mantle}cc;
         margin: 3px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       #workspaces button.active {
-        background-color: rgba(17, 111, 174, 0.9);
-        color: #04182F;
-        box-shadow: 0 3px 6px rgba(17, 111, 174, 0.4);
+        background-color: ${config.tundra.palette.blue}e6;
+        color: ${config.tundra.palette.base};
+        box-shadow: 0 3px 6px #00000066;
       }
 
       #window,
@@ -399,27 +396,27 @@
       #mpris {
         padding: 0 12px;
         margin: 3px;
-        background-color: rgba(17, 111, 174, 0.7);
-        color: #04182F;
+        background-color: ${config.tundra.palette.surface0}e6;
+        color: ${config.tundra.palette.text};
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(17, 111, 174, 0.4);
+        box-shadow: 0 2px 4px #0000004d;
       }
       #battery.charging {
-        background-color: rgba(17, 111, 174, 0.9);
-        color: #04182F;
-        box-shadow: 0 2px 4px rgba(17, 111, 174, 0.4);
+        background-color: ${config.tundra.palette.green}e6;
+        color: ${config.tundra.palette.base};
+        box-shadow: 0 2px 4px #0000004d;
       }
 
       #battery.warning:not(.charging) {
-        background-color: rgba(48, 85, 97, 0.9);
-        color: #04182F;
-        box-shadow: 0 2px 4px rgba(219, 188, 127, 0.4);
+        background-color: ${config.tundra.palette.yellow}e6;
+        color: ${config.tundra.palette.base};
+        box-shadow: 0 2px 4px #0000004d;
       }
 
       #battery.critical:not(.charging) {
-        background-color: rgba(230, 126, 128, 0.9);
-        color: #04182F;
-        box-shadow: 0 2px 4px rgba(230, 126, 128, 0.4);
+        background-color: ${config.tundra.palette.red}e6;
+        color: ${config.tundra.palette.base};
+        box-shadow: 0 2px 4px #0000004d;
       }
     '';
   };

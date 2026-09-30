@@ -1,16 +1,18 @@
 { config, lib, pkgs, ... }:
 
+let
+  palette = config.tundra.palette;
+in
 {
   wayland.windowManager.hyprland.settings = {
     general = {
       gaps_in = 0;
       gaps_out = 0;
       border_size = 2;
-      col.active_border = "rgb(c0caf5)";   # Will be overridden by theme
-      col.inactive_border = "rgb(181825)"; # Will be overridden by theme
+      "col.active_border" = "rgb(${lib.removePrefix "#" palette.blue})";
+      "col.inactive_border" = "rgb(${lib.removePrefix "#" palette.surface0})";
       layout = "dwindle";
       allow_tearing = false;
-      no_cursor_warps = false;
       resize_on_border = true;
     };
 
@@ -26,10 +28,12 @@
         new_optimizations = true;
         xray = false;
       };
-      drop_shadow = true;
-      shadow_range = 10;
-      shadow_render_power = 3;
-      col.shadow = "rgb(181825)";
+      shadow = {
+        enabled = true;
+        range = 10;
+        render_power = 3;
+        color = "rgba(${lib.removePrefix "#" palette.base}cc)";
+      };
     };
 
     animations = {
@@ -48,39 +52,39 @@
     misc = {
       vrr = 2; # FreeSync only while a window is fullscreen
       disable_hyprland_logo = true;
-      xwayland = {
-        force_zero_scaling = true;
-      };
     };
 
+    cursor.no_warps = false;
+    xwayland.force_zero_scaling = true;
+
     # Window rules
-    windowrulev2 = [
+    windowrule = [
       # Floating apps
-      "float, class:^(pavucontrol|blueman-manager|nm-connection-editor|gnome-calculator|org.gnome.Characters)$"
-      "float, title:^(Picture-in-Picture)$"
-      "float, class:^(steam_app_0)$"
+      "float on, match:class ^(pavucontrol|blueman-manager|nm-connection-editor|gnome-calculator|org.gnome.Characters)$"
+      "float on, match:title ^Picture-in-Picture$"
+      "float on, match:class ^steam_app_0$"
 
       # Opacity
-      "opacity 0.85, class:^(foot)$"
-      "opacity 0.88, class:^(VSCodium)$"
-      "opacity 0.92, class:^(zen-beta)$"
-      "opacity 0.85, class:^(thunar)$"
-      "opacity 0.88, class:^(obsidian)$"
+      "opacity 0.85, match:class ^foot$"
+      "opacity 0.88, match:class ^VSCodium$"
+      "opacity 0.92, match:class ^zen-beta$"
+      "opacity 0.85, match:class ^thunar$"
+      "opacity 0.88, match:class ^obsidian$"
 
       # Workspace assignments
-      "workspace 1, class:^(zen-beta|firefox|chromium)$"
-      "workspace 2, class:^(code|VSCodium|vscodium)$"
-      "workspace 3, class:^(foot|ghostty|alacritty|kitty)$"
-      "workspace 4, class:^(discord|signal|telegram|beeper)$"
-      "workspace 5, class:^(obsidian|thunar|libreoffice)$"
-      "workspace 6, class:^(spotify|mpv|iina|vlc)$"
-      "workspace 7, class:^(steam|heroic|bottles|lutris|prismlauncher)$"
-      "workspace 8, class:^(keepassxc|bitwarden|veracrypt)$"
-      "workspace 9, class:^(virt-manager|UTM|docker|qemu)$"
+      "workspace 1 silent, match:class ^(zen-beta|firefox|chromium)$"
+      "workspace 2 silent, match:class ^(code|VSCodium|vscodium)$"
+      "workspace 3 silent, match:class ^(foot|ghostty|alacritty|kitty)$"
+      "workspace 4 silent, match:class ^(discord|signal|telegram|beeper)$"
+      "workspace 5 silent, match:class ^(obsidian|thunar|libreoffice)$"
+      "workspace 6 silent, match:class ^(spotify|mpv|iina|vlc)$"
+      "workspace 7 silent, match:class ^(steam|heroic|bottles|lutris|prismlauncher)$"
+      "workspace 8 silent, match:class ^(keepassxc|bitwarden|veracrypt)$"
+      "workspace 9 silent, match:class ^(virt-manager|UTM|docker|qemu)$"
 
       # Size/position rules
-      "size 800 600, class:^(pavucontrol|blueman-manager)$"
-      "center, class:^(pavucontrol|blueman-manager)$"
+      "size 800 600, match:class ^(pavucontrol|blueman-manager)$"
+      "center on, match:class ^(pavucontrol|blueman-manager)$"
     ];
   };
 }

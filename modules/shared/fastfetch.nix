@@ -1,16 +1,21 @@
-{ ... }:
+{ config, ... }:
 
-{
+let
+  palette = config.tundra.palette or {
+    base = "#2d353b"; text = "#d3c6aa"; subtext0 = "#a7a89c";
+    blue = "#7fbbb3"; mauve = "#d699b6";
+  };
+in {
   programs.fastfetch = {
     enable = true;
     settings = {
       logo = {
         padding = { top = 1; left = 2; right = 2; };
-        color = { "1" = "blue"; "2" = "cyan"; };
+        color = { "1" = palette.blue; "2" = palette.mauve; };
       };
       display = {
         separator = " → ";
-        color = { keys = "blue"; title = "cyan"; };
+        color = { keys = palette.blue; title = palette.mauve; };
       };
       modules = [
         {

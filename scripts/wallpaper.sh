@@ -19,7 +19,7 @@ print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Get script and config directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="$(dirname "$SCRIPT_DIR")"
-WALLPAPER_DIR="$CONFIG_DIR/wallpapers"
+WALLPAPER_DIR="${TUNDRA_WALLPAPER_DIR:-$CONFIG_DIR/wallpapers}"
 
 # Detect OS
 detect_os() {
@@ -69,38 +69,49 @@ list_wallpapers() {
     fi
 }
 
+current_wallpaper() {
+    for file in "$WALLPAPER_DIR"/wallpaper.{jpg,jpeg,png,webp}; do
+        if [[ -f "$file" ]]; then
+            printf '%s\n' "$file"
+            return 0
+        fi
+    done
+    return 1
+}
+
 reload_wallpaper_nixos() {
-    print_info "Reloading wallpaper on NixOS (Hyprland)..."
-    
-    # Get hyprpaper PID for targeted kill
-    local hyprpaper_pid
-    hyprpaper_pid=$(pgrep -x "hyprpaper" 2>/dev/null || echo "")
-    
-    # Check if hyprpaper is running
-    if [[ -n "$hyprpaper_pid" ]]; then
-        print_info "Stopping hyprpaper (PID: $hyprpaper_pid)..."
-        kill "$hyprpaper_pid" 2>/dev/null || true
-        sleep 0.5
-        hyprpaper &
-        print_success "Hyprpaper reloaded"
-    else
-        print_info "Starting hyprpaper..."
-        hyprpaper &
-        print_success "Hyprpaper started"
+    print_info "Reloading wallpaper with swaybg..."
+    local wallpaper_path
+    wallpaper_path=$(current_wallpaper) || {
+        print_error "No active wallpaper found in $WALLPAPER_DIR"
+        return 1
+    }
+    if ! command -v swaybg >/dev/null 2>&1; then
+        print_error "swaybg is not available in this session"
+        return 1
     fi
+    if pgrep -f 'tundra-wallpaper-daemon' >/dev/null 2>&1; then
+        request_file="$WALLPAPER_DIR/.wallpaper-request"
+        temporary_request="${request_file}.tmp.$$"
+        printf '%s\n' "$wallpaper_path" > "$temporary_request"
+        mv -f "$temporary_request" "$request_file"
+        print_success "Current wallpaper reload queued for the running wallpaper daemon"
+        return 0
+    fi
+    pkill -x swaybg 2>/dev/null || true
+    swaybg -i "$wallpaper_path" -m fill >/dev/null 2>&1 &
+    print_success "Wallpaper reloaded: $(basename "$wallpaper_path")"
 }
 
 reload_wallpaper_darwin() {
     print_info "Reloading wallpaper on macOS..."
-    local wallpaper_path="$WALLPAPER_DIR/wallpaper.jpg"
-    
-    if [[ -f "$wallpaper_path" ]]; then
-        osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$wallpaper_path\""
-        print_success "Desktop wallpaper updated"
-    else
-        print_error "Wallpaper file not found: $wallpaper_path"
-        exit 1
-    fi
+    local wallpaper_path
+    wallpaper_path=$(current_wallpaper) || {
+        print_error "No active wallpaper found in $WALLPAPER_DIR"
+        return 1
+    }
+    osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$wallpaper_path\""
+    print_success "Desktop wallpaper updated: $(basename "$wallpaper_path")"
 }
 
 set_new_wallpaper() {
@@ -148,11 +159,17 @@ set_new_wallpaper() {
     cp "$new_wallpaper" "$WALLPAPER_DIR/$target_filename"
     print_success "New wallpaper installed"
     
-    print_warning "Note: You may need to update the wallpaper path in home.nix if the extension changed."
-    
     # Reload
     if [[ "$OS" == "nixos" || "$OS" == "linux" ]]; then
-        reload_wallpaper_nixos
+        if pgrep -f 'tundra-wallpaper-daemon' >/dev/null 2>&1; then
+            request_file="$WALLPAPER_DIR/.wallpaper-request"
+            temporary_request="${request_file}.tmp.$$"
+            printf '%s\n' "$WALLPAPER_DIR/$target_filename" > "$temporary_request"
+            mv -f "$temporary_request" "$request_file"
+            print_success "Wallpaper selection queued for the running wallpaper daemon"
+        else
+            reload_wallpaper_nixos
+        fi
     elif [[ "$OS" == "darwin" ]]; then
         reload_wallpaper_darwin
     fi
