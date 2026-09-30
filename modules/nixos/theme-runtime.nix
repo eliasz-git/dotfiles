@@ -37,7 +37,7 @@ in {
   # better than Hyprland's own during that gap. Hyprland warns about a missing
   # source file and carries on, so the gap degrades rather than breaks.
   wayland.windowManager.hyprland.extraConfig = lib.mkOrder 1000 ''
-    source = $HOME/.config/tundra/colors/hyprland.conf
+    source = /home/elias/.config/tundra/colors/hyprland.conf
   '';
 
   systemd.user.services.tundra-theme-apply = lib.mkIf cfg.enable {
