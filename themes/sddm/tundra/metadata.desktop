@@ -8,4 +8,4 @@ Version=1.0
 MainScript=Main.qml
 ConfigFile=theme.conf
 Theme-Id=tundra-dark
-Theme-API=1.0
+Theme-API=0
