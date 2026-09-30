@@ -1,17 +1,7 @@
 { config, lib, pkgs, ... }:
 
-let
-  # This file is 3 levels deep (modules/nixos/hyprland/), so it takes 3 "../" to
-  # reach the repo root — 2 landed on modules/wallpapers/, which doesn't exist.
-  wallpaper = ../../../wallpapers/wallpaper.jpg;
-in {
-  wayland.windowManager.hyprland.settings.exec-once = [
-    # Wallpaper
-    "${pkgs.swaybg}/bin/swaybg -i ${wallpaper} -m fill"
-
-    # Waybar
-    "${pkgs.waybar}/bin/waybar"
-
+{
+  wayland.windowManager.hyprland.settings.exec_once = [
     # Notifications
     "${pkgs.dunst}/bin/dunst"
 
@@ -32,9 +22,6 @@ in {
 
     # Idle management
     "${pkgs.hypridle}/bin/hypridle"
-
-    # Lock screen
-    "${pkgs.hyprlock}/bin/hyprlock"
   ];
 
   # Environment variables
@@ -45,7 +32,6 @@ in {
     "HYPRCURSOR_THEME,Bibata-Modern-Classic"
     "QT_QPA_PLATFORMTHEME,qt5ct"
     "QT_STYLE_OVERRIDE,kvantum"
-    "GTK_THEME,Orchis-Dark"
     "ICON_THEME,Papirus-Dark"
     "CURSOR_THEME,Bibata-Modern-Classic"
     "MOZ_ENABLE_WAYLAND,1"

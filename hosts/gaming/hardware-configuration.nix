@@ -1,11 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 
-# PLACEHOLDER for a Ryzen 5 5600 desktop. It evaluates and builds, but the disk
-# labels below are guesses. On the real machine, after partitioning/mounting:
-#
-#   nixos-generate-config --show-hardware-config > hosts/gaming/hardware-configuration.nix
-#
-# and let that output replace this file (then `git add` it — flakes only see tracked files).
+# Hardware configuration for the Ryzen 5 5600 gaming PC. These UUIDs were
+# verified on the machine; do not replace them with generic labels.
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
@@ -15,17 +11,19 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
+    device = "/dev/disk/by-uuid/286aa678-0c14-4c82-bf01-5f5b302e48fe";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
+    device = "/dev/disk/by-uuid/5EA0-61FB";
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
-  swapDevices = [ ];
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/855568f5-264b-4aaa-9656-06375b0e7838"; }
+  ];
 
   networking.useDHCP = lib.mkDefault true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

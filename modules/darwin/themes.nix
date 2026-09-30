@@ -9,7 +9,7 @@
     # These are the correct nix-darwin options
     system.defaults = {
       screensaver = {
-        askForPassword = 1;
+        askForPassword = true;
         askForPasswordDelay = 0;
       };
     };

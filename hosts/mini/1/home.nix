@@ -8,6 +8,7 @@
     ../../../modules/shared/multiplexer.nix
     ../../../modules/shared/fastfetch.nix
     ../../../modules/shared/slskd.nix
+    ../../../modules/shared/operations.nix
   ];
 
   home.username = "elias";
@@ -63,12 +64,6 @@
       dcd = "docker compose down";
       dcl = "docker compose logs -f";
 
-      # NixOS (new primary)
-      rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#mini1";
-      rbu = "cd ~/.config/nix-config && sudo nix flake update && sudo nixos-rebuild switch --flake .#mini1";
-      # Home-manager fallback
-      hms = "home-manager switch --flake ~/.config/nix-config#mini1";
-      hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#mini1";
     };
 
     initContent = lib.mkOrder 550 ''

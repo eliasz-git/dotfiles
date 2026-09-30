@@ -118,9 +118,10 @@ if [[ "$OS" == "darwin" ]]; then
     
     echo ""
     print_info "Next steps for macOS:"
-    echo "  1. Update the flake: cd $CONFIG_DIR && nix flake update"
-    echo "  2. Build: sudo darwin-rebuild switch --flake $CONFIG_DIR#macbook"
-    echo "  3. For full yabai functionality, disable SIP (see README)"
+    echo "  1. Validate: cd $CONFIG_DIR && ./scripts/validate.sh --all"
+    echo "  2. Build: ./scripts/tundra-cli.sh build macbook"
+    echo "  3. Activate after review: ./scripts/tundra-cli.sh switch macbook"
+    echo "  4. For full AeroSpace functionality, review macOS permissions"
     echo ""
     
 elif [[ "$OS" == "nixos" ]]; then
@@ -188,9 +189,9 @@ elif [[ "$OS" == "nixos" ]]; then
     print_info "Next steps for NixOS:"
     echo "  1. Verify hardware-configuration.nix is in hosts/nixos/ directory"
     echo "  2. Update timezone in hosts/nixos/configuration.nix if needed"
-    echo "  3. Update the flake: cd /etc/nixos && sudo nix flake update"
-    echo "  4. Build: sudo nixos-rebuild switch --flake /etc/nixos#laptop"
-    echo "  5. Reboot: sudo reboot"
+    echo "  3. Validate: cd /etc/nixos && ./scripts/validate.sh --all"
+    echo "  4. Build without activation: ./scripts/tundra-cli.sh build laptop"
+    echo "  5. Activate after review: ./scripts/tundra-cli.sh switch laptop"
     echo ""
     
 else

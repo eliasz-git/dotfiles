@@ -10,7 +10,7 @@
   ];
 
   # Clipboard history keybinding (SUPER+V) is in bindings.nix
-  # Uses: cliphist list | wofi --dmenu | cliphist decode | wl-copy
+  # Uses: cliphist list | rofi -dmenu | cliphist decode | wl-copy
 
   # Optional: rofi-greenclip for rofi integration
   # programs.greenclip = {

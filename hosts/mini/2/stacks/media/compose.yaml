@@ -1,6 +1,6 @@
 # mini2 — media stack (R5 2400GE Vega 11, headless, 16GB)
-# Deploy: sudo docker compose -f /etc/stacks/media/compose.yaml up -d
-# Requires: /mnt/storage mounted (ext4 STORAGE), .env next to this file (Mullvad)
+# Deploy: systemctl start homelab-compose-media (NixOS manages this lifecycle)
+# Requires: /mnt/storage mounted from mini1 and /var/lib/secrets/stacks/media.env
 # PUID/PGID 1000 = elias. Change if your user id differs (id -u / id -g).
 x-common: &common
   restart: unless-stopped
@@ -19,7 +19,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/prowlarr:/config
+      - /mnt/storage/appdata/media/prowlarr:/config
 
   flaresolverr:
     <<: *common
@@ -42,7 +42,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/sonarr:/config
+      - /mnt/storage/appdata/media/sonarr:/config
       - /mnt/storage/tvshows:/tv
       - /mnt/storage/downloads:/downloads
 
@@ -56,7 +56,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/radarr:/config
+      - /mnt/storage/appdata/media/radarr:/config
       - /mnt/storage/movies:/movies
       - /mnt/storage/downloads:/downloads
 
@@ -70,7 +70,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/lidarr:/config
+      - /mnt/storage/appdata/media/lidarr:/config
       - /mnt/storage/music:/music
       - /mnt/storage/downloads:/downloads
 
@@ -83,21 +83,21 @@ services:
       - LOG_LEVEL=debug
       - TZ=America/New_York
     volumes:
-      - ./data/seerr:/app/config
+      - /mnt/storage/appdata/media/seerr:/app/config
 
   jellyfin:
     <<: *common
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     ports: ["8096:8096", "8920:8920"]
-    devices: [/dev/dri:/dev/dri]  # Vega 11 VAAPI
+    devices: ["/dev/dri:/dev/dri"]  # Vega 11 VAAPI
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/jellyfin/config:/config
-      - ./data/jellyfin/cache:/cache
+      - /mnt/storage/appdata/media/jellyfin/config:/config
+      - /mnt/storage/appdata/media/jellyfin/cache:/cache
       - /mnt/storage/tvshows:/media/tv:ro
       - /mnt/storage/movies:/media/movies:ro
       - /mnt/storage/music:/media/music:ro
@@ -107,14 +107,14 @@ services:
     image: deluan/navidrome:latest
     container_name: navidrome
     ports: ["4533:4533"]
-    env_file: [.env]
+    env_file: [/var/lib/secrets/stacks/media.env]
     environment:
       - ND_SCANSCHEDULE=1h
       - ND_LOGLEVEL=info
       - ND_LASTFM_ENABLED=true
-      # API key/secret via /etc/stacks/media/.env (not in git): ND_LASTFM_APIKEY, ND_LASTFM_SECRET
+      # API key/secret via /var/lib/secrets/stacks/media.env (not in git).
     volumes:
-      - ./data/navidrome:/data
+      - /mnt/storage/appdata/media/navidrome:/data
       - /mnt/storage/music:/music:ro
 
   immich-postgres:
@@ -123,10 +123,10 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD must be set}
       POSTGRES_DB: immich
     volumes:
-      - ./data/immich-postgres:/var/lib/postgresql/data
+      - /mnt/storage/appdata/media/immich-postgres:/var/lib/postgresql/data
 
   immich-redis:
     image: redis:7
@@ -138,7 +138,7 @@ services:
     container_name: immich-machine-learning
     restart: unless-stopped
     volumes:
-      - ./data/immich-ml:/cache
+      - /mnt/storage/appdata/media/immich-ml:/cache
     environment:
       - TZ=America/New_York
 
@@ -151,9 +151,9 @@ services:
       - /dev/sr0:/dev/sr0
     ports: ["8080:8080"]
     volumes:
-      - ./data/arm:/home/arm
-      - ./data/arm/logs:/home/arm/logs
-      - ./data/arm/config:/etc/arm/config
+      - /mnt/storage/appdata/media/arm:/home/arm
+      - /mnt/storage/appdata/media/arm/logs:/home/arm/logs
+      - /mnt/storage/appdata/media/arm/config:/etc/arm/config
       - /mnt/storage/movies:/home/arm/media/movies:rw
       - /mnt/storage/music:/home/arm/media/music:rw
       - /mnt/storage/tvshows:/home/arm/media/tvshows:rw
@@ -166,7 +166,7 @@ services:
     container_name: homepage
     ports: ["3000:3000"]
     volumes:
-      - ./data/homepage:/app/config
+      - /mnt/storage/appdata/media/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - PUID=1000
@@ -185,7 +185,7 @@ services:
       # Remote Path Mapping Remote=/data/downloads Local=/downloads (or Local=/data/downloads if you
       # also change Lidarr mount). Host path is same for all arrs so /downloads/lidarr is visible
       # in both containers once systemd.tmpfiles creates it.
-      - ./data/rdt-client:/data
+      - /mnt/storage/appdata/media/rdt-client:/data
       - /mnt/storage/downloads:/downloads
     environment:
       - TZ=America/New_York
@@ -203,7 +203,7 @@ services:
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/bazarr:/config
+      - /mnt/storage/appdata/media/bazarr:/config
       - /mnt/storage/movies:/movies
       - /mnt/storage/tvshows:/tv
 
@@ -217,8 +217,8 @@ services:
       - PGID=1000
       - TZ=America/New_York
     volumes:
-      - ./data/tautulli:/config
-      - ./data/jellyfin/config:/config-jellyfin:ro
+      - /mnt/storage/appdata/media/tautulli:/config
+      - /mnt/storage/appdata/media/jellyfin/config:/config-jellyfin:ro
 
   maintainerr:
     image: ghcr.io/maintainerr/maintainerr:latest
@@ -226,7 +226,7 @@ services:
     ports: ["6246:6246"]
     user: "1000:1000"
     volumes:
-      - ./data/maintainerr:/opt/data
+      - /mnt/storage/appdata/media/maintainerr:/opt/data
     environment:
       - TZ=America/New_York
     restart: unless-stopped
@@ -235,7 +235,7 @@ services:
     image: ghcr.io/recyclarr/recyclarr:8
     container_name: recyclarr
     volumes:
-      - ./data/recyclarr:/config
+      - /mnt/storage/appdata/media/recyclarr:/config
     environment:
       - TZ=America/New_York
       - CRON_SCHEDULE=@daily
@@ -259,6 +259,6 @@ services:
       - TZ=America/New_York
       - DB_HOSTNAME=immich-postgres
       - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD must be set}
       - DB_DATABASE_NAME=immich
       - REDIS_HOSTNAME=immich-redis

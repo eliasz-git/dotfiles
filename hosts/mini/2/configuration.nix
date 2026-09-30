@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 {
-  imports = [ ./hardware-configuration.nix ../../../modules/nixos/tailscale-serve.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ../../../modules/nixos/headless-base.nix
+    ../../../modules/nixos/compose-stack.nix
+    ../../../modules/nixos/tailscale-serve.nix
+  ];
 
   networking.hostName = "mini2"; # media — elias-server2 alias via DNS
 
@@ -103,7 +108,7 @@
   # virtualisation.oci-containers.containers handled by compose, not Nix.
   # Example compose will include: gluetun (Mullvad) -> transmission, prowlarr,
   # sonarr, radarr, jellyseerr, navidrome, immich. Keep it in git under
-  # hosts/mini/2/stacks/ and symlink or `docker compose up -d`.
+    # hosts/mini/2/stacks/ and symlink or `docker compose up -d`.
   # systemd.services.media-stack = {
   #   description = "media docker compose";
   #   after = [ "docker.service" "mnt-storage.mount" ];
@@ -118,6 +123,13 @@
   # };
 
   # Cockpit optional on media too
+  services.homelabCompose.stacks.media = {
+    enable = true;
+    composeFile = ./stacks/media/compose.yaml;
+    requiredMounts = [ "/mnt/storage" ];
+    environmentFile = "/var/lib/secrets/stacks/media.env";
+  };
+
   services.cockpit = {
     enable = true;
     openFirewall = true;
@@ -222,7 +234,9 @@
   };
 
 
-  # NAS — 2TB STORAGE on mini1 (moved from mini2) - defined in hardware-configuration.nix
-  # fileSystems."/mnt/storage" now in hardware-configuration.nix with IP 100.99.239.80
+  # Primary 2 TB storage lives on mini1; /mnt/storage is defined as an NFS4
+  # mount in hardware-configuration.nix.
+
+  system.stateVersion = "25.05";
 
 }

@@ -1,0 +1,63 @@
+name: Nix validation
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: nix-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    name: Evaluate all flake outputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v19
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Validate repository and evaluate all systems
+        run: nix shell nixpkgs#shellcheck --command ./scripts/validate.sh --all
+
+  nixos:
+    name: Build NixOS ${{ matrix.host }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [laptop, mini1, mini2, beattie, gaming-pc]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v19
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Build ${{ matrix.host }} without activation
+        run: nix build --no-link ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
+
+  home-manager:
+    name: Build Home Manager ${{ matrix.host }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [mini1, mini2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v19
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Build Home Manager activation package
+        run: nix build --no-link ".#homeConfigurations.${{ matrix.host }}.activationPackage"
+
+  darwin-evaluation:
+    name: Evaluate Darwin output
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v19
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Evaluate macOS system derivation without cross-building
+        run: nix eval --raw '.#darwinConfigurations.macbook.system.drvPath'

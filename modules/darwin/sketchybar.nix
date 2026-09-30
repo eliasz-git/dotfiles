@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 
-{
+let
+  palette = config.tundra.palette;
+  rgb = color: lib.removePrefix "#" color;
+  opaque = color: "0xff${rgb color}";
+  translucent = alpha: color: "0x${alpha}${rgb color}";
+in {
   # Sketchybar configuration - theme-aware with Omarchy-style workspaces
   home.file.".config/sketchybar/sketchybarrc" = {
     executable = true;
@@ -8,11 +13,14 @@
       #!/bin/sh
       PLUGIN_DIR="$HOME/.config/sketchybar/plugins"
 
-      # Colors will be overridden by theme
-      BG_COLOR=0xE6181825
-      FG_COLOR=0xffc0caf5
-      ACCENT_COLOR=0xff7aa2f7
-      INACTIVE_COLOR=0x667E8A94
+      # Shared Tundra palette
+      BG_COLOR=${translucent "E6" palette.base}
+      FG_COLOR=${opaque palette.text}
+      ACCENT_COLOR=${opaque palette.blue}
+      INACTIVE_COLOR=${opaque palette.subtext0}
+      GREEN_COLOR=${opaque palette.green}
+      YELLOW_COLOR=${opaque palette.yellow}
+      RED_COLOR=${opaque palette.red}
       BAR_HEIGHT=32
       MARGIN=4
       Y_OFFSET=4
@@ -30,14 +38,14 @@
         num="''${sid%%-*}"
         [ "$num" = "10" ] && display="0" || display="$num"
         sketchybar --add item "workspace.$sid" left \
-          --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=0x40116FAE background.corner_radius=11 background.height=22 background.padding_left=2 background.padding_right=2 \
+          --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 background.padding_left=2 background.padding_right=2 \
           script="$PLUGIN_DIR/aerospace.sh" click_script="aerospace workspace $sid" \
           --subscribe "workspace.$sid" aerospace_workspace_change
       done
 
       # Front app
       sketchybar --add item front_app center \
-        --set front_app icon.drawing=off label.max_chars=28 label.color=0xff7E8A94 \
+        --set front_app icon.drawing=off label.max_chars=28 label.color=${opaque palette.subtext0} \
         script="$PLUGIN_DIR/front_app.sh" \
         --subscribe front_app front_app_switched
 
@@ -51,7 +59,7 @@
       sketchybar --add item mem right --set mem update_freq=10 icon="" icon.color=$ACCENT_COLOR script="$PLUGIN_DIR/memory.sh"
       sketchybar --add item net right --set net update_freq=15 icon="󰖩" icon.color=$ACCENT_COLOR script="$PLUGIN_DIR/network.sh"
       sketchybar --add item battery right --set battery update_freq=60 icon.color=$ACCENT_COLOR script="$PLUGIN_DIR/battery.sh" --subscribe battery system_woke power_source_change
-      sketchybar --add item volume right --set volume icon.color=0xff305561 script="$PLUGIN_DIR/volume.sh" --subscribe volume volume_change
+      sketchybar --add item volume right --set volume icon.color=${opaque palette.teal} script="$PLUGIN_DIR/volume.sh" --subscribe volume volume_change
       sketchybar --add item clock right --set clock icon="" icon.color=$ACCENT_COLOR update_freq=30 script="$PLUGIN_DIR/clock.sh"
 
       sketchybar --update
@@ -70,13 +78,13 @@
       if [ -z "$FOCUSED" ]; then FOCUSED="$(aerospace list-workspaces --focused 2>/dev/null)"; fi
       WORKSPACE="''${NAME#workspace.}"
       if [ "$WORKSPACE" = "$FOCUSED" ]; then
-        sketchybar --set "$NAME" background.drawing=on background.color=0xff116FAE icon.color=0xff04182F
+        sketchybar --set "$NAME" background.drawing=on background.color=${opaque palette.blue} icon.color=${opaque palette.base}
       else
         COUNT="$(aerospace list-windows --workspace "$WORKSPACE" --count 2>/dev/null || echo 0)"
         if [ "$COUNT" -eq 0 ]; then
-          sketchybar --set "$NAME" background.drawing=off icon.color=0x667E8A94
+          sketchybar --set "$NAME" background.drawing=off icon.color=${opaque palette.subtext0}
         else
-          sketchybar --set "$NAME" background.drawing=off icon.color=0xff68A2C6
+          sketchybar --set "$NAME" background.drawing=off icon.color=${opaque palette.subtext1}
         fi
       fi
     '';
@@ -106,9 +114,9 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
         *) ICON="" ;;
       esac
       [ -n "$CHARGING" ] && ICON=""
-      if [ "$PERCENTAGE" -lt 20 ] && [ -z "$CHARGING" ]; then COLOR="0xffff6b6b"
-      elif [ "$PERCENTAGE" -lt 40 ] && [ -z "$CHARGING" ]; then COLOR="0xffe8a87c"
-      else COLOR="0xff68A2C6"; fi
+      if [ "$PERCENTAGE" -lt 20 ] && [ -z "$CHARGING" ]; then COLOR="${opaque palette.red}"
+      elif [ "$PERCENTAGE" -lt 40 ] && [ -z "$CHARGING" ]; then COLOR="${opaque palette.yellow}"
+      else COLOR="${opaque palette.green}"; fi
       sketchybar --set "$NAME" icon="$ICON" label="''${PERCENTAGE}%" icon.color="$COLOR" label.color="$COLOR"
     '';
   };
@@ -140,9 +148,9 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
       CORES="''$(sysctl -n hw.ncpu 2>/dev/null || echo 4)"
       AVG=$((CPU / CORES))
       [ "$AVG" -gt 100 ] && AVG=100
-      if [ "$AVG" -gt 80 ]; then COLOR="0xffe8a87c"
-      elif [ "$AVG" -gt 50 ]; then COLOR="0xff68A2C6"
-      else COLOR="0xff7E8A94"; fi
+      if [ "$AVG" -gt 80 ]; then COLOR="${opaque palette.red}"
+      elif [ "$AVG" -gt 50 ]; then COLOR="${opaque palette.yellow}"
+      else COLOR="${opaque palette.blue}"; fi
       sketchybar --set "$NAME" label="''${AVG}%" icon.color="$COLOR" label.color="$COLOR"
     '';
   };
@@ -154,9 +162,9 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
       #!/bin/sh
       # Use memory_pressure for a simple percentage
       PRESSURE="''$(memory_pressure 2>&1 | grep "System-wide memory free percentage:" | awk '{print 100 - $5}' | tr -d '%' || echo 50)"
-      if [ "$PRESSURE" -gt 80 ]; then COLOR="0xffff6b6b"
-      elif [ "$PRESSURE" -gt 60 ]; then COLOR="0xffe8a87c"
-      else COLOR="0xff68A2C6"; fi
+      if [ "$PRESSURE" -gt 80 ]; then COLOR="${opaque palette.red}"
+      elif [ "$PRESSURE" -gt 60 ]; then COLOR="${opaque palette.yellow}"
+      else COLOR="${opaque palette.green}"; fi
       sketchybar --set "$NAME" label="''${PRESSURE}%" icon.color="$COLOR" label.color="$COLOR"
     '';
   };
@@ -178,14 +186,14 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
         if echo "$SSID" | grep -qi "redacted"; then SSID=""; fi
         if [ -z "$SSID" ]; then LABEL=""; else LABEL="$SSID"; fi
         ICON="󰖩"
-        COLOR="0xff68A2C6"
+        COLOR="${opaque palette.green}"
       elif [ "$POWER_ON" = 1 ]; then
         ICON="󰖪"
-        COLOR="0xffe8a87c"
+        COLOR="${opaque palette.yellow}"
         LABEL="no wifi"
       else
         ICON="󰖪"
-        COLOR="0x667E8A94"
+        COLOR="${opaque palette.subtext0}"
         LABEL="off"
       fi
 

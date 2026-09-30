@@ -1,226 +1,271 @@
 #!/usr/bin/env bash
-# tundra-cli — Tundra configuration management CLI (Omarchy-inspired)
+# tundra-cli — explicit Nix configuration operations
 # Usage: tundra <command> [args...]
 
 set -euo pipefail
 
-VERSION="0.1.0"
+VERSION="0.2.0"
 CONFIG_DIR="${HOME}/.config/tundra"
-NIX_CONFIG_DIR="${HOME}/.config/nix-config"
+if [[ -n "${TUNDRA_NIX_CONFIG_DIR:-}" ]]; then
+  NIX_CONFIG_DIR="$TUNDRA_NIX_CONFIG_DIR"
+elif [[ -f "${HOME}/.config/nix-config/flake.nix" ]]; then
+  NIX_CONFIG_DIR="${HOME}/.config/nix-config"
+elif [[ -f /etc/nixos/flake.nix ]]; then
+  NIX_CONFIG_DIR="/etc/nixos"
+else
+  NIX_CONFIG_DIR="${HOME}/.config/nix-config"
+fi
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 log_info() { echo -e "${BLUE}[INFO]${NC} $*"; }
 log_success() { echo -e "${GREEN}[OK]${NC} $*"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
-# ── Commands ────────────────────────────────────────────────────────
+usage_host() {
+  echo "Hosts: macbook, laptop, gaming-pc, beattie, mini1, mini2" >&2
+}
+
+host_kind() {
+  case "$1" in
+    macbook) echo darwin ;;
+    laptop|gaming-pc|beattie|mini1|mini2) echo nixos ;;
+    *) return 1 ;;
+  esac
+}
+
+resolve_host() {
+  local requested="${1:-}"
+  if [[ -n "$requested" ]]; then
+    if ! host_kind "$requested" >/dev/null; then
+      log_error "Unknown host: $requested"
+      usage_host
+      return 2
+    fi
+    printf '%s\n' "$requested"
+    return 0
+  fi
+
+  local machine
+  machine="$(hostname -s 2>/dev/null || hostname)"
+  case "$(uname -s)" in
+    Darwin) [[ "$machine" == "macbook" ]] && printf '%s\n' macbook && return 0 ;;
+    Linux)
+      case "$machine" in
+        laptop|gaming-pc|beattie|mini1|mini2) printf '%s\n' "$machine"; return 0 ;;
+      esac
+      ;;
+  esac
+
+  log_error "Host is ambiguous; refusing to guess from hostname '$machine'."
+  echo "Specify one explicitly:" >&2
+  usage_host
+  return 2
+}
+
+flake_attr() {
+  local host="$1" kind
+  kind="$(host_kind "$host")"
+  if [[ "$kind" == darwin ]]; then
+    printf '%s\n' ".#darwinConfigurations.${host}.system"
+  else
+    printf '%s\n' ".#nixosConfigurations.${host}.config.system.build.toplevel"
+  fi
+}
+
+require_repo() {
+  if [[ ! -f "$NIX_CONFIG_DIR/flake.nix" ]]; then
+    log_error "flake.nix not found at $NIX_CONFIG_DIR"
+    exit 1
+  fi
+  cd "$NIX_CONFIG_DIR"
+}
 
 cmd_theme() {
   case "${1:-current}" in
     current)
-      if [ -f "${CONFIG_DIR}/theme" ]; then
-        cat "${CONFIG_DIR}/theme"
-      else
-        echo "catppuccin-mocha"
-      fi
+      if [[ -f "$CONFIG_DIR/theme" ]]; then cat "$CONFIG_DIR/theme"; else echo "everforest-blue"; fi
       ;;
     list|ls)
-      echo "Available themes:"
-      for theme in catppuccin-mocha catppuccin-latte catppuccin-frappe catppuccin-macchiato \
-                   gruvbox-dark gruvbox-light \
-                   nord \
-                   tokyo-night tokyo-night-storm tokyo-night-day \
-                   kanagawa-wave kanagawa-dragon kanagawa-lotus \
-                   rose-pine rose-pine-moon rose-pine-dawn \
-                   everforest-dark everforest-light \
-                   flexoki-dark flexoki-light \
-                   matte-black miasma solitude ristretto osaka-jade last-horizon lupine hackerman ethereal lumon retro-82; do
-        echo "  $theme"
-      done
+      cat <<'EOF'
+Available declared themes:
+  catppuccin-mocha
+  everforest-blue
+
+Theme selection is declarative. Set tundra.theme in the host's Nix configuration,
+then run `tundra build <host>` and `tundra switch <host>`.
+EOF
       ;;
     set)
-      local theme_name="${2:-}"
-      if [ -z "$theme_name" ]; then
-        log_error "Theme name required"
-        echo "Usage: tundra theme set <theme>"
-        exit 1
-      fi
-      mkdir -p "$CONFIG_DIR"
-      echo "$theme_name" > "${CONFIG_DIR}/theme"
-      log_success "Theme set to: $theme_name"
-      log_info "Run 'tundra rebuild' to apply system-wide"
+      log_error "Runtime theme mutation is disabled; it would diverge from Nix."
+      echo "Edit tundra.theme in the intended host configuration instead." >&2
+      exit 2
       ;;
     *)
       log_error "Unknown theme command: $1"
-      echo "Usage: tundra theme [current|list|set <theme>]"
-      exit 1
+      echo "Usage: tundra theme [current|list]" >&2
+      exit 2
       ;;
   esac
 }
 
-cmd_rebuild() {
-  local host="${1:-}"
-  if [ -z "$host" ]; then
-    # Auto-detect host
-    if [ -f /etc/nixos/configuration.nix ] || [ -f /run/current-system/sw/bin/nixos-version ]; then
-      host="gaming-pc"
-    elif [ "$(uname)" = "Darwin" ]; then
-      host="macbook"
-    else
-      log_error "Could not detect host. Specify: tundra rebuild <gaming-pc|macbook>"
-      exit 1
-    fi
+cmd_eval() {
+  local host attr
+  host="$(resolve_host "${1:-}")"
+  attr="$(flake_attr "$host").drvPath"
+  require_repo
+  log_info "Evaluating $host (no build or activation)..."
+  nix eval --raw "$attr"
+}
+
+cmd_build() {
+  local host attr
+  host="$(resolve_host "${1:-}")"
+  attr="$(flake_attr "$host")"
+  require_repo
+  log_info "Building $host without activation..."
+  nix build --no-link "$attr"
+  log_success "Build completed for $host"
+}
+
+cmd_system_action() {
+  local action="$1" host kind
+  host="$(resolve_host "${2:-}")"
+  kind="$(host_kind "$host")"
+  require_repo
+
+  if [[ "$action" == test || "$action" == boot ]] && [[ "$kind" == darwin ]]; then
+    log_error "$action is only supported for NixOS hosts"
+    exit 2
   fi
 
-  log_info "Rebuilding $host..."
-  cd "$NIX_CONFIG_DIR"
-
-  case "$host" in
-    gaming-pc)
-      sudo nixos-rebuild switch --flake ".#gaming-pc"
+  case "$kind" in
+    darwin)
+      log_info "Running darwin-rebuild $action for $host (activation may change macOS)..."
+      sudo darwin-rebuild "$action" --flake "$NIX_CONFIG_DIR#$host"
       ;;
-    macbook)
-      sudo darwin-rebuild switch --flake ".#macbook"
-      ;;
-    laptop)
-      sudo nixos-rebuild switch --flake ".#laptop"
-      ;;
-    mini1)
-      sudo nixos-rebuild switch --flake ".#mini1"
-      ;;
-    mini2)
-      sudo nixos-rebuild switch --flake ".#mini2"
-      ;;
-    beattie)
-      sudo nixos-rebuild switch --flake ".#beattie"
-      ;;
-    beattie-minimal)
-      sudo nixos-rebuild switch --flake ".#beattie-minimal"
-      ;;
-    *)
-      log_error "Unknown host: $host"
-      exit 1
+    nixos)
+      log_info "Running nixos-rebuild $action for $host (activation may change the host)..."
+      sudo nixos-rebuild "$action" --flake "$NIX_CONFIG_DIR#$host"
       ;;
   esac
-  log_success "Rebuild complete"
+  log_success "$action completed for $host"
+}
+
+cmd_rollback() {
+  local host kind
+  host="$(resolve_host "${1:-}")"
+  kind="$(host_kind "$host")"
+  require_repo
+  log_warn "Rolling back $host. This changes the active system generation."
+  if [[ "$kind" == darwin ]]; then
+    sudo darwin-rebuild switch --rollback
+  else
+    sudo nixos-rebuild switch --rollback
+  fi
+  log_success "Rollback completed for $host"
 }
 
 cmd_update() {
-  log_info "Updating flake..."
-  cd "$NIX_CONFIG_DIR"
+  local host attr
+  host="$(resolve_host "${1:-}")"
+  attr="$(flake_attr "$host")"
+  require_repo
+  log_warn "Updating flake.lock; this is a reviewed repository mutation."
   nix flake update
-  log_success "Flake updated"
-  log_info "Run 'tundra rebuild' to apply updates"
+  echo "--- flake.lock changes ---"
+  git diff -- flake.lock || true
+  log_info "Building updated $host without activation..."
+  nix build --no-link "$attr"
+  log_success "Inputs updated and $host build verified; nothing was activated"
 }
 
 cmd_doctor() {
-  log_info "Running health checks..."
-
   local issues=0
+  log_info "Read-only health checks"
 
-  # Check flake
-  if [ -f "$NIX_CONFIG_DIR/flake.nix" ]; then
-    log_success "flake.nix exists"
-  else
-    log_error "flake.nix not found at $NIX_CONFIG_DIR"
-    ((issues++))
+  if [[ -f "$NIX_CONFIG_DIR/flake.nix" ]]; then log_success "flake.nix exists"; else log_error "flake.nix missing"; ((issues+=1)); fi
+  if command -v nix >/dev/null 2>&1; then log_success "$(nix --version)"; else log_error "nix is not in PATH"; ((issues+=1)); fi
+  if [[ -d "$NIX_CONFIG_DIR/.git" ]]; then
+    if (cd "$NIX_CONFIG_DIR" && git status --porcelain | grep -q .); then log_warn "working tree has uncommitted changes"; else log_success "working tree clean"; fi
+  fi
+  if [[ -f "$CONFIG_DIR/theme" ]]; then log_info "local theme state: $(cat "$CONFIG_DIR/theme")"; else log_info "theme state is generated by Home Manager"; fi
+
+  if command -v nix >/dev/null 2>&1 && [[ -f "$NIX_CONFIG_DIR/flake.nix" ]]; then
+    log_info "Checking all flake outputs (no activation)..."
+    if (cd "$NIX_CONFIG_DIR" && nix flake check --all-systems --no-build); then log_success "all outputs evaluate"; else log_error "flake output check failed"; ((issues+=1)); fi
   fi
 
-  # Check nix
-  if command -v nix >/dev/null 2>&1; then
-    log_success "nix available: $(nix --version)"
-  else
-    log_error "nix not in PATH"
-    ((issues++))
-  fi
-
-  # Check home-manager
-  if command -v home-manager >/dev/null 2>&1; then
-    log_success "home-manager available"
-  else
-    log_warn "home-manager not in PATH (may be via nix shell)"
-  fi
-
-  # Check theme state
-  if [ -f "${CONFIG_DIR}/theme" ]; then
-    log_success "Theme set: $(cat "${CONFIG_DIR}/theme")"
-  else
-    log_warn "No theme set (default: catppuccin-mocha)"
-  fi
-
-  # Check git status
-  if [ -d "$NIX_CONFIG_DIR/.git" ]; then
-    cd "$NIX_CONFIG_DIR"
-    if git status --porcelain | grep -q .; then
-      log_warn "Uncommitted changes in nix-config"
-    else
-      log_success "Git working tree clean"
-    fi
-  fi
-
-  # Check disk space
-  local disk_usage=$(df -h "$HOME" | tail -1 | awk '{print $5}' | tr -d '%')
-  if [ "$disk_usage" -gt 90 ]; then
-    log_error "Disk usage critical: ${disk_usage}%"
-    ((issues++))
-  elif [ "$disk_usage" -gt 80 ]; then
-    log_warn "Disk usage high: ${disk_usage}%"
-  else
-    log_success "Disk usage: ${disk_usage}%"
-  fi
-
-  # Check Nix store
-  if command -v nix >/dev/null 2>&1; then
-    local store_size=$(nix store info 2>/dev/null | grep "Store size" | awk '{print $3}' || echo "unknown")
-    log_info "Nix store size: $store_size"
-  fi
-
-  if [ $issues -eq 0 ]; then
-    log_success "All checks passed"
-  else
-    log_error "$issues issue(s) found"
-    exit 1
-  fi
+  if ((issues == 0)); then log_success "Doctor checks passed"; else log_error "$issues issue(s) found"; exit 1; fi
 }
 
 cmd_gaming() {
   case "${1:-}" in
-    proton)
-      log_info "Available Proton versions:"
-      ls -1 ~/.steam/steam/compatibilitytools.d/ 2>/dev/null || log_warn "No custom Proton found"
+    proton) log_info "Available Proton versions:"; ls -1 ~/.steam/steam/compatibilitytools.d/ 2>/dev/null || log_warn "No custom Proton found" ;;
+    gamescope) systemctl --user list-units --type=service 2>/dev/null | grep gamescope || log_info "No gamescope services running" ;;
+    lutris) lutris --list-games 2>/dev/null || log_warn "Lutris not installed or no games" ;;
+    heroic|bottles)
+      if command -v "$1" >/dev/null 2>&1; then log_success "$1 installed"; else log_warn "$1 not installed"; fi
       ;;
-    gamescope)
-      log_info "Gamescope sessions:"
-      systemctl --user list-units --type=service | grep gamescope || log_info "No gamescope services running"
+    *) echo "Usage: tundra gaming [proton|gamescope|lutris|heroic|bottles]" ;;
+  esac
+}
+
+cmd_github() {
+  command -v gh >/dev/null 2>&1 || { log_error "GitHub CLI (gh) is not installed"; exit 1; }
+  case "${1:-status}" in
+    status|runs) gh run list --limit 10 ;;
+    watch) gh run watch "${2:-}" ;;
+    pr) gh pr view --web ;;
+    workflows) gh workflow list ;;
+    login) gh auth login ;;
+    auth) gh auth status ;;
+    *) log_error "Usage: tundra github [status|login|auth|watch <run-id>|pr|workflows]"; exit 2 ;;
+  esac
+}
+
+cmd_wallpaper() {
+  local action="${1:-list}" directory target script
+  directory="$HOME/.local/share/tundra/wallpapers"
+  [[ -d "$directory" ]] || directory="$NIX_CONFIG_DIR/wallpapers"
+  [[ -d "$directory" ]] || directory="$HOME/.config/nix-config/wallpapers"
+  script="$NIX_CONFIG_DIR/scripts/wallpaper.sh"
+  [[ -x "$script" ]] || script="$HOME/.local/bin/tundra-wallpaper"
+
+  case "$action" in
+    list|ls)
+      [[ -d "$directory" ]] || { log_error "Wallpaper directory not found: $directory"; exit 1; }
+      find "$directory" -maxdepth 1 -type f \
+        \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+        ! -iname 'wallpaper_backup_*' -exec basename {} \; | sort
       ;;
-    lutris)
-      log_info "Lutris games:"
-      lutris --list-games 2>/dev/null || log_warn "Lutris not installed or no games"
+    set|select)
+      target="${2:-}"
+      [[ -n "$target" ]] || { log_error "Wallpaper name or path required"; exit 2; }
+      if [[ ! -f "$target" ]]; then target="$directory/$(basename "$target")"; fi
+      [[ -f "$target" ]] || { log_error "Wallpaper not found: $target"; exit 1; }
+      if [[ -x "$script" ]]; then
+        TUNDRA_WALLPAPER_DIR="$directory" "$script" "$target"
+      else
+        log_error "Wallpaper switcher is unavailable at $script"
+        exit 1
+      fi
       ;;
-    heroic)
-      log_info "Heroic Games Launcher:"
-      command -v heroic >/dev/null && log_success "Heroic installed" || log_warn "Heroic not installed"
+    reload)
+      [[ -x "$script" ]] || { log_error "Wallpaper switcher is unavailable at $script"; exit 1; }
+      TUNDRA_WALLPAPER_DIR="$directory" "$script" --reload
       ;;
-    bottles)
-      log_info "Bottles:"
-      command -v bottles >/dev/null && log_success "Bottles installed" || log_warn "Bottles not installed"
+    self-test)
+      TUNDRA_WALLPAPER_DIR="$directory" "$HOME/.local/bin/tundra-wallpaper-daemon" --self-test
       ;;
     *)
-      echo "Gaming utilities:"
-      echo "  tundra gaming proton    - List Proton versions"
-      echo "  tundra gaming gamescope - Check gamescope sessions"
-      echo "  tundra gaming lutris    - List Lutris games"
-      echo "  tundra gaming heroic    - Check Heroic"
-      echo "  tundra gaming bottles   - Check Bottles"
+      log_error "Usage: tundra wallpaper [list|set <name>|reload|self-test]"
+      exit 2
       ;;
   esac
 }
@@ -228,139 +273,98 @@ cmd_gaming() {
 cmd_apps() {
   case "${1:-list}" in
     list)
-      log_info "Installed applications (via nix):"
+      log_warn "These are imperative profile operations, not repository declarations."
       nix profile list 2>/dev/null | head -30
-      echo ""
-      log_info "Home Manager packages:"
-      home-manager packages 2>/dev/null | head -30
       ;;
-    install)
+    install|remove)
       local pkg="${2:-}"
-      if [ -z "$pkg" ]; then
-        log_error "Package name required"
-        exit 1
-      fi
-      log_info "Installing $pkg..."
-      nix profile install "nixpkgs#$pkg"
-      log_success "Installed $pkg"
+      [[ -n "$pkg" ]] || { log_error "Package name required"; exit 2; }
+      log_warn "Imperative profile operation: $1 $pkg"
+      if [[ "$1" == install ]]; then nix profile install "nixpkgs#$pkg"; else nix profile remove "$pkg"; fi
       ;;
-    remove)
-      local pkg="${2:-}"
-      if [ -z "$pkg" ]; then
-        log_error "Package name required"
-        exit 1
-      fi
-      log_info "Removing $pkg..."
-      nix profile remove "$pkg"
-      log_success "Removed $pkg"
-      ;;
-    *)
-      log_error "Unknown apps command: $1"
-      echo "Usage: tundra apps [list|install|remove] [package]"
-      exit 1
-      ;;
+    *) log_error "Usage: tundra apps [list|install|remove] [package]"; exit 2 ;;
   esac
 }
 
 cmd_edit() {
   local editor="${EDITOR:-nvim}"
   case "${1:-config}" in
-    config|nix)
-      $editor "$NIX_CONFIG_DIR"
-      ;;
-    hyprland)
-      $editor "$NIX_CONFIG_DIR/modules/nixos/hyprland"
-      ;;
-    aerospace)
-      $editor "$HOME/.config/aerospace/aerospace.toml"
-      ;;
-    sketchybar)
-      $editor "$HOME/.config/sketchybar"
-      ;;
-    karabiner)
-      $editor "$HOME/.config/karabiner"
-      ;;
-    shell)
-      $editor "$NIX_CONFIG_DIR/modules/shared/shell.nix"
-      ;;
-    theme)
-      $editor "$NIX_CONFIG_DIR/modules/shared/themes.nix"
-      ;;
-    *)
-      log_error "Unknown edit target: $1"
-      echo "Targets: config, hyprland, aerospace, sketchybar, karabiner, shell, theme"
-      exit 1
-      ;;
+    config|nix) "$editor" "$NIX_CONFIG_DIR" ;;
+    hyprland) "$editor" "$NIX_CONFIG_DIR/modules/nixos/hyprland" ;;
+    aerospace) "$editor" "$HOME/.config/aerospace/aerospace.toml" ;;
+    sketchybar) "$editor" "$HOME/.config/sketchybar" ;;
+    karabiner) "$editor" "$HOME/.config/karabiner" ;;
+    shell) "$editor" "$NIX_CONFIG_DIR/modules/shared/shell.nix" ;;
+    theme) "$editor" "$NIX_CONFIG_DIR/modules/home/themes.nix" ;;
+    *) log_error "Unknown edit target: $1"; exit 2 ;;
   esac
 }
 
 cmd_gc() {
-  log_info "Running garbage collection..."
+  if [[ "${1:-}" != --yes ]]; then
+    log_error "Garbage collection deletes unreferenced store paths. Re-run as: tundra gc --yes"
+    exit 2
+  fi
+  log_warn "Running destructive garbage collection"
   nix-collect-garbage -d
-  log_success "Garbage collection complete"
 }
 
 cmd_help() {
   cat <<EOF
-tundra-cli v$VERSION — Tundra configuration management
+Tundra CLI v$VERSION — explicit Nix configuration operations
 
 USAGE:
-  tundra <command> [args...]
+  tundra <command> [host]
 
-COMMANDS:
-  theme [current|list|set <theme>]  Manage themes (20+ available)
-  rebuild [host]                    Rebuild system (gaming-pc, macbook, laptop, mini1, mini2, beattie)
-  update                            Update flake inputs
-  doctor                            Run health checks
-  gaming [proton|gamescope|lutris|heroic|bottles]  Gaming utilities
-  apps [list|install|remove] [pkg]  Manage nix packages
-  edit [config|hyprland|aerospace|sketchybar|karabiner|shell|theme]  Edit config files
-  gc                                Run garbage collection
-  help                              Show this help
+READ-ONLY / BUILD:
+  eval [host]                 Evaluate one output; no build or activation
+  build [host]                Build one output; no activation
+  doctor                      Check repository and evaluate all outputs
 
-EXAMPLES:
-  tundra theme set catppuccin-mocha
-  tundra rebuild gaming-pc
-  tundra update && tundra rebuild
-  tundra doctor
-  tundra edit hyprland
-  tundra gaming proton
+SYSTEM ACTIONS:
+  test <host>                 Temporary NixOS activation
+  switch <host>               Activate the selected host
+  boot <host>                 Build and add a boot generation (NixOS only)
+  rollback <host>             Roll back the active generation
+  rebuild <host>              Compatibility alias for switch; host is required
+
+INPUTS AND OTHER:
+  update <host>               Update flake.lock, show diff, build; never activate
+  theme [current|list]         Show declared theme information
+  gaming [subcommand]          Gaming utilities
+  wallpaper [list|set|reload]   List and switch wallpapers
+  github [status|login|watch]   GitHub Actions, auth, and pull-request status
+  apps [list|install|remove]   Imperative profile operations (not declarative)
+  edit [target]                Open repository configuration
+  gc --yes                     Destructive garbage collection
+  help                         Show this help
+
+SUPPORTED HOSTS:
+  macbook laptop gaming-pc beattie mini1 mini2
+
+Examples:
+  tundra eval gaming-pc
+  tundra build gaming-pc
+  tundra switch gaming-pc
+  tundra update macbook
 EOF
 }
 
-# ── Main ────────────────────────────────────────────────────────────
-
 case "${1:-help}" in
-  theme)
-    cmd_theme "${2:-}" "${3:-}"
-    ;;
-  rebuild)
-    cmd_rebuild "${2:-}"
-    ;;
-  update)
-    cmd_update
-    ;;
-  doctor)
-    cmd_doctor
-    ;;
-  gaming)
-    cmd_gaming "${2:-}"
-    ;;
-  apps)
-    cmd_apps "${2:-}" "${3:-}"
-    ;;
-  edit)
-    cmd_edit "${2:-}"
-    ;;
-  gc)
-    cmd_gc
-    ;;
-  help|--help|-h)
-    cmd_help
-    ;;
-  *)
-    log_error "Unknown command: $1"
-    cmd_help
-    exit 1
-    ;;
+  theme) cmd_theme "${2:-current}" "${3:-}" ;;
+  eval) cmd_eval "${2:-}" ;;
+  build) cmd_build "${2:-}" ;;
+  test|switch|boot) cmd_system_action "$1" "${2:-}" ;;
+  rebuild) cmd_system_action switch "${2:-}" ;;
+  rollback) cmd_rollback "${2:-}" ;;
+  update) cmd_update "${2:-}" ;;
+  doctor) cmd_doctor ;;
+  gaming) cmd_gaming "${2:-}" ;;
+  github|gh) cmd_github "${2:-}" "${3:-}" ;;
+  wallpaper|wallpapers|wp) cmd_wallpaper "${2:-}" "${3:-}" ;;
+  apps) cmd_apps "${2:-}" "${3:-}" ;;
+  edit) cmd_edit "${2:-}" ;;
+  gc) cmd_gc "${2:-}" ;;
+  help|--help|-h) cmd_help ;;
+  *) log_error "Unknown command: $1"; cmd_help; exit 2 ;;
 esac

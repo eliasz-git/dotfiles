@@ -1,12 +1,58 @@
 { config, lib, pkgs, ... }:
 
-{
+let
+  palettes = {
+    catppuccin-mocha = {
+      base = "#1e1e2e";
+      mantle = "#181825";
+      surface0 = "#313244";
+      surface1 = "#45475a";
+      surface2 = "#585b70";
+      text = "#cdd6f4";
+      subtext0 = "#a6adc8";
+      subtext1 = "#bac2de";
+      blue = "#89b4fa";
+      mauve = "#cba6f7";
+      pink = "#f5c2e7";
+      peach = "#fab387";
+      yellow = "#f9e2af";
+      green = "#a6e3a1";
+      red = "#f38ba8";
+      teal = "#94e2d5";
+    };
+    everforest-blue = {
+      # Everforest Dark (medium contrast), with its muted teal-blue as the
+      # interface accent and its canonical greens for status/success colors.
+      base = "#2d353b";
+      mantle = "#272e33";
+      surface0 = "#343f44";
+      surface1 = "#3d484d";
+      surface2 = "#475258";
+      text = "#d3c6aa";
+      subtext0 = "#a7a89c";
+      subtext1 = "#b0b79c";
+      blue = "#7fbbb3";
+      mauve = "#d699b6";
+      pink = "#d699b6";
+      peach = "#e69875";
+      yellow = "#dbbc7f";
+      green = "#a7c080";
+      red = "#e67e80";
+      teal = "#83c092";
+    };
+  };
+in {
   options.tundra = {
     enable = lib.mkEnableOption "Tundra theme system";
     theme = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.enum (builtins.attrNames palettes);
       default = "catppuccin-mocha";
-      description = "Current theme name";
+      description = "Selected shared desktop palette";
+    };
+    palette = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = palettes.${config.tundra.theme};
+      description = "Shared color tokens derived from the selected Tundra theme";
     };
   };
 
@@ -99,9 +145,7 @@
     # Create state directory and default theme file via activation
     home.activation.tundraTheme = ''
       mkdir -p "$HOME/.config/tundra"
-      if [ ! -f "$HOME/.config/tundra/theme" ]; then
-        echo "${config.tundra.theme}" > "$HOME/.config/tundra/theme"
-      fi
+      printf '%s\n' "${config.tundra.theme}" > "$HOME/.config/tundra/theme"
     '';
   };
 }

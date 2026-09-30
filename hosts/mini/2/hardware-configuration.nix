@@ -17,11 +17,11 @@
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
   };
-  # HDD now on mini1 as NAS — mini2 mounts via NFS
+  # Primary 2 TB storage is physically on mini1; mini2 consumes it via NFS.
   fileSystems."/mnt/storage" = {
-    device = "100.99.239.80:/mnt/storage";
+    device = "192.168.1.75:/mnt/storage";
     fsType = "nfs4";
-    options = [ "nofail" "x-systemd.automount" "noatime" "hard" "timeo=600" "retrans=3" ];
+    options = [ "nofail" "x-systemd.automount" "x-systemd.device-timeout=10s" "noatime" "hard" "timeo=600" "retrans=3" ];
   };
 
   swapDevices = [ ];

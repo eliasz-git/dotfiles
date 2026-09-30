@@ -8,6 +8,7 @@
     ../../../modules/shared/multiplexer.nix
     ../../../modules/shared/fastfetch.nix
     ../../../modules/shared/slskd.nix
+    ../../../modules/shared/operations.nix
   ];
 
   home.username = "elias";
@@ -35,12 +36,6 @@
   ];
 
   programs.zsh.shellAliases = {
-    # NixOS (new primary)
-    rb  = "sudo nixos-rebuild switch --flake ~/.config/nix-config#mini2";
-    rbu = "cd ~/.config/nix-config && sudo nix flake update && sudo nixos-rebuild switch --flake .#mini2";
-    # Home-manager fallback (still works standalone if you test without nixos)
-    hms = "home-manager switch --flake ~/.config/nix-config#mini2";
-    hmu = "cd ~/.config/nix-config && nix flake update && home-manager switch --flake .#mini2";
     dps = "docker ps";
     dcu = "docker compose up -d";
     dcd = "docker compose down";

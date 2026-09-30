@@ -9,12 +9,12 @@
     ../../modules/nixos/themes.nix
   ];
 
-  # System-level theme switcher (swaylock, swayidle, /etc/tundra/themes, the
+  # System-level theme registry and optional Swaylock fallback, plus the
   # `tundra-theme` binary) is gated behind this flag in modules/system/themes.nix
   # and modules/nixos/themes.nix — without it those modules are dead code even
   # though they're imported. home.nix sets the matching HM-level flag.
   tundra.enable = true;
-  tundra.theme = "catppuccin-mocha";
+  tundra.theme = "everforest-blue";
 
   # ── BOOT ──────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
@@ -35,14 +35,11 @@
   console.keyMap = "us";
 
   # ── USER ──────────────────────────────────────────────────────
-  # Change the password on first login (`passwd`). SSH is key-only, so this
-  # password is only usable at the keyboard.
   users.users.elias = {
     isNormalUser = true;
     description = "elias";
     extraGroups = [ "wheel" "networkmanager" "video" "render" "input" ];
     shell = pkgs.zsh;
-    initialPassword = "changeme";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
     ];
@@ -66,7 +63,7 @@
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --user-menu --theme 'border=green;text=green;prompt=blue;time=yellow;action=blue;button=green;container=black;input=white;greet=green' --greeting 'TUNDRA // GAMING PC' --cmd start-hyprland";
       user = "greeter";
     };
   };
@@ -136,11 +133,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    git vim nano curl wget htop pciutils usbutils
-    # `tundra-theme` itself comes from modules/system/themes.nix, gated on
-    # tundra.enable above — it isn't a plain pkgs.* attribute, so it can't be
-    # listed here directly (that's what made this line fail to evaluate).
-    (pkgs.writeScriptBin "tundra" (builtins.readFile ../../scripts/tundra-cli.sh))
+    git vim nano curl wget htop pciutils smartmontools usbutils
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────
@@ -148,7 +141,17 @@
   fileSystems."/Games" = {
     device = "/dev/disk/by-uuid/14882C93882C7580";
     fsType = "ntfs3";
-    options = [ "uid=1000" "gid=1000" "umask=022" ];
+    # Keep boot resilient if the data drive is temporarily unavailable, then
+    # mount it on first access so Steam sees the library at its stable path.
+    options = [ "uid=1000" "gid=1000" "umask=022" "nofail" "x-systemd.automount" ];
+  };
+
+  # Monitor both internal NVMe drives for failing sectors and controller health.
+  services.smartd = {
+    enable = true;
+    autodetect = true;
+    notifications.wall.enable = true;
+    notifications.mail.enable = false;
   };
 
   # ── NIX ───────────────────────────────────────────────────────

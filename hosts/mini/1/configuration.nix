@@ -1,6 +1,12 @@
 { config, pkgs, lib, hermes-agent, ... }:
 {
-  imports = [ ./hardware-configuration.nix ../../../modules/nixos/tailscale-serve.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ../../../modules/nixos/headless-base.nix
+    ../../../modules/nixos/compose-stack.nix
+    ../../../modules/nixos/homelab-backup.nix
+    ../../../modules/nixos/tailscale-serve.nix
+  ];
 
   # ── Host identity ───────────────────────────────────────────────
   networking.hostName = "mini1"; # infra — elias-server alias via DNS
@@ -75,7 +81,8 @@
   # HDD at /dev/disk/by-uuid/04d77883-ba85-4992-af18-9862040416a2 mounted at /mnt/storage via hardware-configuration.nix
   services.nfs.server.enable = true;
   services.nfs.server.exports = ''
-    /mnt/storage 192.168.1.0/24(rw,sync,no_subtree_check,no_root_squash) 100.64.0.0/10(rw,sync,no_subtree_check,no_root_squash)
+    # mini2 is the application consumer; keep root squashed on the export.
+    /mnt/storage 192.168.1.76/32(rw,sync,no_subtree_check,root_squash) 100.64.0.0/10(rw,sync,no_subtree_check,root_squash)
   '';
   services.samba = {
     enable = true;
@@ -85,7 +92,7 @@
       "server string" = "mini1 NAS";
       security = "user";
     };
-    shares.storage = {
+    settings.storage = {
       path = "/mnt/storage";
       browseable = "yes";
       "read only" = "no";
@@ -175,29 +182,20 @@
     powerOnBoot = true;
   };
 
-  # -- Home Assistant docker (oci-container) - auto-started via systemd docker-homeassistant
-  virtualisation.oci-containers.containers.homeassistant = {
-    image = "ghcr.io/home-assistant/home-assistant:stable";
-    volumes = [
-      "/mnt/storage/homeassistant:/config"
-      "/etc/localtime:/etc/localtime:ro"
-      "/run/dbus:/run/dbus:ro"
-    ];
-    environment = {
-      TZ = "America/New_York";
-    };
-    extraOptions = [
-      "--network=host"
-      "--privileged"
-    ];
+  # -- Home Assistant — DOCKER (migrated 2026-09-01) ─────────────────
+  # NixOS module disabled — Compose is the single owner for HACS/latest.
+  # The tracked Compose file is installed into /etc/stacks and started only
+  # after /mnt/storage is mounted and `docker compose config` succeeds.
+  services.home-assistant.enable = lib.mkForce false;
+  services.homelabCompose.stacks.homeassistant = {
+    enable = true;
+    composeFile = ./stacks/homeassistant/compose.yaml;
+    requiredMounts = [ "/mnt/storage" ];
   };
 
-  # -- Home Assistant — DOCKER (migrated 2026-09-01) ─────────────────
-  # NixOS module disabled — now runs as Docker container for HACS/latest.
-  # Config preserved at /mnt/storage/homeassistant (bind mount).
-  # Compose lives at /etc/stacks/homeassistant/compose.yaml on mini1.
-  # Backup: sudo tar -czf /mnt/storage/homeassistant-backup-$(date +%%F).tgz -C /mnt/storage homeassistant
-  services.home-assistant.enable = lib.mkForce false;
+  # Enable only after the gaming PC has a restricted SSH destination and this
+  # root-only password file exists: /var/lib/homelab-backup/restic-password.
+  services.homelabBackup.enable = false;
 
   # ── Cloudflared Tunnel — alt to Tailscale when VPN blocked ─────────
   # 1. cloudflared tunnel login  (on mini1, creates cert.pem in ~/.cloudflared)

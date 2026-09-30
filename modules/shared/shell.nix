@@ -1,6 +1,13 @@
 { config, lib, pkgs, ... }:
 
-{
+let
+  palette = config.tundra.palette or {
+    base = "#2d353b"; mantle = "#272e33"; surface1 = "#3d484d";
+    text = "#d3c6aa"; subtext0 = "#a7a89c"; subtext1 = "#b0b79c";
+    blue = "#7fbbb3"; mauve = "#d699b6"; pink = "#d699b6";
+    yellow = "#dbbc7f"; green = "#a7c080"; red = "#e67e80"; teal = "#83c092";
+  };
+in {
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -33,12 +40,13 @@
       # AI
       ai = "opencode";
       # claude = "claude-code";  # Not in nixpkgs - install via npm: npm i -g @anthropic-ai/claude-code
-      gemini = "gemini-cli";
+      antigravity = "agy";
+      gemini = "agy";
       # copilot = "copilot-cli";  # Not in nixpkgs - install via npm: npm i -g @github/copilot-cli
     };
     sessionVariables = {
       NPM_CONFIG_PREFIX = "$HOME/.npm-global";
-      BAT_THEME = "base16";
+      BAT_THEME = "ansi";
       FZF_DEFAULT_OPTS = "--height 40% --layout=reverse --border";
     };
     initContent = lib.mkOrder 550 ''
@@ -72,24 +80,24 @@
       add_newline = true;
       format = "$username$hostname$directory$git_branch$git_status$nix_shell$character";
       character = {
-        error_symbol = "[➜](bold #305561)";
-        success_symbol = "[➜](bold #116FAE)";
+        error_symbol = "[➜](bold ${palette.red})";
+        success_symbol = "[➜](bold ${palette.blue})";
       };
       directory = {
-        style = "bold #116FAE";
+        style = "bold ${palette.blue}";
         truncate_to_repo = true;
         truncation_length = 3;
       };
       git_branch = {
-        style = "bold #68A2C6";
+        style = "bold ${palette.mauve}";
         symbol = " ";
       };
       git_status = {
-        style = "bold #7E8A94";
+        style = "bold ${palette.subtext0}";
       };
       nix_shell = {
         format = "via [$symbol$state]($style) ";
-        style = "bold #06467E";
+        style = "bold ${palette.teal}";
         symbol = " ";
       };
     };
@@ -100,24 +108,24 @@
     # Disable fzf's Ctrl-R binding since atuin owns it
     historyWidget.zsh.command = "";
     colors = {
-      bg = "#04182F";
-      "bg+" = "#06467E";
-      fg = "#68A2C6";
-      "fg+" = "#68A2C6";
-      hl = "#116FAE";
-      "hl+" = "#116FAE";
-      info = "#7E8A94";
-      marker = "#305561";
-      prompt = "#116FAE";
-      spinner = "#68A2C6";
-      pointer = "#68A2C6";
-      header = "#305561";
+      bg = palette.base;
+      "bg+" = palette.mantle;
+      fg = palette.text;
+      "fg+" = palette.subtext1;
+      hl = palette.red;
+      "hl+" = palette.red;
+      info = palette.blue;
+      marker = palette.green;
+      prompt = palette.blue;
+      spinner = palette.pink;
+      pointer = palette.pink;
+      header = palette.teal;
     };
   };
   programs.bat = {
     enable = true;
     config = {
-      theme = "base16";
+      theme = "ansi";
       pager = "less -FR";
     };
   };

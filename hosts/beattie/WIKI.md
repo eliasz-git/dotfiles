@@ -9,10 +9,10 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 ## Table of Contents
 1. [Quick Start](#quick-start)
 2. [Meet the 3 Linux Stations](#meet-the-3-linux-stations)
-3. [KDE Plasma Tour (5 min)](#gnome-tour-5-min)
+3. [KDE Plasma Tour (5 min)](#kde-plasma-tour-5-min)
 4. [Apps You Actually Have](#apps-you-actually-have)
 5. [Terminal Crash Course](#terminal-crash-course)
-6. [Customizing KDE Plasma](#customizing-gnome)
+6. [Customizing KDE Plasma](#customizing-kde-plasma)
 7. [NixOS Superpower — Rebuild + Rollback](#nixos-superpower)
 8. [Cybersecurity Lab](#cybersecurity-lab)
 9. [Cheat Sheets](#cheat-sheets)
@@ -23,8 +23,8 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 
 ## Quick Start
 - **Super** opens search — type anything.
-- **Bottom dock** = favorites. Right-click → Add/Remove.
-- **Top bar → Vitals** shows CPU/RAM.
+- **Panel** = launcher, task manager, favorites, notifications, and system tray.
+- **System Monitor** shows CPU/RAM and process details.
 - Open **Console**, run:
   ```bash
   fastfetch
@@ -35,39 +35,38 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 ## Meet the 3 Linux Stations
 All three run the **same NixOS config**, different desktops:
 
-- **This: beattie — KDE Plasma** — macOS-like, simple, extensions. Best first desktop.
-- **KDE Plasma station** — Windows-like, widgets, insane customization.
+- **This: beattie — KDE Plasma** — polished, simple, and customizable. Best first desktop.
+- **Gaming station** — Hyprland tiling, Wayland-native, and gaming-focused.
 - **Omarchy station** — Hyprland tiling, keyboard-driven, for power users.
 
 Try all three. Same apps, same terminal, different shell.
 
 ## KDE Plasma Tour (5 min)
 - **Activities / Super:** overview, workspaces, search.
-- **Dash (bottom):** click or Super + number. Drag to reorder. Scroll over icon cycles windows.
-- **Workspaces:** dynamic — drag window to right edge creates new. Or Super + swipe.
-- **Window tiling:** drag to edge, or Super + Arrow. `Alt+Tab` windows, `Super+Tab` apps.
-- **Notifications:** top-center clock → calendar. Bottom-right → quick settings (wifi/sound/power).
+- **Panel:** launch applications, pin favorites, and switch windows.
+- **Workspaces:** use the workspace switcher or Meta+Tab.
+- **Window tiling:** drag windows to screen edges; use `Alt+Tab` to switch.
+- **Notifications:** the system tray contains calendar, network, sound, and power controls.
 - **Night Light:** Settings → Displays → Night Light (3500K preset, easy on eyes).
-- **GSConnect:** pair your phone (same wifi) → share files/clipboard. Firewall already open 1714-1764.
+- **KDE Connect:** pair your phone (same Wi-Fi) → share files/clipboard. Firewall is open for the KDE Connect range.
 
 ## Apps You Actually Have
 
 ### System
-- **KDE Plasma Software** — graphical app store (Flatpak). No terminal needed.
-- **System Settings** — toggle Blur My Shell, Dash to Dock, Caffeine, etc.
-- **KDE Plasma Tweaks** — fonts, theme, titlebar buttons.
-- **dconf Editor** — advanced KDE Plasma settings.
-- **Baobab** (Disk Usage), **KDE Plasma Disk Utility**, **System Monitor**
+- **Discover** — graphical app store and Flatpak frontend.
+- **System Settings** — colors, themes, displays, input, and window behavior.
+- **Kate** — editor; **Konsole** — terminal; **Dolphin** — file manager.
+- **Baobab**, **KDE Plasma System Monitor**, and **KCalc**
 
 ### Everyday
 - **Browsers:** LibreWolf (privacy), Brave
-- **Files:** Nautilus — `/` for path, `Ctrl+H` hidden files, `Ctrl+L` location.
+- **Files:** Dolphin — `Ctrl+L` location, `Ctrl+H` hidden files.
 - **Editors:** VSCodium, Obsidian, LibreOffice
 - **Media:** VLC, Celluloid, Loupe (images), Evince (PDF), GIMP, Inkscape
 - **Comms:** Thunderbird, Signal, Nextcloud
 
 ### Terminal (both installed)
-- **KDE Plasma Console (kgx)** — simple, beginner default.
+- **Konsole** — KDE terminal and beginner default.
 - **Kitty** — fast, splits, images, for Elias.
 
 ## Terminal Crash Course
@@ -100,11 +99,14 @@ hollywood
 pipes
 ```
 
-**Aliases on this host:**
+**Shared aliases on every supported host:**
 ```
-rb            → rebuild beattie
-
-update        → flake update + rebuild
+rb            → tundra switch
+rbu           → update flake.lock + build, no activation
+rbb           → build only
+rbe           → evaluate only
+rbt           → temporary test activation
+rbr           → rollback
 ll / la / l   → eza variants
 cat           → bat
 helpme        → fzf tldr
@@ -113,13 +115,11 @@ helpme        → fzf tldr
 MOTD prints on new shell: `Welcome to Beattie Linux...` with hints.
 
 ## Customizing KDE Plasma
-- **Appearance:** Settings → Appearance → Dark, green accent, background `wallpapers/wallpaper.jpg`
-- **Dock:** System Settings → Dash to Dock → position/size/intellihide.
-- **Blur:** System Settings → Blur My Shell → panel/dash blur.
-- **Top bar:** Just Perfection → hide accessibility, adjust padding.
-- **Menu:** ArcMenu → Redmond layout, left in panel. Right-click menu button to change.
-- **Vitals:** click CPU icon → settings → pick sensors.
-- **Caffeine:** top bar coffee cup → prevent sleep during demos.
+- **Appearance:** System Settings → Colors & Themes → dark Breeze variant and green accent.
+- **Panel:** right-click the panel → enter edit mode to change position, size, and widgets.
+- **Window behavior:** System Settings → Window Management.
+- **Display/night light:** System Settings → Display & Monitor.
+- **KDE Connect:** pair a phone on the same network; the firewall range is already configured.
 
 Theme files (if you want to hack):
 - GTK: `Tundra Dark (Everforest-Dark-BL)` from `everforest-gtk-theme`
@@ -135,9 +135,11 @@ Whole desktop = two files: `hosts/beattie/configuration.nix` + `home.nix`.
 sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
 # or: rb
 
-# update all inputs
-sudo nix flake update && sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
-# or: update  (or update-all function)
+# update all inputs, then build without activation
+cd /etc/nixos
+nix flake update
+nix build .#nixosConfigurations.beattie.config.system.build.toplevel
+# review the lockfile/build, then use rb to activate
 
 # try without committing
 sudo nixos-rebuild test --flake /etc/nixos#beattie --impure

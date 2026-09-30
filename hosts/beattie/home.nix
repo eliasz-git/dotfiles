@@ -6,6 +6,8 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/operations.nix
+    ../../modules/home/themes.nix
     ../../modules/nixos/terminal.nix
   ];
   home.stateVersion = "25.05";
@@ -40,8 +42,6 @@
   ];
 
   programs.zsh.shellAliases = {
-    rb = "sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure";
-    update = "cd /etc/nixos && sudo nix flake update && sudo nixos-rebuild switch --flake .#beattie --impure";
     ll = "eza -la --icons"; la = "eza -a --icons"; l = "eza --icons"; cat = "bat --paging=never";
     helpme = "tldr --list | fzf --preview 'tldr {1}' | xargs tldr";
   };
@@ -63,8 +63,7 @@
       echo "=== ERRORS LAST BOOT ==="; journalctl -b -1 -p 3 --no-pager | tail -n 40
     }
     update-all() {
-      echo "Updating flake..."; cd /etc/nixos; sudo nix flake update
-      echo "Rebuilding..."; sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure
+      rbu
     }
   '';
 
