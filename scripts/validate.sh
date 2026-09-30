@@ -43,6 +43,23 @@ printf '%s\n' '== Nix output evaluation =='
 nix flake check --all-systems --no-build
 printf '%s\n' 'Nix output evaluation: ok'
 
+printf '%s\n' '== generated config syntax =='
+if command -v python3 >/dev/null 2>&1; then
+  # AeroSpace tolerates duplicate keys and stray quotes in its TOML instead of
+  # failing, so only a strict parse surfaces them.
+  nix eval --raw '.#darwinConfigurations.macbook.config.home-manager.users.elias.home.file.".config/aerospace/aerospace.toml".text' \
+    | python3 -c 'import sys, tomllib
+try:
+    tomllib.load(sys.stdin.buffer)
+except tomllib.TOMLDecodeError as exc:
+    sys.exit(f"invalid TOML in generated aerospace.toml: {exc}")
+print("aerospace.toml: ok")'
+  python3 -c 'import json; json.load(open("modules/darwin/karabiner/karabiner.json"))'
+  printf '%s\n' 'karabiner.json: ok'
+else
+  printf '%s\n' 'python3: not installed (skipping generated config syntax)' >&2
+fi
+
 if command -v shellcheck >/dev/null 2>&1; then
   printf '%s\n' '== shellcheck =='
   # The maintained operational entry points are gated here. Legacy installers

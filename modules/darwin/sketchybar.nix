@@ -49,9 +49,9 @@ in {
         script="$PLUGIN_DIR/front_app.sh" \
         --subscribe front_app front_app_switched
 
-      # Media
+# Media
       sketchybar --add item media center \
-        --set media icon="" icon.color=$ACCENT_COLOR label.max_chars=30 scroll_texts=on label.scroll_duration=140 label.color=$ACCENT_COLOR drawing=off update_freq=2 \
+        --set media icon="" icon.color=$ACCENT_COLOR label.max_chars=30 scroll_texts=on label.scroll_duration=140 label.color=$ACCENT_COLOR drawing=off update_freq=5 \
         script="$PLUGIN_DIR/media.sh" click_script="$PLUGIN_DIR/media_click.sh"
 
       # Right side: cpu, mem, net, battery, volume, clock
@@ -94,17 +94,63 @@ in {
   home.file.".config/sketchybar/plugins/clock.sh" = { executable = true; text = '' #!/bin/sh
 sketchybar --set "$NAME" label="$(date '+%a %d  %I:%M %p')" ''; };
 
+  # Media plugin (nowplaying-cli)
+  home.file.".config/sketchybar/plugins/media.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      RAW="$(nowplaying-cli get --json title artist 2>/dev/null)"
+      TITLE="$(echo "$RAW" | sed -n 's/.*"title" *: *"\(.*\)".*/\1/p')"
+      ARTIST="$(echo "$RAW" | sed -n 's/.*"artist" *: *"\(.*\)".*/\1/p')"
+
+      if [ -z "$TITLE" ]; then
+        sketchybar --set "$NAME" drawing=off 2>/dev/null
+        exit 0
+      fi
+
+      if [ -n "$ARTIST" ]; then LABEL="$TITLE — $ARTIST"; else LABEL="$TITLE"; fi
+      sketchybar --set "$NAME" drawing=on icon="" label="$LABEL" label.drawing=on \
+        icon.color="${opaque palette.blue}" label.color="${opaque palette.text}"
+    '';
+  };
+
+  # Media click plugin (play/pause)
+  home.file.".config/sketchybar/plugins/media_click.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      nowplaying-cli togglePlayPause 2>/dev/null
+      sketchybar --update "$NAME" 2>/dev/null
+    '';
+  };
+
   # Front app plugin
-  home.file.".config/sketchybar/plugins/front_app.sh" = { executable = true; text = '' #!/bin/sh
-if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$INFO"; fi ''; };
+  home.file.".config/sketchybar/plugins/front_app.sh" = {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      if [ "$SENDER" = "forced" ]; then
+        # System Events reports process names ("ghostty"); sketchybar's own event
+        # uses display names ("Ghostty"). Match the latter for visual consistency.
+        APP="$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true' 2>/dev/null)"
+        if [ -n "$APP" ]; then
+          LABEL="$(echo "$APP" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')"
+          sketchybar --set "$NAME" label="$LABEL"
+        fi
+      else
+        sketchybar --set "$NAME" label="$INFO"
+      fi
+    '';
+  };
 
   # Battery plugin
   home.file.".config/sketchybar/plugins/battery.sh" = {
     executable = true;
     text = ''
       #!/bin/sh
-      PERCENTAGE="''$(pmset -g batt | grep -Eo "[0-9]+%" | cut -d% -f1)"
-      CHARGING="''$(pmset -g batt | grep 'AC Power')"
+      PWR="''$(pmset -g batt 2>/dev/null)"
+      PERCENTAGE="$(echo "$PWR" | grep -Eo "[0-9]+%" | cut -d% -f1)"
+      CHARGING="$(echo "$PWR" | grep 'AC Power')"
       [ -z "$PERCENTAGE" ] && exit 0
       case "$PERCENTAGE" in
         9[0-9]|100) ICON="" ;;
@@ -128,14 +174,17 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
       #!/bin/sh
       if [ "$SENDER" = "volume_change" ]; then
         VOLUME="$INFO"
-        case "$VOLUME" in
-          [6-9][0-9]|100) ICON="󰕾" ;;
-          [3-5][0-9]) ICON="󰖀" ;;
-          [1-9]|[1-2][0-9]) ICON="󰕿" ;;
-          *) ICON="󰖁" ;;
-        esac
-        sketchybar --set "$NAME" icon="$ICON" label="''${VOLUME}%"
+      else
+        VOLUME="$(osascript -e 'get volume settings' 2>/dev/null | sed -n 's/.*output volume:\([0-9]*\).*/\1/p')"
+        [ -n "$VOLUME" ] || exit 0
       fi
+      case "$VOLUME" in
+        [6-9][0-9]|100) ICON="󰕾" ;;
+        [3-5][0-9]) ICON="󰖀" ;;
+        [1-9]|[1-2][0-9]) ICON="󰕿" ;;
+        *) ICON="󰖁" ;;
+      esac
+      sketchybar --set "$NAME" icon="$ICON" label="''${VOLUME}%"
     '';
   };
 
@@ -179,12 +228,9 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
       echo "$WIFI_POWER" | grep -q "On" && POWER_ON=1 || POWER_ON=0
 
       if [ -n "$WIFI_IP" ]; then
-        SSID="''$(networksetup -getairportnetwork en0 2>/dev/null | sed -n 's/.*: "\(.*\)".*/\1/p')"
-        if [ -z "$SSID" ] || echo "$SSID" | grep -qi "not associated\|redacted"; then
-          SSID="''$(system_profiler SPAirPortDataType 2>/dev/null | awk '/Current Network Information:/{getline; gsub(/^[ \t]+/,"",$0); gsub(/:$/,"",$0); print; exit}')"
-        fi
-        if echo "$SSID" | grep -qi "redacted"; then SSID=""; fi
-        if [ -z "$SSID" ]; then LABEL=""; else LABEL="$SSID"; fi
+        # SSID requires a Location Services grant that sketchybar does not have,
+        # and the airport CLI was removed in macOS 14. Status only.
+        LABEL=""
         ICON="󰖩"
         COLOR="${opaque palette.green}"
       elif [ "$POWER_ON" = 1 ]; then
@@ -206,4 +252,12 @@ if [ "$SENDER" = "front_app_switched" ]; then sketchybar --set "$NAME" label="$I
       sketchybar --set "$NAME" icon="$ICON" label="''${LABEL}''${TS_BADGE}''${WARP_BADGE}" icon.color="$COLOR"
     '';
   };
+
+  # The Homebrew LaunchAgent is KeepAlive, so the running bar survives the config
+  # symlink swap but keeps serving the previously parsed config until reloaded.
+  home.activation.sketchybarReload = lib.mkAfter ''
+    if command -v sketchybar >/dev/null 2>&1; then
+      sketchybar --reload || true
+    fi
+  '';
 }

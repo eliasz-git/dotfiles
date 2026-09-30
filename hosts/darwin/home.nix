@@ -23,13 +23,13 @@
   tundra.theme = "everforest-blue";
 
   # Karabiner — keeps keyboard remaps under version control
-  # Caps Lock → Left Command (feels like SUPER)
+  # Caps Lock → Command+Control (AeroSpace Mod), tap → Escape
   home.file.".config/karabiner".source =
     config.lib.file.mkOutOfStoreSymlink
       "/Users/elias/.config/nix-config/modules/darwin/karabiner";
 
   # AeroSpace — i3-style tiling window manager
-  # Mod key: cmd+ctrl (hyper) - but with Caps Lock → cmd, this feels like SUPER
+  # Mod key: cmd+ctrl, produced by Karabiner from Caps Lock
   home.file.".config/aerospace/aerospace.toml".text = ''
     # AeroSpace — https://nikitabobko.github.io/AeroSpace/
     config-version = 2
@@ -48,6 +48,12 @@
 
     # Workspace names (Omarchy-style)
     persistent-workspaces = ['1-web', '2-code', '3-term', '4-chat', '5-media', '6-games', '7-docs', '8-sys', '9-vm', '10-misc']
+
+    # SketchyBar workspace highlight is driven by a custom event; AeroSpace must
+    # trigger it whenever focus or the active monitor changes. Absolute path is
+    # required because these callbacks run under the launchd PATH.
+    on-focus-changed = ['exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change']
+    on-focused-monitor-changed = ['exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change']
 
     # Auto-assign apps to workspaces
     on-window-detected = [
@@ -73,10 +79,12 @@
       { if = 'test %{app-bundle-id} = com.apple.finder || test %{app-bundle-id} = com.apple.ActivityMonitor', run = 'move-node-to-workspace 10-misc' },
       # Floating: system settings / launchers / overlays must never tile
       { if = 'test %{app-bundle-id} = com.apple.systempreferences || test %{app-bundle-id} = com.raycast.macos || test %{app-bundle-id} = org.pqrs.Karabiner-Elements.Settings || test %{app-bundle-id} = org.pqrs.Karabiner-EventViewer || test %{app-bundle-id} = com.MrKai77.Loop || test %{app-bundle-id} = theboringteam.boringnotch || test %{app-bundle-id} = bobko.aerospace', run = ['layout floating'] },
+      # Repaint the SketchyBar highlight after auto-assignment moves the window
+      { run = 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change' },
     ]
 
     [mode.main.binding]
-    # Mod = cmd+ctrl (hyper) - with Caps Lock → cmd via Karabiner, this is like SUPER
+    # Mod = cmd+ctrl, produced by Karabiner from Caps Lock
     # Focus
     cmd-ctrl-left = 'focus left'
     cmd-ctrl-down = 'focus down'
@@ -138,7 +146,7 @@
     cmd-ctrl-shift-grave = 'move-node-to-workspace scratchpad'
 
     # Screenshot
-    cmd-ctrl-shift-4 = 'exec-and-forget screencapture -i ~/Pictures/Screenshots/screenshot-$(date +%s).png'
+    cmd-ctrl-shift-s = 'exec-and-forget screencapture -i ~/Pictures/Screenshots/screenshot-$(date +%s).png'
 
     # Reload config
     cmd-ctrl-shift-r = 'exec-and-forget aerospace reload-config'
