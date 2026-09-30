@@ -32,6 +32,6 @@ in {
     ln -sfn "${userThemeConf}" "${themeDir}/theme.conf"
   '';
 
-  services.displayManager.sddm.package = lib.mkIf config.services.displayManager.sddm.enable sddmWithGreeter;
+  services.displayManager.sddm.package = lib.mkIf config.services.displayManager.sddm.enable (lib.mkForce sddmWithGreeter);
   services.displayManager.sddm.theme = lib.mkIf config.services.displayManager.sddm.enable themeDir;
 }
