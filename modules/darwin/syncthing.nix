@@ -42,21 +42,25 @@
   #    bootstrap fails with "I/O error (code 5)" against the taken label.
   # 2. A stray process holding the config lock and port 8384.
   #
-  # Only unload when the running agent is not already using our real plist, so a
-  # healthy daemon is left alone across ordinary rebuilds.
+  # A symlinked or missing plist is exactly the stale case, since a healthy
+  # generation always leaves a real file there.
+  #
+  # Two constraints on this entry. Home Manager runs the whole activation under
+  # `set -eu -o pipefail` and inlines the body into the main script, so: no pipes
+  # (a `head -n 1` on `launchctl print` gives the writer SIGPIPE, and pipefail
+  # turns that into a silent abort of the whole rebuild), and no `exit`, which
+  # would terminate the activation script itself.
   home.activation.syncthingStrayProcess = lib.hm.dag.entryBefore [ "setupLaunchAgents" ] ''
     DOMAIN="gui/$(id -u)"
     LABEL="xyz.syncthing.agent"
     PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
-    loaded_path="$(launchctl print "$DOMAIN/$LABEL" 2>/dev/null \
-      | sed -n 's/^[[:space:]]*path = //p' | head -n 1)"
-    if [[ -n "$loaded_path" && "$loaded_path" != "$PLIST" ]]; then
-      launchctl bootout --wait "$DOMAIN/$LABEL" || true
+    if [[ -L "$PLIST" || ! -f "$PLIST" ]]; then
+      launchctl bootout --wait "$DOMAIN/$LABEL" >/dev/null 2>&1 || true
     fi
 
     if ! launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
-      pkill -x syncthing 2>/dev/null || true
+      pkill -x syncthing >/dev/null 2>&1 || true
     fi
   '';
 }
