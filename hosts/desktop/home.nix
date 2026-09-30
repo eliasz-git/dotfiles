@@ -25,6 +25,7 @@ in {
     ../../modules/nixos/clipboard.nix
     ../../modules/nixos/screenshot.nix
     ../../modules/nixos/ai-tools.nix
+    ../../modules/nixos/launchers.nix
     ../../modules/nixos/gaming-enhanced.nix
   ];
 
@@ -381,6 +382,7 @@ in {
     # Needed by modules/shared/shell.nix (aliases + init hook)
     eza pay-respects
     # AI tools (also in ai-tools.nix)
-    # opencode claude-code antigravity-cli copilot-cli
+    # opencode, antigravity-cli and copilot-cli ship no .desktop file; they get
+    # launcher entries from modules/nixos/launchers.nix.
   ];
 }
