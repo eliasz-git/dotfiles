@@ -253,11 +253,18 @@ sketchybar --set "$NAME" label="$(date '+%a %d  %I:%M %p')" ''; };
     '';
   };
 
-  # The Homebrew LaunchAgent is KeepAlive, so the running bar survives the config
-  # symlink swap but keeps serving the previously parsed config until reloaded.
+  # The Homebrew LaunchAgent is KeepAlive, so killing the bar makes launchd
+  # respawn it against the freshly swapped config. `sketchybar --reload` does
+  # not replace properties or rebuild the item set, which leaves the bar
+  # serving stale properties (observed as a blank bar after activation).
   home.activation.sketchybarReload = lib.mkAfter ''
     if command -v sketchybar >/dev/null 2>&1; then
-      sketchybar --reload || true
+      pkill -x sketchybar || true
+      for _ in 1 2 3 4 5 6 7 8 9 10; do
+        pgrep -x sketchybar >/dev/null 2>&1 && break
+        sleep 0.5
+      done
+      pgrep -x sketchybar >/dev/null 2>&1 || brew services start sketchybar || true
     fi
   '';
 }
