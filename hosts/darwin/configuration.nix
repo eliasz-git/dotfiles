@@ -119,7 +119,6 @@
     };
     screencapture.location = "/Users/elias/Pictures/Screenshots";
     loginwindow.GuestEnabled = false;
-    screensaver.askForPasswordDelay = 5;
   };
 
   security.pam.services.sudo_local.touchIdAuth = true;
