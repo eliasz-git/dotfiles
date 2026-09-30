@@ -80,7 +80,7 @@
       # Floating: system settings / launchers / overlays must never tile
       { if = 'test %{app-bundle-id} = com.apple.systempreferences || test %{app-bundle-id} = com.raycast.macos || test %{app-bundle-id} = org.pqrs.Karabiner-Elements.Settings || test %{app-bundle-id} = org.pqrs.Karabiner-EventViewer || test %{app-bundle-id} = com.MrKai77.Loop || test %{app-bundle-id} = theboringteam.boringnotch || test %{app-bundle-id} = bobko.aerospace', run = ['layout floating'] },
       # Repaint the SketchyBar highlight after auto-assignment moves the window
-      { run = 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change' },
+      { if = 'true', run = 'exec-and-forget /opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change' },
     ]
 
     [mode.main.binding]
@@ -98,10 +98,10 @@
     cmd-ctrl-shift-right = 'move right'
 
     # Resize windows
-    cmd-ctrl-alt-left = 'resize smart -20 0'
-    cmd-ctrl-alt-down = 'resize smart 0 20'
-    cmd-ctrl-alt-up = 'resize smart 0 -20'
-    cmd-ctrl-alt-right = 'resize smart 20 0'
+    cmd-ctrl-alt-left = 'resize width -20'
+    cmd-ctrl-alt-down = 'resize height 20'
+    cmd-ctrl-alt-up = 'resize height -20'
+    cmd-ctrl-alt-right = 'resize width 20'
 
     # Workspaces (1-0)
     cmd-ctrl-1 = 'workspace 1-web'
@@ -139,11 +139,11 @@
     cmd-ctrl-shift-tab = 'focus dfs-prev'
 
     # Floating toggle
-    cmd-ctrl-shift-space = 'toggle-floating'
+    cmd-ctrl-shift-space = 'layout floating tiling'
 
     # Scratchpad (special workspace)
-    cmd-ctrl-grave = 'workspace scratchpad'
-    cmd-ctrl-shift-grave = 'move-node-to-workspace scratchpad'
+    cmd-ctrl-backtick = 'workspace scratchpad'
+    cmd-ctrl-shift-backtick = 'move-node-to-workspace scratchpad'
 
     # Screenshot
     cmd-ctrl-shift-s = 'exec-and-forget screencapture -i ~/Pictures/Screenshots/screenshot-$(date +%s).png'
