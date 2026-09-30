@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  wayland.windowManager.hyprland.settings.exec_once = [
+  wayland.windowManager.hyprland.settings.exec-once = [
     # Notifications
     "${pkgs.dunst}/bin/dunst"
 

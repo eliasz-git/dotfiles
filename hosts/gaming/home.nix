@@ -41,9 +41,11 @@ in {
     package = null;
     portalPackage = null;
 
-    # Lua is the native Hyprland format in current releases. Avoid `$`-prefixed
-    # variable keys because Home Manager renders those as invalid Lua identifiers.
-    configType = "lua";
+    # Keep the working hyprlang configuration active for now. The Lua-compatible
+    # modular source remains in the repository and the existing hyprland.lua file
+    # is intentionally not removed, so migration can resume after a newer stable
+    # Hyprland/Home Manager combination is verified.
+    configType = "hyprlang";
 
     # Settings are now imported from modular files:
     # - monitors.nix
@@ -77,7 +79,7 @@ in {
   home.file.".local/share/tundra/wallpapers/tani-buncho-blue-green-landscape.jpg".source = ../../wallpapers/tani-buncho-blue-green-landscape.jpg;
   home.file.".local/share/tundra/wallpapers/saal-forest-landscape-moonlight.jpg".source = ../../wallpapers/saal-forest-landscape-moonlight.jpg;
   home.file.".local/share/tundra/wallpapers/bierstadt-mountainous-landscape-moonlight.jpg".source = ../../wallpapers/bierstadt-mountainous-landscape-moonlight.jpg;
-  wayland.windowManager.hyprland.settings.exec_once = [
+  wayland.windowManager.hyprland.settings.exec-once = [
     "env TUNDRA_WALLPAPER_DIR=${config.home.homeDirectory}/.local/share/tundra/wallpapers ${config.home.homeDirectory}/.local/bin/tundra-wallpaper-daemon"
   ];
 
