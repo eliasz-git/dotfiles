@@ -6,6 +6,31 @@
 let
   palette = config.tundra.palette;
   selectedEverforest = config.tundra.theme == "everforest-blue";
+  wallpaperDir = ../../wallpapers;
+
+  # Every image in the collection is linked into the daemon's directory. The
+  # list is read from the directory rather than repeated here, so adding a
+  # painting is a matter of dropping the file in. The daemon picks anything
+  # with a dash in its name, so wallpaper.jpg stays the default and is never
+  # rotated in; every other file takes part in rotation. wallpaper.sh writes
+  # wallpaper_backup_*.jpg when replacing the default, and those are skipped:
+  # they are the old default, not part of the collection.
+  #
+  # listToAttrs rather than genAttrs: genAttrs routes names through the attr
+  # parser, which treats the dots in ".local/share/..." as attribute
+  # separators and loses the directory part.
+  wallpaperLinks = lib.listToAttrs (
+    map
+      (name: {
+        name = ".local/share/tundra/wallpapers/${name}";
+        value.source = "${wallpaperDir}/${name}";
+      })
+      (
+        lib.filter
+          (name: lib.hasSuffix ".jpg" name && !lib.hasPrefix "wallpaper_backup_" name)
+          (lib.attrNames (builtins.readDir wallpaperDir))
+      )
+  );
 in {
   imports = [
     ../../modules/shared/shell.nix
@@ -75,63 +100,63 @@ in {
   # Rotate the painting collection every 15 minutes and hide swaybg whenever
   # Hyprland reports a fullscreen window, so media and games have no wallpaper
   # behind them. The daemon is the sole wallpaper owner for this host.
-  home.file.".local/bin/tundra-wallpaper-daemon".source = ../../scripts/wallpaper-daemon.sh;
-  home.file.".local/bin/tundra-wallpaper".source = ../../scripts/wallpaper.sh;
-  home.file.".local/share/tundra/wallpapers/wallpaper.jpg".source = ../../wallpapers/wallpaper.jpg;
-  home.file.".local/share/tundra/wallpapers/tani-buncho-blue-green-landscape.jpg".source = ../../wallpapers/tani-buncho-blue-green-landscape.jpg;
-  home.file.".local/share/tundra/wallpapers/saal-forest-landscape-moonlight.jpg".source = ../../wallpapers/saal-forest-landscape-moonlight.jpg;
-  home.file.".local/share/tundra/wallpapers/bierstadt-mountainous-landscape-moonlight.jpg".source = ../../wallpapers/bierstadt-mountainous-landscape-moonlight.jpg;
-  wayland.windowManager.hyprland.settings.exec-once = [
-    "env TUNDRA_WALLPAPER_DIR=${config.home.homeDirectory}/.local/share/tundra/wallpapers ${config.home.homeDirectory}/.local/bin/tundra-wallpaper-daemon"
-  ];
 
   # Hypridle is the sole idle manager. Lock only after inactivity or before
   # suspend; do not start Hyprlock itself as an exec-once command.
-  home.file.".config/hypr/hypridle.conf".text = ''
-    general {
-      lock_cmd = pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock
-      before_sleep_cmd = loginctl lock-session
-      inhibit_sleep = 3
-    }
+  home.file = {
+    ".local/bin/tundra-wallpaper-daemon".source = ../../scripts/wallpaper-daemon.sh;
+    ".local/bin/tundra-wallpaper".source = ../../scripts/wallpaper.sh;
+  } // wallpaperLinks // {
+    ".config/hypr/hypridle.conf".text = ''
+      general {
+        lock_cmd = pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock
+        before_sleep_cmd = loginctl lock-session
+        inhibit_sleep = 3
+      }
 
-    listener {
-      timeout = 300
-      on-timeout = loginctl lock-session
-    }
-  '';
+      listener {
+        timeout = 300
+        on-timeout = loginctl lock-session
+      }
+    '';
 
-  home.file.".config/hypr/hyprlock.conf".text = ''
-    general {
-      disable_loading_bar = true
-      hide_cursor = true
-      grace = 0
-    }
+    ".config/hypr/hyprlock.conf".text = ''
+      general {
+        disable_loading_bar = true
+        hide_cursor = true
+        grace = 0
+      }
 
-    background {
-      monitor =
-      color = rgb(${lib.removePrefix "#" palette.base})
-      blur_passes = 2
-    }
+      background {
+        monitor =
+        color = rgb(${lib.removePrefix "#" palette.base})
+        blur_passes = 2
+      }
 
-    input-field {
-      size = 320, 60
-      outline_thickness = 2
-      dots_size = 0.25
-      dots_spacing = 0.25
-      outer_color = rgb(${lib.removePrefix "#" palette.blue})
-      inner_color = rgb(${lib.removePrefix "#" palette.mantle})
-      font_color = rgb(${lib.removePrefix "#" palette.text})
-      check_color = rgb(${lib.removePrefix "#" palette.green})
-      fail_color = rgb(${lib.removePrefix "#" palette.red})
-      capslock_color = rgb(${lib.removePrefix "#" palette.yellow})
-      placeholder_text = <i>Type password to unlock</i>
-      rounding = 12
-      font_family = JetBrainsMono Nerd Font
-      position = 0, -80
-      halign = center
-      valign = center
-    }
-  '';
+      input-field {
+        size = 320, 60
+        outline_thickness = 2
+        dots_size = 0.25
+        dots_spacing = 0.25
+        outer_color = rgb(${lib.removePrefix "#" palette.blue})
+        inner_color = rgb(${lib.removePrefix "#" palette.mantle})
+        font_color = rgb(${lib.removePrefix "#" palette.text})
+        check_color = rgb(${lib.removePrefix "#" palette.green})
+        fail_color = rgb(${lib.removePrefix "#" palette.red})
+        capslock_color = rgb(${lib.removePrefix "#" palette.yellow})
+        placeholder_text = <i>Type password to unlock</i>
+        rounding = 12
+        font_family = JetBrainsMono Nerd Font
+        position = 0, -80
+        halign = center
+        valign = center
+      }
+    '';
+  };
+
+  wayland.windowManager.hyprland.settings.exec-once = [
+    "env TUNDRA_WALLPAPER_DIR=${config.home.homeDirectory}/.local/share/tundra/wallpapers ${config.home.homeDirectory}/.local/bin/tundra-wallpaper-daemon"
+  ];
 
   # ── TERMINAL ───────────────────────────────────────────────
   programs.foot = {

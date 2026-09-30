@@ -6,11 +6,18 @@ WALLPAPER_DIR="${TUNDRA_WALLPAPER_DIR:-${HOME}/.config/nix-config/wallpapers}"
 INTERVAL="${TUNDRA_WALLPAPER_INTERVAL:-900}"
 CHECK_INTERVAL="${TUNDRA_WALLPAPER_CHECK_INTERVAL:-5}"
 REQUEST_FILE="$WALLPAPER_DIR/.wallpaper-request"
+# Records which image is on screen. The SDDM greeter has no way to ask swaybg,
+# so it reads this at login to show a matching background.
+POINTER_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/tundra/wallpaper"
 
+# Home Manager links each wallpaper into ~/.local/share/tundra/wallpapers as a
+# symlink to the store, so these are links rather than regular files. Match both,
+# otherwise find turns up nothing and the rotation silently falls back to
+# wallpaper.jpg forever.
 mapfile -t WALLPAPERS < <(
-  find "$WALLPAPER_DIR" -maxdepth 1 -type f \
+  find "$WALLPAPER_DIR" -maxdepth 1 \( -type f -o -type l \) \
     \( -iname '*-*.jpg' -o -iname '*-*.jpeg' -o -iname '*-*.png' -o -iname '*-*.webp' \) \
-    ! -iname 'wallpaper_backup_*' | sort
+    ! -iname 'wallpaper_backup_*' ! -iname '*.backup' | sort
 )
 
 if ((${#WALLPAPERS[@]} == 0)); then
@@ -45,6 +52,15 @@ start_wallpaper() {
   wallpaper_pid="$!"
   last_change="$(date +%s)"
   hidden=false
+  write_pointer "$image"
+}
+
+# Write the pointer atomically so a reader never sees a half-written path.
+write_pointer() {
+  local image="$1"
+  mkdir -p "$(dirname "$POINTER_FILE")"
+  printf '%s\n' "$image" > "$POINTER_FILE.tmp.$$"
+  mv -f "$POINTER_FILE.tmp.$$" "$POINTER_FILE"
 }
 
 is_fullscreen() {
