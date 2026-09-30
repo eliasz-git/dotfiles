@@ -24,10 +24,10 @@
   tundra.enable = true;
   tundra.theme = "everforest-blue";
 
-  # macOS runs the scrobbler, so it opts in to the Last.fm secret. The agenix
-  # Home Manager module decrypts it into the session runtime dir and symlinks
-  # ~/.config/mpdscribble/lastfm-password, which modules/darwin/music.nix reads.
-  age.secrets."lastfm-password".enable = true;
+  # Apple Music scrobbling runs as a launchd daemon (modules/darwin/music.nix).
+  # No credential is managed here: apple-to-last-fm authenticates through the
+  # browser and keeps its own session key.
+  programs.apple-music-scrobbler.enable = true;
 
   # Karabiner — keeps keyboard remaps under version control
   # Caps Lock → Command+Control (AeroSpace Mod), tap → Escape
