@@ -230,19 +230,33 @@ cmd_github() {
 }
 
 cmd_wallpaper() {
-  local action="${1:-list}" directory target script
-  directory="$HOME/.local/share/tundra/wallpapers"
-  [[ -d "$directory" ]] || directory="$NIX_CONFIG_DIR/wallpapers"
-  [[ -d "$directory" ]] || directory="$HOME/.config/nix-config/wallpapers"
+  local action="${1:-list}" directory target script candidate file
+  directory=""
+  for candidate in "$HOME/.local/share/tundra/wallpapers" "$NIX_CONFIG_DIR/wallpapers" "$HOME/.config/nix-config/wallpapers"; do
+    [[ -d "$candidate" ]] || continue
+    shopt -s nullglob
+    for file in "$candidate"/*.jpg "$candidate"/*.jpeg "$candidate"/*.png "$candidate"/*.webp; do
+      if [[ -f "$file" ]]; then
+        directory="$candidate"
+        break 2
+      fi
+    done
+    shopt -u nullglob
+  done
+  [[ -n "$directory" ]] || directory="$NIX_CONFIG_DIR/wallpapers"
   script="$NIX_CONFIG_DIR/scripts/wallpaper.sh"
   [[ -x "$script" ]] || script="$HOME/.local/bin/tundra-wallpaper"
 
   case "$action" in
     list|ls)
       [[ -d "$directory" ]] || { log_error "Wallpaper directory not found: $directory"; exit 1; }
-      find "$directory" -maxdepth 1 -type f \
-        \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
-        ! -iname 'wallpaper_backup_*' -exec basename {} \; | sort
+      shopt -s nullglob
+      for file in "$directory"/*.jpg "$directory"/*.jpeg "$directory"/*.png "$directory"/*.webp; do
+        [[ -f "$file" ]] || continue
+        [[ "$(basename "$file")" == wallpaper_backup_* ]] && continue
+        basename "$file"
+      done | sort
+      shopt -u nullglob
       ;;
     set|select)
       target="${2:-}"

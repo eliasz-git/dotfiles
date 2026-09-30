@@ -7,7 +7,7 @@
 
 Do **not** start with a wholesale directory rewrite or a migration to `flake-parts`. First establish a trustworthy baseline and validation gate, then repair the theme system—which currently has competing sources of truth—and improve host-aware operations. Keep host outputs explicit and keep Hyprland in the existing modular hyprlang/Home Manager setup. Refactor only where repeated code or a demonstrated maintenance problem justifies it.
 
-Treat the existing [Omarchy alignment plan](./OMARCHY_ALIGNMENT_PLAN.md) as a desktop-feature workstream within this broader repository plan, not as a mandate to make servers into desktops or to copy Omarchy's implementation literally.
+Treat the existing [Omarchy alignment plan](./docs/OMARCHY_ALIGNMENT_PLAN.md) as a desktop-feature workstream within this broader repository plan, not as a mandate to make servers into desktops or to copy Omarchy's implementation literally.
 
 ## Current-state snapshot
 
@@ -114,7 +114,7 @@ Important findings that should drive the order of work:
 
 - Replace the stale top-level README host table, installation steps, package descriptions, keybindings, and OS claims with the actual supported output matrix.
 - Give each host a concise README: purpose, target output, bootstrap/rebuild command, persistent data, secrets location, validation command, and rollback command.
-- Update or supersede `OMARCHY_ALIGNMENT_PLAN.md` with completed/deferred items after implementation, not before. Keep “Omarchy-inspired” goals separate from non-negotiable host requirements.
+- Update or supersede `docs/OMARCHY_ALIGNMENT_PLAN.md` with completed/deferred items after implementation, not before. Keep “Omarchy-inspired” goals separate from non-negotiable host requirements.
 - Document the lockfile update cadence, supported Nix versions, formatter/linter commands, CI checks, and emergency rollback procedure.
 - Add contribution guidance for module ownership and naming only after the directory/host model is settled.
 
