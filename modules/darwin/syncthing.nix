@@ -10,6 +10,8 @@
   # an agent whose plist is a store symlink, which is why the previous version
   # of this module printed "failed to load launch agent" on every rebuild.
   launchd.agents."xyz.syncthing.agent" = {
+    # launchd.agents.<name>.enable defaults to false, so this is required.
+    enable = true;
     config = {
       # Keep the existing label; Home Manager would otherwise rename the agent
       # to org.nix-community.home.* and orphan the running one.
@@ -30,14 +32,35 @@
     };
   };
 
-  # A hand-started syncthing (or one left over from an unmanaged plist) holds
-  # the config lock and port 8384, so the managed agent cannot come up. Kill
-  # it only when the agent is not currently loaded, otherwise this would flap
-  # the healthy daemon on every rebuild.
+  # Two ways a hand-started or previously-store-symlinked syncthing keeps the
+  # managed agent from coming up, so resolve both before Home Manager bootstraps:
+  #
+  # 1. Stale label registration. Home Manager's processAgent only calls
+  #    bootoutAgent when the destination plist still exists, and the orphan-link
+  #    cleanup earlier in the same activation deletes it. An agent still
+  #    registered from an older /nix/store plist therefore survives, and the new
+  #    bootstrap fails with "I/O error (code 5)" against the taken label.
+  # 2. A stray process holding the config lock and port 8384.
+  #
+  # A symlinked or missing plist is exactly the stale case, since a healthy
+  # generation always leaves a real file there.
+  #
+  # Two constraints on this entry. Home Manager runs the whole activation under
+  # `set -eu -o pipefail` and inlines the body into the main script, so: no pipes
+  # (a `head -n 1` on `launchctl print` gives the writer SIGPIPE, and pipefail
+  # turns that into a silent abort of the whole rebuild), and no `exit`, which
+  # would terminate the activation script itself.
   home.activation.syncthingStrayProcess = lib.hm.dag.entryBefore [ "setupLaunchAgents" ] ''
     DOMAIN="gui/$(id -u)"
-    if ! launchctl print "$DOMAIN/xyz.syncthing.agent" >/dev/null 2>&1; then
-      pkill -x syncthing 2>/dev/null || true
+    LABEL="xyz.syncthing.agent"
+    PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+
+    if [[ -L "$PLIST" || ! -f "$PLIST" ]]; then
+      launchctl bootout --wait "$DOMAIN/$LABEL" >/dev/null 2>&1 || true
+    fi
+
+    if ! launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
+      pkill -x syncthing >/dev/null 2>&1 || true
     fi
   '';
 }

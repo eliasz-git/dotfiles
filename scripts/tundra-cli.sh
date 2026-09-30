@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-VERSION="0.2.0"
+VERSION="0.3.0"
 CONFIG_DIR="${HOME}/.config/tundra"
 if [[ -n "${TUNDRA_NIX_CONFIG_DIR:-}" ]]; then
   NIX_CONFIG_DIR="$TUNDRA_NIX_CONFIG_DIR"
@@ -134,7 +134,7 @@ cmd_build() {
 }
 
 cmd_system_action() {
-  local action="$1" host kind
+  local action="$1" host kind success_message="${3:-}"
   host="$(resolve_host "${2:-}")"
   kind="$(host_kind "$host")"
   require_repo
@@ -154,7 +154,12 @@ cmd_system_action() {
       sudo nixos-rebuild "$action" --flake "$NIX_CONFIG_DIR#$host"
       ;;
   esac
-  log_success "$action completed for $host"
+  # Reached only when the rebuild exited 0: the script runs under
+  # `set -e`, so a failed activation never prints a success line. That matters
+  # because an activation failure can be otherwise silent — Home Manager
+  # aborts mid-script with no message when an entry trips `set -e`.
+  [[ -n "$success_message" ]] || success_message="$action completed for $host"
+  log_success "$success_message"
 }
 
 cmd_rebuild() {
@@ -183,7 +188,7 @@ cmd_rebuild() {
     log_warn "Skipping GitHub pull; rebuilding the current checkout"
   fi
 
-  cmd_system_action switch "$host"
+  cmd_system_action switch "$host" "$host rebuilt successfully"
 }
 
 cmd_rollback() {
