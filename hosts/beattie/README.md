@@ -23,7 +23,7 @@ cd /etc/nixos
 ./scripts/tundra-cli.sh switch beattie
 ```
 
-Login: `demo` / `demo` (NOPASSWD sudo for the showcase account). `tundra` is admin. No auto-login is configured; harden the initial passwords before exposing the machine.
+Login: `demo` / `demo` (NOPASSWD sudo for the showcase account). `elias` is admin. No auto-login is configured; harden the initial passwords before exposing the machine.
 
 ## What makes it showcase-ready
 

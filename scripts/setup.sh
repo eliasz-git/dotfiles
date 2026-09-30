@@ -55,8 +55,8 @@ fi
 echo "Please provide the following details (or press Enter to keep defaults):"
 echo ""
 
-read -rp "Enter your system username [default: tundra]: " USER_NAME
-USER_NAME="${USER_NAME:-tundra}"
+read -rp "Enter your system username [default: elias]: " USER_NAME
+USER_NAME="${USER_NAME:-elias}"
 
 read -rp "Enter your GitHub username [default: tundra-node]: " GITHUB_USERNAME
 GITHUB_USERNAME="${GITHUB_USERNAME:-tundra-node}"
@@ -78,7 +78,7 @@ echo "  - Email: $USER_EMAIL"
 echo ""
 
 # Check if using defaults
-if [[ "$USER_NAME" == "tundra" && "$GITHUB_USERNAME" == "tundra-node" && "$USER_EMAIL" == "117379918+tundra-node@users.noreply.github.com" ]]; then
+if [[ "$USER_NAME" == "elias" && "$GITHUB_USERNAME" == "tundra-node" && "$USER_EMAIL" == "117379918+tundra-node@users.noreply.github.com" ]]; then
     print_info "Using default values - no placeholder replacement needed"
     SKIP_REPLACEMENT=true
 else
@@ -139,24 +139,7 @@ elif [[ "$OS" == "nixos" ]]; then
             exit 1
         fi
     fi
-    
-    # Replace placeholders if needed
-    if [[ "$SKIP_REPLACEMENT" == false ]]; then
-        echo ""
-        print_info "Replacing placeholders in configuration files..."
-        
-        if [[ -f "$CONFIG_DIR/hosts/laptop/replace.sh" ]]; then
-            cd "$CONFIG_DIR/hosts/laptop"
-            chmod +x replace.sh
-            ./replace.sh "$USER_NAME" "$GITHUB_USERNAME" "$USER_EMAIL"
-            cd "$CONFIG_DIR"
-            print_success "Placeholders replaced successfully!"
-        else
-            print_error "replace.sh not found in hosts/laptop/"
-            exit 1
-        fi
-    fi
-    
+
     # Create symlink for /etc/nixos if requested
     echo ""
     read -rp "Create symlink from /etc/nixos to this config? (y/n): " CREATE_SYMLINK

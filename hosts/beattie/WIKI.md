@@ -1,6 +1,6 @@
 # Beattie Wiki — KDE Plasma + NixOS Lab
 
-> **Host:** beattie · **DE:** KDE Plasma 6 (Wayland) · **Base:** NixOS 25.05 · **Theme:** Tundra Dark BL + Papirus Dark + Bibata · **Users:** `demo` / `demo` (auto-login, NOPASSWD sudo) + `tundra` (admin)
+> **Host:** beattie · **DE:** KDE Plasma 6 (Wayland) · **Base:** NixOS 25.05 · **Theme:** Tundra Dark BL + Papirus Dark + Bibata · **Users:** `demo` / `demo` (auto-login, NOPASSWD sudo) + `elias` (admin)
 
 This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wiki** or `xdg-open ~/.config/nix-config/hosts/beattie/WIKI.md`.
 
@@ -249,7 +249,7 @@ SecLists lives via nix at `/run/current-system/sw/share/seclists` — use that p
 - **Black screen?** Reboot → boot menu → older generation.
 - **Extensions broken after update?** System Settings → toggle off/on, or `gnome-extensions list`.
 - **Sound broken?** Settings → Sound → output, or `pavucontrol`.
-- **Forgot demo password?** Login as tundra, `sudo passwd demo`.
+- **Forgot demo password?** Login as elias, `sudo passwd demo`.
 - **Wallpaper not showing?** `home.file` links it to `~/.config/nix-config/wallpapers/wallpaper.jpg` — run `rb` to re-apply dconf.
 - **Docker permission?** `groups` should include docker — re-login after `rb`.
 
@@ -257,7 +257,7 @@ SecLists lives via nix at `/run/current-system/sw/share/seclists` — use that p
 - **Repo:** `~/Developer/nix-config` → symlinked to `/etc/nixos` on target.
 - **Generate hw config on target:** `sudo nixos-generate-config --show-hardware-config > hosts/beattie/hardware-configuration.nix`
 - **Build:** `sudo nixos-rebuild switch --flake /etc/nixos#beattie --impure` (also `#beattie` alias)
-- **Users:** `demo` (auto-login, NOPASSWD sudo for class — remove `security.sudo.extraRules` if you want password), `tundra` (your admin).
+- **Users:** `demo` (auto-login, NOPASSWD sudo for class — remove `security.sudo.extraRules` if you want password), `elias` (your admin).
 - **Hostnames:** `beattie` (flake attrs `beattie` + `beattie`).
 - **Flatpak:** `flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo`
 - **To lock down:** comment `services.displayManager.autoLogin`, set `users.users.demo.initialPassword = null`, add `users.users.demo.hashedPassword = "..."` or require passwd change.

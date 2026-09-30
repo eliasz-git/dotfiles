@@ -65,7 +65,7 @@
           # Config-only module: the niri binary still comes from nixpkgs via
           # programs.niri.enable in configuration.nix.
           home-manager.sharedModules           = [ niri.homeModules.config ];
-          home-manager.users.tundra            = import ./hosts/laptop/home.nix;
+          home-manager.users.elias            = import ./hosts/laptop/home.nix;
         }
       ];
     };
@@ -117,7 +117,7 @@
           home-manager.useUserPackages         = true;
           home-manager.backupFileExtension     = "backup";
           home-manager.users.demo   = import ./hosts/beattie/home.nix;
-          home-manager.users.tundra = import ./hosts/beattie/home.nix;
+          home-manager.users.elias  = import ./hosts/beattie/home.nix;
         }
       ];
     };

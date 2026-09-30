@@ -1,6 +1,6 @@
 { config, pkgs, lib, zen-browser, ... }:
 
-# Home Manager config for the gaming PC (user: elias).
+# Home Manager config for the desktop (user: elias).
 # System-level stuff (Steam, Hyprland package, drivers, TLP/PPD, ssh, avahi,
 # bluetooth) lives in configuration.nix — Home Manager has no options for those.
 let
@@ -21,6 +21,7 @@ in {
     ../../modules/nixos/hyprland/autostart.nix
     ../../modules/nixos/hyprland/toggles.nix
     ../../modules/nixos/rofi.nix
+    ../../modules/nixos/mail.nix
     ../../modules/nixos/clipboard.nix
     ../../modules/nixos/screenshot.nix
     ../../modules/nixos/ai-tools.nix

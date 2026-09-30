@@ -10,6 +10,7 @@
     ../../modules/shared/slskd.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
+    ../../modules/nixos/mail.nix
     ../../modules/nixos/terminal.nix
   ];
 
@@ -24,11 +25,11 @@
     bluetuith netop
     wl-clipboard grim slurp swappy
     dunst rofi swaybg
-    librewolf thunderbird vscodium signal-desktop
+    librewolf vscodium signal-desktop
     bitwarden-desktop obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
     steam calibre discord gramps rustdesk tailscale docker
-    tutanota-desktop yubioath-flutter prismlauncher
+    yubioath-flutter prismlauncher
     nextcloud-client
     jetbrains-toolbox
     davmail

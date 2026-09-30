@@ -76,12 +76,12 @@
     shell = pkgs.zsh;
     initialPassword = "demo";
   };
-  users.users.tundra = {
+  users.users.elias = {
     isNormalUser = true;
-    description = "tundra";
+    description = "elias";
     extraGroups = [ "networkmanager" "wheel" "docker" "wireshark" ];
     shell = pkgs.zsh;
-    initialPassword = "tundra";
+    initialPassword = "elias";
   };
   security.sudo.extraRules = [{ users = [ "demo" ]; commands = [{ command = "ALL"; options = [ "NOPASSWD" ]; }]; }];
   users.mutableUsers = true;

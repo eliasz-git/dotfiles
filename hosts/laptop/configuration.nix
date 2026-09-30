@@ -1,12 +1,22 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
     (if builtins.pathExists ./hardware-configuration.nix
      then ./hardware-configuration.nix
      else ./hardware-configuration.nix.example)
+    ../../modules/system/themes.nix
+    ../../modules/nixos/themes.nix
   ];
 
+  # ── THEME ───────────────────────────────────────────────────
+  # System-level theme registry plus the `tundra-theme` binary and the Swaylock
+  # fallback. Without this the modules above are inert even though they are
+  # imported; home.nix sets the matching Home Manager-level flag.
+  tundra.enable = true;
+  tundra.theme = "everforest-blue";
+
+  # ── BOOT ────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -19,9 +29,11 @@
     "i915.enable_dc=2"          # Intel display C-states
   ];
 
+  # ── NETWORK ─────────────────────────────────────────────────
   networking.hostName = "icarus";
   networking.networkmanager.enable = true;
 
+  # ── LOCALE ──────────────────────────────────────────────────
   time.timeZone = "America/New_York";  # Change to your timezone
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -31,6 +43,7 @@
     fi
   '';
 
+  # ── DESKTOP: NIRI ────────────────────────────────────────────
   programs.niri.enable = true;
 
   # Enable SDDM for Wayland login with proper theme
@@ -45,6 +58,7 @@
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
+  # ── SOUND ────────────────────────────────────────────────────
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -53,6 +67,7 @@
     pulse.enable = true;
   };
 
+  # ── BLUETOOTH ────────────────────────────────────────────────
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = false;
@@ -157,6 +172,7 @@
     };
   };
 
+  # ── POWER MANAGEMENT ─────────────────────────────────────────
   services.thermald.enable = true;
 
   # Disable power-profiles-daemon as it conflicts with TLP
@@ -213,13 +229,15 @@
     openFirewall = true;
   };
 
-  users.users.tundra = {
+  # ── USER ──────────────────────────────────────────────────────
+  users.users.elias = {
     isNormalUser = true;
-    description = "tundra";
+    description = "elias";
     extraGroups = [ "networkmanager" "wheel" "docker" "bluetooth"];
     shell = pkgs.zsh;
   };
 
+  # ── INPUT ─────────────────────────────────────────────────────
   console.keyMap = "us";
 
   services.xserver = {
@@ -228,6 +246,7 @@
     };
   };
 
+  # ── FONTS & PACKAGES ─────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     nano
     wget
@@ -247,14 +266,25 @@
     mullvad-vpn
     cups
     system-config-printer    # GUI for printer management
+
+    # Print/export workflow (was hosts/laptop/extra-packages.nix, imported by nobody)
+    imagemagick
+    exiftool
+    ghostscript
+    # pypdf replaces the old pypdf2: it is the same project renamed, and pypdf2
+    # 3.0.1 is marked insecure in nixpkgs (CVE-2026-27024, -27025, -27628), so
+    # importing the file as written broke the laptop build.
+    (python3.withPackages (ps: with ps; [ pillow reportlab pypdf ]))
   ];
 
+  # ── SERVICES ─────────────────────────────────────────────────
   virtualisation.docker.enable = true;
 
   programs.zsh.enable = true;
 
   services.openssh.enable = true;
   
+  # ── NIX ──────────────────────────────────────────────────────
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;

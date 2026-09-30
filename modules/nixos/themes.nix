@@ -2,9 +2,11 @@
 
 {
   config = lib.mkIf config.tundra.enable {
-    # NixOS-specific: create theme state directory via systemd-tmpfiles
+    # NixOS-specific: create theme state directory via systemd-tmpfiles.
+    # Resolved from the account rather than hardcoded so any host importing this
+    # module works regardless of which user its Home Manager profile targets.
     systemd.tmpfiles.rules = [
-      "d /home/elias/.config/tundra 0755 elias users -"
+      "d ${config.users.users.elias.home}/.config/tundra 0755 ${config.users.users.elias.name} users -"
     ];
 
     # Swaylock (Wayland lock screen) - install and configure
