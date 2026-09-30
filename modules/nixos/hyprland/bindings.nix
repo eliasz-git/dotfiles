@@ -7,6 +7,7 @@ let
     # ── Core ────────────────────────────────────────────────────────
     "SUPER, Return, exec, foot"
     "SUPER, Space, exec, rofi -show drun"
+    "SUPER, Escape, exec, tundra-screensaver"
     "SUPER, W, exec, rofi -show window"
     "SUPER, D, exec, rofi -show ssh"
     "SUPER ALT, C, exec, rofi -show calc"

@@ -79,6 +79,24 @@ current_wallpaper() {
     return 1
 }
 
+# Record which image is on screen so the SDDM greeter can pick the same one up
+# at login. The rotation daemon maintains this too; this covers the manual path,
+# where a wallpaper is installed and the daemon may not be the one showing it.
+# Written to a temporary file and moved into place so a reader never sees a
+# half-written path.
+POINTER_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/tundra/wallpaper"
+
+write_pointer() {
+    local image="$1"
+    mkdir -p "$(dirname "$POINTER_FILE")" 2>/dev/null || true
+    local temporary="${POINTER_FILE}.tmp.$$"
+    if printf '%s\n' "$image" > "$temporary" 2>/dev/null; then
+        mv -f "$temporary" "$POINTER_FILE"
+    else
+        rm -f "$temporary" 2>/dev/null || true
+    fi
+}
+
 reload_wallpaper_nixos() {
     print_info "Reloading wallpaper with swaybg..."
     local wallpaper_path
@@ -86,6 +104,7 @@ reload_wallpaper_nixos() {
         print_error "No active wallpaper found in $WALLPAPER_DIR"
         return 1
     }
+    write_pointer "$wallpaper_path"
     if ! command -v swaybg >/dev/null 2>&1; then
         print_error "swaybg is not available in this session"
         return 1
@@ -158,7 +177,12 @@ set_new_wallpaper() {
     print_info "Copying new wallpaper as $target_filename..."
     cp "$new_wallpaper" "$WALLPAPER_DIR/$target_filename"
     print_success "New wallpaper installed"
-    
+
+    # Update the pointer here as well as in the reload path: if the daemon is
+    # running it will rotate away from this image on its own schedule, but the
+    # greeter should still be told what was just chosen.
+    write_pointer "$WALLPAPER_DIR/$target_filename"
+
     # Reload
     if [[ "$OS" == "nixos" || "$OS" == "linux" ]]; then
         if pgrep -f 'tundra-wallpaper-daemon' >/dev/null 2>&1; then

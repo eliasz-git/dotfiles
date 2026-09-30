@@ -31,6 +31,30 @@ let
           (lib.attrNames (builtins.readDir wallpaperDir))
       )
   );
+
+  # The ASCII screensaver is three scripts plus the FIGlet faces they draw with.
+  # The faces are linked into the XDG data directory rather than left in the
+  # checkout, so the installed system does not depend on this repository keeping
+  # its current location. Only .flf is linked, so a README can sit alongside them.
+  asciiFontDir = ../../themes/tundra/ascii/fonts;
+  asciiLinks =
+    {
+      ".local/bin/tundra-ascii".source = ../../scripts/tundra-ascii.sh;
+      ".local/bin/tundra-screensaver".source = ../../scripts/tundra-screensaver.sh;
+      ".local/bin/tundra-screensaver-effect".source = ../../scripts/tundra-screensaver-effect.sh;
+    }
+    // lib.listToAttrs (
+      map
+        (name: {
+          name = ".local/share/tundra/ascii/fonts/${name}";
+          value.source = "${asciiFontDir}/${name}";
+        })
+        (
+          lib.filter
+            (name: lib.hasSuffix ".flf" name)
+            (lib.attrNames (builtins.readDir asciiFontDir))
+        )
+    );
 in {
   imports = [
     ../../modules/shared/shell.nix
@@ -106,12 +130,22 @@ in {
   home.file = {
     ".local/bin/tundra-wallpaper-daemon".source = ../../scripts/wallpaper-daemon.sh;
     ".local/bin/tundra-wallpaper".source = ../../scripts/wallpaper.sh;
-  } // wallpaperLinks // {
+  } // wallpaperLinks // asciiLinks // {
     ".config/hypr/hypridle.conf".text = ''
       general {
         lock_cmd = pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock
         before_sleep_cmd = loginctl lock-session
         inhibit_sleep = 3
+      }
+
+      # Screensaver first, lock later. The gap is deliberate: the ASCII
+      # screensaver appears at 150s of idleness and any key dismisses it, so
+      # stepping away briefly costs nothing while a longer absence still ends
+      # at the lock. tundra-screensaver exits its own special workspace on
+      # dismissal, so this listener only has to start it.
+      listener {
+        timeout = 150
+        on-timeout = tundra-screensaver
       }
 
       listener {
@@ -395,6 +429,10 @@ in {
     # Desktop utilities
     swaybg wl-clipboard grim slurp playerctl
     pulsemixer pavucontrol
+    # figlet draws the screensaver wordmark; gawk animates it. Both are invoked
+    # by name from tundra-screensaver, so they have to be on the session PATH
+    # that Hypridle and the Hyprland keybindings run with.
+    figlet gawk
     nnn lf
     # Clipboard
     cliphist
