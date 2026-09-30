@@ -134,5 +134,14 @@ in {
         printf '%s\n' "${config.tundra.theme}" > "$HOME/.config/tundra/theme"
       fi
     '';
+
+    # The SDDM greeter reads a theme.conf from the user's config dir. Seed it
+    # on first activation so the initial login screen has a valid palette.
+    home.activation.tundraThemeStateSDDM = ''
+      mkdir -p "$HOME/.config/tundra/sddm"
+      if [ ! -e "$HOME/.config/tundra/sddm/theme.conf" ]; then
+        printf '[General]\nBackground="wallpaper.jpg"\nMainColor="#cdd6f4"\nAccentColor="#89b4fa"\nScaleImageCropped=true\nScreenWidth=1920\nScreenHeight=1080\n' > "$HOME/.config/tundra/sddm/theme.conf"
+      fi
+    '';
   };
 }

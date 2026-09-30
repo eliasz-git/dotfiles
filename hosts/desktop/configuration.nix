@@ -3,11 +3,12 @@
 # Desktop — Ryzen 5 5600 + AMD Radeon GPU, Hyprland (Wayland), Steam.
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop
 {
-  imports = [
-    ./hardware-configuration.nix
-    ../../modules/system/themes.nix
-    ../../modules/nixos/themes.nix
-  ];
+    imports = [
+      ./hardware-configuration.nix
+      ../../modules/system/themes.nix
+      ../../modules/nixos/themes.nix
+      ../../modules/nixos/sddm-theme.nix
+    ];
 
   # System-level theme registry and optional Swaylock fallback, plus the
   # `tundra-theme` binary) is gated behind this flag in modules/system/themes.nix
@@ -66,7 +67,6 @@
     enable = true;
     wayland.enable = true;
     autoNumlock = true;
-    theme = "${pkgs.sddm-sugar-dark}/share/sddm/themes/sugar-dark";
   };
   services.displayManager.defaultSession = "hyprland";
 

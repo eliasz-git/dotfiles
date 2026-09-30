@@ -1,0 +1,11 @@
+[SddmGreeterTheme]
+Name=Tundra
+Author=Elias Z
+Copyright=Copyright (C) 2026 Elias Z
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=tundra-dark
+Theme-API=2.11
