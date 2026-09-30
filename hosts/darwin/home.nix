@@ -11,6 +11,7 @@
     ../../modules/home/themes.nix
     ../../modules/darwin/terminal.nix
     ../../modules/darwin/sketchybar.nix
+    ../../modules/darwin/syncthing.nix
   ];
 
   home.stateVersion = "26.05";
