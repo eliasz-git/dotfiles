@@ -10,6 +10,8 @@
   # an agent whose plist is a store symlink, which is why the previous version
   # of this module printed "failed to load launch agent" on every rebuild.
   launchd.agents."xyz.syncthing.agent" = {
+    # launchd.agents.<name>.enable defaults to false, so this is required.
+    enable = true;
     config = {
       # Keep the existing label; Home Manager would otherwise rename the agent
       # to org.nix-community.home.* and orphan the running one.
