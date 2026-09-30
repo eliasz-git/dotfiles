@@ -56,7 +56,13 @@ in
         Label = label;
         ProgramArguments = [ "${cfg.package}/bin/apple-to-last-fm" "run" ];
         RunAtLoad = true;
-        KeepAlive = true;
+        # Before `apple-to-last-fm auth` has run there is no config.toml and the
+        # daemon exits immediately, so a bare KeepAlive would respawn it in a
+        # tight loop and fill the log. SuccessfulExit = false skips the restart
+        # on that clean exit, and ThrottleInterval bounds the loop for any other
+        # failure.
+        KeepAlive = { SuccessfulExit = false; };
+        ThrottleInterval = 60;
         ProcessType = "Background";
         StandardOutPath = "${logDir}/output.log";
         StandardErrorPath = "${logDir}/error.log";

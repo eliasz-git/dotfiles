@@ -32,13 +32,30 @@
     };
   };
 
-  # A hand-started syncthing (or one left over from an unmanaged plist) holds
-  # the config lock and port 8384, so the managed agent cannot come up. Kill
-  # it only when the agent is not currently loaded, otherwise this would flap
-  # the healthy daemon on every rebuild.
+  # Two ways a hand-started or previously-store-symlinked syncthing keeps the
+  # managed agent from coming up, so resolve both before Home Manager bootstraps:
+  #
+  # 1. Stale label registration. Home Manager's processAgent only calls
+  #    bootoutAgent when the destination plist still exists, and the orphan-link
+  #    cleanup earlier in the same activation deletes it. An agent still
+  #    registered from an older /nix/store plist therefore survives, and the new
+  #    bootstrap fails with "I/O error (code 5)" against the taken label.
+  # 2. A stray process holding the config lock and port 8384.
+  #
+  # Only unload when the running agent is not already using our real plist, so a
+  # healthy daemon is left alone across ordinary rebuilds.
   home.activation.syncthingStrayProcess = lib.hm.dag.entryBefore [ "setupLaunchAgents" ] ''
     DOMAIN="gui/$(id -u)"
-    if ! launchctl print "$DOMAIN/xyz.syncthing.agent" >/dev/null 2>&1; then
+    LABEL="xyz.syncthing.agent"
+    PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+
+    loaded_path="$(launchctl print "$DOMAIN/$LABEL" 2>/dev/null \
+      | sed -n 's/^[[:space:]]*path = //p' | head -n 1)"
+    if [[ -n "$loaded_path" && "$loaded_path" != "$PLIST" ]]; then
+      launchctl bootout --wait "$DOMAIN/$LABEL" || true
+    fi
+
+    if ! launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
       pkill -x syncthing 2>/dev/null || true
     fi
   '';
