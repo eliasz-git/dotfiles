@@ -14,13 +14,11 @@ let
     '';
   };
 
-  sddmWithGreeter = pkgs.symlinkJoin {
-    name = "sddm-wrapped-with-greeter";
-    paths = [ pkgs.kdePackages.sddm ];
-    postBuild = ''
+  sddmWithGreeter = pkgs.kdePackages.sddm.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
       ln -sf sddm-greeter-qt6 $out/bin/sddm-greeter
     '';
-  };
+  });
 in {
   systemd.tmpfiles.rules = [
     "d /var/lib/tundra 0755 root root - -"
