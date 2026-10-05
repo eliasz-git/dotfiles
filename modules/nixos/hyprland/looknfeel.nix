@@ -68,6 +68,19 @@ in
       "opacity 0.85, match:class ^foot$"
       "opacity 0.88, match:class ^VSCodium$"
       "opacity 0.92, match:class ^zen-beta$"
+      # Zen stays slightly translucent in normal use, but goes fully opaque in
+      # true fullscreen. Without this, the wallpaper shows through the
+      # letterbox bars around wide-aspect video, and because the browser window
+      # is the one that fills the screen it is the most obvious place for the
+      # effect to look like a rendering bug rather than an effect.
+      #
+      # This has to stay below the 0.92 line: Hyprland applies window rules in
+      # order and the last match wins, so it would otherwise be overridden.
+      #
+      # Only `fullscreen 1` is covered. A *maximised* Zen window reports
+      # fullscreen 2 and still bleeds, so if bars show up outside real
+      # fullscreen the fix is to drop the 0.92 line above entirely.
+      "opacity 1, fullscreen 1, match:class ^zen-beta$"
       "opacity 0.85, match:class ^thunar$"
       "opacity 0.88, match:class ^obsidian$"
 
