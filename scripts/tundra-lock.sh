@@ -8,6 +8,12 @@
 # recolours the lock without touching the wrapper.
 set -euo pipefail
 
+# Do not lock while a client is in fullscreen. Video and media players are
+# usually fullscreen and should keep the screen awake.
+if mmsg get all-clients 2>/dev/null | grep -q "\"is_fullscreen\":true"; then
+    exit 0
+fi
+
 fragment="$HOME/.config/tundra/colors/swaylock.conf"
 flags=()
 if [[ -r "$fragment" ]]; then
