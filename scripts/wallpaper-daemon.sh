@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 # Rotate painting wallpapers and hide the desktop background during fullscreen.
+#
+# One swaybg instance is run per monitor instead of a single global one. A single
+# swaybg paints every output it is started for, so taking it down to hide the
+# background behind a fullscreen window blanked *all* monitors. Scoping the
+# process to `-o <output>` lets a fullscreen window hide only its own monitor,
+# while the other displays keep their wallpaper.
 set -euo pipefail
 
 WALLPAPER_DIR="${TUNDRA_WALLPAPER_DIR:-${HOME}/.config/nix-config/wallpapers}"
@@ -32,28 +38,11 @@ if [[ "${1:-}" == "--self-test" ]]; then
   exit 0
 fi
 
-wallpaper_pid=""
+# swaybg PID per output name, e.g. wallpaper_pids[HDMI-A-1]=12345.
+declare -A wallpaper_pids=()
 current_index=-1
+current_image=""
 last_change=0
-hidden=false
-
-stop_wallpaper() {
-  if [[ -n "$wallpaper_pid" ]] && kill -0 "$wallpaper_pid" 2>/dev/null; then
-    kill "$wallpaper_pid" 2>/dev/null || true
-    wait "$wallpaper_pid" 2>/dev/null || true
-  fi
-  wallpaper_pid=""
-}
-
-start_wallpaper() {
-  local image="$1"
-  stop_wallpaper
-  swaybg -i "$image" -m fill >/dev/null 2>&1 &
-  wallpaper_pid="$!"
-  last_change="$(date +%s)"
-  hidden=false
-  write_pointer "$image"
-}
 
 # Write the pointer atomically so a reader never sees a half-written path.
 write_pointer() {
@@ -63,25 +52,84 @@ write_pointer() {
   mv -f "$POINTER_FILE.tmp.$$" "$POINTER_FILE"
 }
 
-is_fullscreen() {
-  hyprctl activewindow -j 2>/dev/null \
-    | grep -Eq '"fullscreen"[[:space:]]*:[[:space:]]*[12]'
+# Every connected output, in the order Hyprland reports them.
+list_outputs() {
+  hyprctl monitors 2>/dev/null | awk '/^Monitor / { print $2 }'
+}
+
+# Monitor IDs that currently hold a fullscreen (1) or maximised (2) window.
+# `hyprctl clients` text is parsed rather than the JSON, because the session has
+# neither jq nor python3 on PATH.
+fullscreen_monitor_ids() {
+  hyprctl clients 2>/dev/null | awk '
+    /^Window / { monitor="" ; next }
+    /^[[:space:]]*monitor:/ { monitor=$2 }
+    /^[[:space:]]*fullscreen:/ { if ($2 == "1" || $2 == "2") print monitor }
+  '
+}
+
+# Map the numeric monitor ID that `hyprctl clients` reports to the output name
+# swaybg wants. A monitor line looks like: Monitor HDMI-A-1 (ID 0):
+monitor_name_for_id() {
+  local id="$1"
+  hyprctl monitors 2>/dev/null | awk -v want="$id" '
+    /^Monitor / {
+      name=$2
+      for (i = 1; i <= NF; i++) {
+        if ($i == "(ID") {
+          gsub(/[():]/, "", $(i + 1))
+          if ($(i + 1) == want) print name
+        }
+      }
+    }
+  '
+}
+
+stop_output() {
+  local output="$1" pid="${wallpaper_pids[$1]:-}"
+  if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" 2>/dev/null || true
+    wait "$pid" 2>/dev/null || true
+  fi
+  unset 'wallpaper_pids[$output]'
+}
+
+start_output() {
+  local output="$1" image="$2"
+  stop_output "$output"
+  swaybg -o "$output" -i "$image" -m fill >/dev/null 2>&1 &
+  wallpaper_pids["$output"]="$!"
+  write_pointer "$image"
+}
+
+stop_all() {
+  local output
+  for output in "${!wallpaper_pids[@]}"; do
+    stop_output "$output"
+  done
 }
 
 cleanup() {
-  stop_wallpaper
+  stop_all
 }
-trap cleanup EXIT INT TERM
+# EXIT covers normal return and the explicit exit below; INT/TERM must exit, or a
+# signal would run cleanup and then resume the loop and repaint the wallpaper.
+trap cleanup EXIT
+trap 'exit 0' INT TERM
 
 while true; do
-  if is_fullscreen; then
-    if [[ "$hidden" == false ]]; then
-      stop_wallpaper
-      hidden=true
-    fi
-    sleep "$CHECK_INTERVAL"
-    continue
-  fi
+  mapfile -t outputs < <(list_outputs)
+
+  # Resolve the fullscreen monitor IDs to output names for this pass.
+  declare -A fullscreen_outputs=()
+  while read -r id; do
+    [[ -n "$id" ]] || continue
+    name="$(monitor_name_for_id "$id")"
+    [[ -n "$name" ]] && fullscreen_outputs["$name"]=1
+  done < <(fullscreen_monitor_ids)
+
+  restart=false
+  now="$(date +%s)"
 
   # wallpaper.sh writes here when the user selects a specific image. Keep the
   # request until fullscreen ends, then honor it before the normal rotation.
@@ -89,17 +137,46 @@ while true; do
     requested_image="$(cat "$REQUEST_FILE")"
     rm -f "$REQUEST_FILE"
     if [[ -s "$requested_image" ]]; then
-      start_wallpaper "$requested_image"
+      current_image="$requested_image"
       current_index=-1
-      sleep "$CHECK_INTERVAL"
-      continue
+      last_change="$now"
+      restart=true
     fi
   fi
 
-  now="$(date +%s)"
-  if [[ -z "$wallpaper_pid" ]] || ! kill -0 "$wallpaper_pid" 2>/dev/null || ((now - last_change >= INTERVAL)); then
+  if [[ "$restart" == false ]] && ((now - last_change >= INTERVAL)); then
     current_index=$(( (current_index + 1) % ${#WALLPAPERS[@]} ))
-    start_wallpaper "${WALLPAPERS[$current_index]}"
+    current_image="${WALLPAPERS[$current_index]}"
+    last_change="$now"
+    restart=true
   fi
+
+  # First pass: settle on an image so the visible outputs have something to show.
+  if [[ -z "$current_image" ]]; then
+    current_index=0
+    current_image="${WALLPAPERS[0]}"
+    restart=true
+  fi
+
+  # Reconcile each connected output: hide it while it holds a fullscreen window,
+  # otherwise (re)start its swaybg if it died or the image rotated.
+  for output in "${outputs[@]}"; do
+    if [[ -n "${fullscreen_outputs[$output]:-}" ]]; then
+      stop_output "$output"
+    elif [[ "$restart" == true || -z "${wallpaper_pids[$output]:-}" ]] \
+      || ! kill -0 "${wallpaper_pids[$output]}" 2>/dev/null; then
+      start_output "$output" "$current_image"
+    fi
+  done
+
+  # Drop outputs that went away (unplugged or disabled).
+  for output in "${!wallpaper_pids[@]}"; do
+    present=false
+    for connected in "${outputs[@]}"; do
+      [[ "$connected" == "$output" ]] && present=true
+    done
+    [[ "$present" == true ]] || stop_output "$output"
+  done
+
   sleep "$CHECK_INTERVAL"
 done

@@ -81,7 +81,7 @@ The wallpaper collection includes public-domain painting sources and attribution
 ./scripts/wallpaper.sh wallpapers/saal-forest-landscape-moonlight.jpg
 ```
 
-On the desktop, Hyprland rotates the painting set every 15 minutes and hides the wallpaper while any active window is fullscreen, including fullscreen media and games.
+On the desktop, Hyprland rotates the painting set every 15 minutes. The daemon runs one `swaybg` per monitor and hides the wallpaper only on a monitor showing a fullscreen window, so fullscreen media or games on one display leave the other display's wallpaper untouched.
 
 ## Repository layout
 

@@ -54,7 +54,7 @@ tundra rbu <host>
 
 This updates `flake.lock`, shows the changed lockfile, and builds the selected host. It does not activate the result. Review and commit the lockfile separately, then run `tundra rb <host>`.
 
-On the gaming host, the Hyprland wallpaper daemon rotates the painting collection every 15 minutes and stops `swaybg` whenever the active window is fullscreen. It resumes the rotation when fullscreen ends.
+On the gaming host, the Hyprland wallpaper daemon rotates the painting collection every 15 minutes and hides the background on whichever monitor holds a fullscreen window. It runs one `swaybg` per output, so hiding a fullscreen monitor leaves the other displays' wallpapers in place; each hidden monitor is repainted when its fullscreen window closes.
 
 ## Destructive operations
 

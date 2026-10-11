@@ -6,7 +6,7 @@ This repository keeps host outputs explicit. A successful evaluation of one host
 |---|---|---|---|---|---|
 | MacBook | `darwinConfigurations.macbook` | `aarch64-darwin` | Personal macOS workstation | AeroSpace, SketchyBar, Ghostty | `tundra switch macbook` |
 | Laptop | `nixosConfigurations.laptop` | `x86_64-linux` | NixOS laptop | Niri + Waybar | `tundra switch laptop` |
-| Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Hyprland + Waybar; rotating painting wallpaper hidden during fullscreen | `tundra switch desktop` |
+| Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Hyprland + Waybar; rotating painting wallpaper hidden only on a fullscreen monitor | `tundra switch desktop` |
 | Beattie | `nixosConfigurations.beattie` | `x86_64-linux` | Showcase and lab workstation | GNOME/KDE configuration owned by host files | `tundra switch beattie` |
 | Mini 1 | `nixosConfigurations.mini1` | `x86_64-linux` | Headless infrastructure | None | `tundra switch mini1` |
 | Mini 2 | `nixosConfigurations.mini2` | `x86_64-linux` | Headless media services | None | `tundra switch mini2` |

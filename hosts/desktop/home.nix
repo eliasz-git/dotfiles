@@ -124,9 +124,10 @@ in {
     };
   };
 
-  # Rotate the painting collection every 15 minutes and hide swaybg whenever
-  # Hyprland reports a fullscreen window, so media and games have no wallpaper
-  # behind them. The daemon is the sole wallpaper owner for this host.
+  # Rotate the painting collection every 15 minutes and hide the background only
+  # on a monitor that holds a fullscreen window, so media and games there have no
+  # wallpaper behind them while the other displays keep theirs. The daemon runs
+  # one swaybg per output and is the sole wallpaper owner for this host.
 
   # Hypridle is the sole idle manager. Lock only after inactivity or before
   # suspend; do not start Hyprlock itself as an exec-once command.
