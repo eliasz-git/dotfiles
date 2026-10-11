@@ -87,7 +87,6 @@ in {
   systemd.user.services.mangobar = lib.mkIf cfg.enable {
     Unit = {
       After = [ "tundra-theme-apply.service" ];
-      Requires = [ "tundra-theme-apply.service" ];
     };
   };
 }

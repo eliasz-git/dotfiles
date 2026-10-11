@@ -194,6 +194,7 @@
     git vim nano curl wget htop pciutils smartmontools usbutils
     wakeonlan # magic packets to mini/other hosts; MAC lives in /sys/class/net/enp4s0/address
     moonlight-qt # client, for testing the loopback from this machine
+    android-tools # Android SDK platform tools (adb/fastboot)
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────
