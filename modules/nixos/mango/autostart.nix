@@ -6,8 +6,9 @@
       # Notifications
       "${pkgs.dunst}/bin/dunst"
 
-      # Clipboard history
-      "${pkgs.cliphist}/bin/cliphist listen"
+      # Clipboard history. cliphist has no daemon subcommand; it stores whatever
+      # wl-paste feeds it whenever the selection changes.
+      "${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store"
 
       # Polkit agent
       "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
