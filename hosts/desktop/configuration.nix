@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 
-# Desktop — Ryzen 5 5600 + AMD Radeon GPU, Hyprland (Wayland), Steam.
+# Desktop — Ryzen 5 5600 + AMD Radeon GPU, Mango (Wayland), Steam.
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop
 {
     imports = [
@@ -69,10 +69,11 @@
   hardware.enableRedistributableFirmware = true; # amdgpu firmware blobs
   services.lact.enable = true; # AMD GPU fan/clock/power control (replaces radeon-profile)
 
-  # ── DESKTOP: HYPRLAND ─────────────────────────────────────────
-  # Compositor + portals live here; the config lives in home.nix.
-  programs.hyprland.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  # ── DESKTOP: MANGO ──────────────────────────────────────────
+  # Compositor + portals live here; the config lives in home.nix. The mango
+  # flake module (imported in flake.nix) configures xdg-portal (wlr + gtk),
+  # xwayland and polkit, and registers the Mango session for SDDM.
+  programs.mango.enable = true;
 
   # Graphical SDDM login: a dark, image-capable surface fits the Omarchy/Tundra
   # visual language much better than a terminal greeter with ANSI colors.
@@ -84,14 +85,14 @@
 
   # Sunshine runs as a user service on graphical-session.target, so after a
   # reboot it does not exist until a session is up. Without auto-login a remote
-  # wake would land on the greeter with no way in. hypridle locks at 300s and
+  # wake would land on the greeter with no way in. swayidle locks at 300s and
   # before suspend (hosts/desktop/home.nix), so the unlocked window is brief.
   services.displayManager.autoLogin = {
     enable = true;
     user = "elias";
   };
   services.seatd.enable = true;
-  services.displayManager.defaultSession = "hyprland";
+  services.displayManager.defaultSession = "mango";
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1"; # Electron/Chromium apps on Wayland
 
@@ -107,7 +108,7 @@
 
   # ── REMOTE DESKTOP ────────────────────────────────────────────
   # Sunshine (Moonlight-compatible host): AMD AMF/VAAPI encode on the RX 6600,
-  # capture through Hyprland's wlr-screencast via PipeWire.
+  # capture through the Mango compositor's wlr-screencast via PipeWire.
   # capSysAdmin installs a setuid-cap wrapper for direct KMS capture and
   # cursor compositing; without it capture works but cursor handling is flaky.
   # Pair at https://<host>:47989 (self-signed), then add the host in Moonlight.

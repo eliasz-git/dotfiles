@@ -2,10 +2,10 @@
 # The per-terminal half of the Tundra screensaver: draws the wordmark as ASCII
 # art and resolves it out of a field of random glyphs.
 #
-# scripts/tundra-screensaver.sh puts this in a fullscreen window on a special
-# workspace and passes it the art to draw. It exits on any keypress, which is
-# what dismisses the screensaver, and closes the special workspace behind
-# itself so the desktop is left clean.
+# scripts/tundra-screensaver.sh puts this in a fullscreen window on the special
+# overlay (tag 0) and passes it the art to draw. It exits on any keypress, which
+# is what dismisses the screensaver; closing the window empties the overlay and
+# mango leaves it again on its own, so the desktop is left clean.
 #
 # Colours arrive in TUNDRA_SCREEN_* so the effect follows the active theme
 # rather than hard-coding a palette.
@@ -17,7 +17,6 @@ set -euo pipefail
 export LC_ALL="${TUNDRA_SCREEN_LOCALE:-C.utf8}"
 
 ART_FILE="${1:?usage: tundra-screensaver-effect.sh ART_FILE}"
-WORKSPACE="${TUNDRA_SCREEN_WORKSPACE:-tundra-screensaver}"
 GAWK="${TUNDRA_GAWK:-gawk}"
 
 if ! command -v "$GAWK" >/dev/null 2>&1; then
@@ -37,7 +36,8 @@ cleanup() {
     [[ -n "$render_pid" ]] && kill "$render_pid" 2>/dev/null || true
     printf '%s[?25h%s[?1049l%s' "$ESC" "$ESC" "$ESC"
     stty echo 2>/dev/null || true
-    hyprctl dispatch exitspecialworkspace "$WORKSPACE" >/dev/null 2>&1 || true
+    # Closing this window empties the special overlay, and mango leaves it again
+    # on its own (special_handle_empty_view), so nothing needs to be torn down.
 }
 trap cleanup EXIT
 trap 'cleanup; exit 0' INT TERM

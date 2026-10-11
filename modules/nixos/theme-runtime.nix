@@ -20,26 +20,32 @@ let
 
   # A user unit gets a minimal PATH, and on NixOS the usual locations for these
   # tools do not exist, so the ones the applier shells out to are named here.
-  applierPath = lib.makeBinPath [
-    pkgs.bash
-    pkgs.coreutils
-    pkgs.procps
-    pkgs.gnused
-    pkgs.gawk
-  ];
+  # systemd is for `systemctl --user restart mangobar` (applies a theme change
+  # to the bar, which has no config reload); the user profile is for `mmsg`,
+  # which the mango hm module puts on the user's PATH the same way.
+  applierPath =
+    lib.makeBinPath [
+      pkgs.bash
+      pkgs.coreutils
+      pkgs.procps
+      pkgs.gnused
+      pkgs.gawk
+      pkgs.systemd
+    ]
+    + ":"
+    + "${config.home.homeDirectory}/.nix-profile/bin";
 in {
   imports = [ ../../modules/home/themes.nix ];
 
   home.file.".local/bin/tundra-theme-apply".source = applier;
 
-  # Sourced last, so the fragment's colours override the build-time ones in
-  # looknfeel.nix. Those are deliberately left in place: a session can start
-  # before the applier has run for the first time, and the declared defaults read
-  # better than Hyprland's own during that gap. Hyprland warns about a missing
-  # source file and carries on, so the gap degrades rather than breaks.
-  wayland.windowManager.hyprland.extraConfig = lib.mkOrder 1000 ''
-    source = /home/elias/.config/tundra/colors/hyprland.conf
-  '';
+  # The mango colours are sourced via settings.source_optional in home.nix,
+  # pushed to the bottom of the config, so the fragment's colours override the
+  # build-time ones in looknfeel.nix. Those stay as the declared default: a
+  # session can start before the applier has run for the first time, and the
+  # declared defaults read better than Mango's own during that gap. source_optional
+  # (rather than source) means a missing fragment is logged and skipped, so the
+  # gap degrades rather than breaks and nothing is required to exist at build time.
 
   systemd.user.services.tundra-theme-apply = lib.mkIf cfg.enable {
     Unit = {
@@ -72,16 +78,13 @@ in {
     Install.WantedBy = [ "default.target" ];
   };
 
-  # waybar is the one consumer that cannot start without its fragment. It loads
-  # style.css through Gtk::CssProvider, and a stylesheet with an unresolvable
-  # @import makes load_from_path return false, which waybar treats as fatal and
-  # throws out of. The others degrade instead: tmux ignores a missing source
-  # file, Hyprland and hyprlock warn, foot prints an error and starts anyway.
-  #
-  # So the bar waits for the applier. Requires rather than Wants, because After
-  # alone only orders the start, and the fragment has to exist by the time waybar
-  # reads it — a oneshot unit has only finished once it has been activated.
-  systemd.user.services.waybar = lib.mkIf cfg.enable {
+  # mangobar reads style.css once at startup and has no reload, so it starts
+  # after the applier has written the bar's fragment. Unlike the old waybar,
+  # mangobar does not die on an unresolvable @import, so a bar that somehow ran
+  # first would merely miss its colours. Runtime theme switches reach the bar
+  # through a restart, which the applier performs (systemctl --user restart
+  # mangobar).
+  systemd.user.services.mangobar = lib.mkIf cfg.enable {
     Unit = {
       After = [ "tundra-theme-apply.service" ];
       Requires = [ "tundra-theme-apply.service" ];

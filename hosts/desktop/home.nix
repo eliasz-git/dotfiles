@@ -1,7 +1,7 @@
 { config, pkgs, lib, zen-browser, ... }:
 
 # Home Manager config for the desktop (user: elias).
-# System-level stuff (Steam, Hyprland package, drivers, TLP/PPD, ssh, avahi,
+# System-level stuff (Steam, Mango package, drivers, TLP/PPD, ssh, avahi,
 # bluetooth) lives in configuration.nix — Home Manager has no options for those.
 let
   palette = config.tundra.palette;
@@ -63,12 +63,13 @@ in {
     ../../modules/shared/fastfetch.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
-    ../../modules/nixos/hyprland/monitors.nix
-    ../../modules/nixos/hyprland/input.nix
-    ../../modules/nixos/hyprland/bindings.nix
-    ../../modules/nixos/hyprland/looknfeel.nix
-    ../../modules/nixos/hyprland/autostart.nix
-    ../../modules/nixos/hyprland/toggles.nix
+    ../../modules/nixos/mango/monitors.nix
+    ../../modules/nixos/mango/input.nix
+    ../../modules/nixos/mango/bindings.nix
+    ../../modules/nixos/mango/looknfeel.nix
+    ../../modules/nixos/mango/autostart.nix
+    ../../modules/nixos/mango/toggles.nix
+    ../../modules/nixos/mangobar.nix
     ../../modules/nixos/rofi.nix
     ../../modules/nixos/mail.nix
     ../../modules/nixos/clipboard.nix
@@ -87,119 +88,86 @@ in {
   tundra.enable = true;
   tundra.theme = "everforest-blue";
 
-  # ── WINDOW MANAGER: HYPRLAND ────────────────────────────────
-  wayland.windowManager.hyprland = {
+  # ── WINDOW MANAGER: MANGO ──────────────────────────────────
+  wayland.windowManager.mango = {
     enable = true;
-    # Hyprland itself comes from programs.hyprland in configuration.nix;
-    # null here avoids a second, possibly mismatched copy.
-    package = null;
-    portalPackage = null;
+    # Mango itself comes from programs.mango in configuration.nix; the mango
+    # hm module adds a second copy to the user profile, which is what provides
+    # `mmsg`. package is left at the module default for that reason.
 
-    # Keep the working hyprlang configuration active for now. The Lua-compatible
-    # modular source remains in the repository and the existing hyprland.lua file
-    # is intentionally not removed, so migration can resume after a newer stable
-    # Hyprland/Home Manager combination is verified.
-    configType = "hyprlang";
-
-    # Settings are now imported from modular files:
-    # - monitors.nix
-    # - input.nix
-    # - bindings.nix
-    # - looknfeel.nix
-    # - autostart.nix
-    # - toggles.nix
+    # Configuration is imported from the modular files (monitors/input/
+    # bindings/looknfeel/autostart/toggles) plus the two runtime fragments
+    # sourced here:
     #
-    # Keep minimal overrides here if needed:
-    settings = {
-      # Monitor config from monitors.nix (override if needed)
-      # monitor = [ ",highrr,auto,1" ];
-
-      # Input config from input.nix
-
-      # Keybindings from bindings.nix
-
-      # Look & feel from looknfeel.nix
-
-      # Autostart from autostart.nix
-    };
+    #   ~/.config/tundra/mango-vrr.conf   the Philips monitor rule, rewritten
+    #                                     live by the VRR toggle
+    #   ~/.config/tundra/colors/mango.conf the theme colours, written by the
+    #                                     theme applier
+    #
+    # source_optional (not source): a missing fragment must never fail the
+    # config, because the colours do not exist until the applier has run and
+    # the fragment path must not be required at build time either.
+    # bottomPrefixes pushes these lines after every other setting, so the theme
+    # fragment's colours are parsed after (and override) the build-time values
+    # in looknfeel.nix. The VRR rule does not collide because it names a
+    # different monitor than the Acer rule in monitors.nix.
+    settings.source_optional = [
+      "~/.config/tundra/mango-vrr.conf"
+      "~/.config/tundra/colors/mango.conf"
+    ];
+    bottomPrefixes = [ "source" ];
   };
 
   # Rotate the painting collection every 15 minutes and hide the background only
   # on a monitor that holds a fullscreen window, so media and games there have no
   # wallpaper behind them while the other displays keep theirs. The daemon runs
-  # one swaybg per output and is the sole wallpaper owner for this host.
+  # one swaybg per output and is the sole wallpaper owner for this host. It is
+  # exec_once'd by modules/nixos/mango/autostart.nix.
 
-  # Hypridle is the sole idle manager. Lock only after inactivity or before
-  # suspend; do not start Hyprlock itself as an exec-once command.
+  # Lock screen and idle manager. swayidle is the sole idle manager: it runs the
+  # ASCII screensaver at 150s of idleness and the lock at 300s, and locks on
+  # suspend. Both it and wlsunset are user services so the mango-toggle-idle and
+  # mango-toggle-nightlight toggles can stop/start them without touching the
+  # session.
   home.file = {
     ".local/bin/tundra-wallpaper-daemon".source = ../../scripts/wallpaper-daemon.sh;
     ".local/bin/tundra-wallpaper".source = ../../scripts/wallpaper.sh;
-  } // wallpaperLinks // asciiLinks // {
-    ".config/hypr/hypridle.conf".text = ''
-      general {
-        lock_cmd = pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock
-        before_sleep_cmd = loginctl lock-session
-        inhibit_sleep = 3
-      }
+    ".local/bin/tundra-lock".source = ../../scripts/tundra-lock.sh;
 
-      # Screensaver first, lock later. The gap is deliberate: the ASCII
-      # screensaver appears at 150s of idleness and any key dismisses it, so
-      # stepping away briefly costs nothing while a longer absence still ends
-      # at the lock. tundra-screensaver exits its own special workspace on
-      # dismissal, so this listener only has to start it.
-      listener {
-        timeout = 150
-        on-timeout = tundra-screensaver
-      }
-
-      listener {
-        timeout = 300
-        on-timeout = loginctl lock-session
-      }
+    # The Philips monitor rule lives here, not in monitors.nix, so the VRR
+    # toggle can rewrite its vrr field. home-manager rewrites this file on every
+    # rebuild, so it always matches the declared layout.
+    ".config/tundra/mango-vrr.conf".text = ''
+      # Generated by home.nix. The VRR toggle flips vrr:1 <-> vrr:0 in this file.
+      monitor_rule=name:^HDMI-A-1$,width:1920,height:1080,refresh:120,x:1536,y:0,scale:1,primary:1,vrr:1
     '';
+  } // wallpaperLinks // asciiLinks;
 
-    ".config/hypr/hyprlock.conf".text = ''
-      general {
-        disable_loading_bar = true
-        hide_cursor = true
-        grace = 0
-      }
-
-      background {
-        monitor =
-        color = rgb(${lib.removePrefix "#" palette.base})
-        blur_passes = 2
-      }
-
-      input-field {
-        size = 320, 60
-        outline_thickness = 2
-        dots_size = 0.25
-        dots_spacing = 0.25
-        outer_color = rgb(${lib.removePrefix "#" palette.blue})
-        inner_color = rgb(${lib.removePrefix "#" palette.mantle})
-        font_color = rgb(${lib.removePrefix "#" palette.text})
-        check_color = rgb(${lib.removePrefix "#" palette.green})
-        fail_color = rgb(${lib.removePrefix "#" palette.red})
-        capslock_color = rgb(${lib.removePrefix "#" palette.yellow})
-        placeholder_text = <i>Type password to unlock</i>
-        rounding = 12
-        font_family = JetBrainsMono Nerd Font
-        position = 0, -80
-        halign = center
-        valign = center
-      }
-
-      # Sourced last, so the runtime colours win over the build-time ones above.
-      # Those stay as the declared default: the lock screen is the one surface
-      # that has to look right even on a session that has not applied a theme.
-      source = ~/.config/tundra/colors/hyprlock.conf
-    '';
+  systemd.user.services.swayidle = {
+    Unit = {
+      Description = "Idle manager (swayidle): screensaver at 150s, lock at 300s";
+      After = [ "mango-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 150 ${config.home.homeDirectory}/.local/bin/tundra-screensaver timeout 300 ${config.home.homeDirectory}/.local/bin/tundra-lock before-sleep ${config.home.homeDirectory}/.local/bin/tundra-lock";
+    };
+    Install.WantedBy = [ "mango-session.target" ];
   };
 
-  wayland.windowManager.hyprland.settings.exec-once = [
-    "env TUNDRA_WALLPAPER_DIR=${config.home.homeDirectory}/.local/share/tundra/wallpapers ${config.home.homeDirectory}/.local/bin/tundra-wallpaper-daemon"
-  ];
+  systemd.user.services.wlsunset = {
+    Unit = {
+      Description = "Night light (wlsunset)";
+      After = [ "mango-session.target" ];
+    };
+    Service = {
+      # Coordinates approximate America/New_York (see configuration.nix) so the
+      # sunset/sunrise transition tracks local time. Toggled by
+      # mango-toggle-nightlight.
+      ExecStart = "${pkgs.wlsunset}/bin/wlsunset -l 40.71 -L -74.01 -t 3500 -T 6500";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "mango-session.target" ];
+  };
 
   # ── TERMINAL ───────────────────────────────────────────────
   programs.foot = {
@@ -278,95 +246,12 @@ in {
   };
 
     # ── TOP BAR ────────────────────────────────────────────────
-    # Waybar: workspaces + window title on the left, clock in the middle,
-    # cpu, memory, network, volume, tray on the right.
+    # mangobar: workspaces + window title on the left, clock in the middle,
+    # custom media, cpu, memory, network, volume, tray on the right.
     #
-    # Every colour rule lives in the imported fragment, not here. The import is
-    # the first line, and a later rule of equal specificity beats it, so leaving
-    # a colour in this file would silently win over the theme and make the
-    # fragment dead. What stays here is structure: fonts, padding, borders.
-    programs.waybar = {
-      enable = true;
-      systemd.enable = true;
-      settings.main = {
-      layer = "top";
-      position = "top";
-      height = 32;
-      modules-left = [ "hyprland/workspaces" "hyprland/window" ];
-      modules-center = [ "clock" ];
-      modules-right = [ "custom/media" "cpu" "memory" "network" "pulseaudio" "tray" ];
-      "hyprland/window".max-length = 60;
-      clock.format = "{:%a %b %d  %I:%M %p}";
-      cpu = {
-        format = "󰻠 {usage}%";
-        interval = 5;
-      };
-      memory = {
-        format = "󰍛 {percentage}%";
-        interval = 5;
-      };
-      network = {
-        format-wifi = "󰖨 {signalStrength}%";
-        format-ethernet = "󰈀 {ipaddr}";
-        format-disconnected = "󰖪 Disconnected";
-        interval = 10;
-      };
-      pulseaudio = {
-        format = "vol {volume}%";
-        format-muted = "muted";
-        on-click = "pavucontrol";
-      };
-      "custom/media" = {
-        format = "{}";
-        exec = ''
-          status=$(playerctl status 2>/dev/null) || exit 0
-          case "$status" in
-            Playing) icon="󰐊" ;;
-            Paused) icon="󰏔" ;;
-            *) exit 0 ;;
-          esac
-          title=$(playerctl metadata title 2>/dev/null)
-          artist=$(playerctl metadata artist 2>/dev/null)
-          [ -n "$title" ] || title="Unknown title"
-          if [ -n "$artist" ] && [ "$artist" != "$title" ]; then
-            printf "%s  %s — %s" "$icon" "$title" "$artist"
-          else
-            printf "%s  %s" "$icon" "$title"
-          fi
-        '';
-        interval = 5;
-        on-click = "playerctl play-pause";
-        on-click-right = "playerctl next";
-      };
-    };
-    # Colour rules come from a runtime fragment, imported as the very first
-    # line of the stylesheet because CSS requires @import to precede the rules.
-    # GTK expands nothing inside url(), hence an absolute path rather than a
-    # tilde one.
-    #
-    # The import is the one place where a missing fragment is fatal: waybar
-    # throws if the stylesheet fails to parse, which an unresolvable @import
-    # causes. theme-runtime.nix orders the theme unit before waybar so the file
-    # is always there by the time the bar reads it.
-    style = ''
-      @import url("file://${config.home.homeDirectory}/.config/tundra/colors/waybar.css");
-      * {
-        font-family: "JetBrainsMono Nerd Font";
-        font-size: 13px;
-        border: none;
-      }
-      #clock,
-      #cpu,
-      #memory,
-      #network,
-      #pulseaudio,
-      #custom-media,
-      #tray,
-      #window {
-        padding: 0 12px;
-      }
-    '';
-  };
+    # config.jsonc and style.css both come from modules/nixos/mangobar.nix
+    # (imported above). style.css imports the runtime theme fragment as its
+    # first statement, so every colour rule lives in the fragment, not here.
 
   # ── GAME OVERLAY ───────────────────────────────────────────
   programs.mangohud.enable = true;
@@ -431,10 +316,11 @@ in {
     wlogout
     # Desktop utilities
     swaybg wl-clipboard grim slurp playerctl
+    swaylock # tundra-lock (lock screen) calls it by name
     pulsemixer pavucontrol
     # figlet draws the screensaver wordmark; gawk animates it. Both are invoked
     # by name from tundra-screensaver, so they have to be on the session PATH
-    # that Hypridle and the Hyprland keybindings run with.
+    # that swayidle and the Mango keybindings run with.
     figlet gawk
     nnn lf
     # Clipboard

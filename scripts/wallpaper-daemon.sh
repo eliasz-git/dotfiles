@@ -52,36 +52,33 @@ write_pointer() {
   mv -f "$POINTER_FILE.tmp.$$" "$POINTER_FILE"
 }
 
-# Every connected output, in the order Hyprland reports them.
-list_outputs() {
-  hyprctl monitors 2>/dev/null | awk '/^Monitor / { print $2 }'
-}
-
-# Monitor IDs that currently hold a fullscreen (1) or maximised (2) window.
-# `hyprctl clients` text is parsed rather than the JSON, because the session has
+# Every connected output, in the order mango reports them. mmsg prints a single
+# compact JSON document, so grep for the name field directly -- the session has
 # neither jq nor python3 on PATH.
-fullscreen_monitor_ids() {
-  hyprctl clients 2>/dev/null | awk '
-    /^Window / { monitor="" ; next }
-    /^[[:space:]]*monitor:/ { monitor=$2 }
-    /^[[:space:]]*fullscreen:/ { if ($2 == "1" || $2 == "2") print monitor }
-  '
+list_outputs() {
+  mmsg get all-monitors 2>/dev/null | grep -oE '"name":"[^"]*"' | cut -d'"' -f4
 }
 
-# Map the numeric monitor ID that `hyprctl clients` reports to the output name
-# swaybg wants. A monitor line looks like: Monitor HDMI-A-1 (ID 0):
-monitor_name_for_id() {
-  local id="$1"
-  hyprctl monitors 2>/dev/null | awk -v want="$id" '
-    /^Monitor / {
-      name=$2
-      for (i = 1; i <= NF; i++) {
-        if ($i == "(ID") {
-          gsub(/[():]/, "", $(i + 1))
-          if ($(i + 1) == want) print name
-        }
-      }
+# Output names whose client presently holds a visible fullscreen or maximized
+# window. mmsg emits one compact JSON object per client in field order; within a
+# client the monitor is followed by its visibility and fullscreen/maximized
+# flags, so a grep for those four tokens reordered by awk pairs each visible
+# fullscreen client with the monitor it covers (no jq needed).
+fullscreen_output_names() {
+  mmsg get all-clients 2>/dev/null | grep -oE \
+    '"monitor":"[^"]*"|"is_visible":(true|false)|"is_fullscreen":(true|false)|"is_maximized":(true|false)' |
+  awk '
+    $0 ~ /"monitor"/ {
+      if (pending && visible && (fullscreen || maximized)) print name
+      pending = 1
+      name = $0; sub(/^"monitor":"/, "", name); sub(/"$/, "", name)
+      visible = 0; fullscreen = 0; maximized = 0
+      next
     }
+    $0 == "\"is_visible\":true" { visible = 1; next }
+    $0 == "\"is_fullscreen\":true" { fullscreen = 1; next }
+    $0 == "\"is_maximized\":true" { maximized = 1 }
+    END { if (pending && visible && (fullscreen || maximized)) print name }
   '
 }
 
@@ -120,13 +117,12 @@ trap 'exit 0' INT TERM
 while true; do
   mapfile -t outputs < <(list_outputs)
 
-  # Resolve the fullscreen monitor IDs to output names for this pass.
+  # Resolve the outputs covered by a visible fullscreen/maximized client; those
+  # have their swaybg stopped so the window "hides" the wallpaper.
   declare -A fullscreen_outputs=()
-  while read -r id; do
-    [[ -n "$id" ]] || continue
-    name="$(monitor_name_for_id "$id")"
+  while read -r name; do
     [[ -n "$name" ]] && fullscreen_outputs["$name"]=1
-  done < <(fullscreen_monitor_ids)
+  done < <(fullscreen_output_names)
 
   restart=false
   now="$(date +%s)"

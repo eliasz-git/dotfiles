@@ -53,6 +53,10 @@ let
 
   themeNames = lib.attrNames palettes;
 
+  # The selected palette is available as config.tundra.palette; bind it here so
+  # the generated fragments can interpolate it directly.
+  palette = config.tundra.palette;
+
   # The catalogue the runtime theme engine reads.
   #
   # Every palette is published, not just the selected one. Switching themes has
@@ -134,8 +138,33 @@ in {
         printf '%s\n' "${config.tundra.theme}" > "$HOME/.config/tundra/theme"
       fi
       mkdir -p "$HOME/.config/tundra/colors"
-      if [ ! -e "$HOME/.config/tundra/colors/hyprland.conf" ]; then
-        printf '# Default Tundra hyprland fragment - will be overwritten by tundra-theme-apply\ncol.active_border = rgb(7fbbb3)\ncol.inactive_border = rgb(313244)\ndecoration.shadow.color = rgba(242233cc)\n' > "$HOME/.config/tundra/colors/hyprland.conf"
+      if [ ! -e "$HOME/.config/tundra/colors/mango.conf" ]; then
+        printf '# Default Tundra mango fragment - will be overwritten by tundra-theme-apply\nfocus_color = 0x${lib.removePrefix "#" palette.blue}ff\nborder_color = 0x${lib.removePrefix "#" palette.surface0}ff\nroot_color = 0x${lib.removePrefix "#" palette.base}ff\nshadows_color = 0x${lib.removePrefix "#" palette.base}cc\n' > "$HOME/.config/tundra/colors/mango.conf"
+      fi
+      if [ ! -e "$HOME/.config/tundra/colors/swaylock.conf" ]; then
+        printf 'SWAYLOCK_FLAGS=(\n  --color %s\n  --ring-color %s\n  --ring-ver-color %s\n  --ring-wrong-color %s\n  --inside-color %s\n  --inside-ver-color %s\n  --inside-wrong-color %s\n  --line-color %s\n  --separator-color %s\n  --key-hl-color %s\n  --bs-hl-color %s\n  --text-color %s\n  --text-clear-color %s\n  --text-wrong-color %s\n  --text-caps-lock-color %s\n  --caps-lock-bs-hl-color %s\n  --ring-width 3\n  --indicator-radius 100\n  --font "JetBrainsMono Nerd Font"\n  --font-size 20\n  --clock\n  --timestr "%%I:%%M %%p"\n  --datestr "%%a %%b %%d"\n)\n' \
+          '${lib.removePrefix "#" palette.base}' \
+          '${lib.removePrefix "#" palette.blue}' \
+          '${lib.removePrefix "#" palette.green}' \
+          '${lib.removePrefix "#" palette.red}' \
+          '${lib.removePrefix "#" palette.mantle}' \
+          '${lib.removePrefix "#" palette.mantle}' \
+          '${lib.removePrefix "#" palette.mantle}' \
+          '${lib.removePrefix "#" palette.base}' \
+          '${lib.removePrefix "#" palette.surface1}' \
+          '${lib.removePrefix "#" palette.blue}' \
+          '${lib.removePrefix "#" palette.red}' \
+          '${lib.removePrefix "#" palette.text}' \
+          '${lib.removePrefix "#" palette.green}' \
+          '${lib.removePrefix "#" palette.red}' \
+          '${lib.removePrefix "#" palette.yellow}' \
+          '${lib.removePrefix "#" palette.red}' > "$HOME/.config/tundra/colors/swaylock.conf"
+      fi
+      if [ ! -e "$HOME/.config/tundra/colors/mangobar.css" ]; then
+        printf '/* Default Tundra mangobar fragment - will be overwritten by tundra-theme-apply */\n@define-color tundra-mantle %s;\n@define-color tundra-base %s;\n@define-color tundra-surface0 %s;\n@define-color tundra-surface1 %s;\n@define-color tundra-text %s;\n@define-color tundra-subtext0 %s;\n@define-color tundra-blue %s;\n@define-color tundra-pink %s;\n@define-color tundra-red %s;\n@define-color tundra-yellow %s;\n@define-color tundra-green %s;\n' \
+          '${palette.mantle}' '${palette.base}' '${palette.surface0}' '${palette.surface1}' \
+          '${palette.text}' '${palette.subtext0}' '${palette.blue}' '${palette.pink}' \
+          '${palette.red}' '${palette.yellow}' '${palette.green}' > "$HOME/.config/tundra/colors/mangobar.css"
       fi
     '';
 

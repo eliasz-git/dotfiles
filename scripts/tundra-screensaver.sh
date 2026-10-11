@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # Tundra screensaver.
 #
-# Renders the wordmark as FIGlet art, then plays it fullscreen on a dedicated
-# special workspace where the art resolves out of a field of noise. Any keypress
-# dismisses it, which is also what Hypridle's screensaver listener fires on
+# Renders the wordmark as FIGlet art, then plays it fullscreen on the special
+# overlay (tag 0) where the art resolves out of a field of noise. Any keypress
+# dismisses it, which is also what swayidle's screensaver listener fires on
 # timeout, so the sequence is: idle, art, a key, desktop.
 #
-# A special workspace is used rather than moving windows between monitors with
-# `hyprctl keyword monitor ...,preferred`. Resizing the output is a lot easier to
-# get half-right and leave the desktop in a bad state; the special workspace is
-# toggled and cannot strand a monitor.
+# A window rule (see modules/nixos/mango/looknfeel.nix) opens the art window on
+# tag 0 silently and fullscreen; this script only checks a singleton is not
+# running, spawns the effect, waits for it to map, and reveals the special
+# overlay. When the last special window closes, mango leaves the overlay again
+# on its own, so there is nothing to tear down on a normal exit.
 set -euo pipefail
 
-WORKSPACE="${TUNDRA_SCREEN_WORKSPACE:-tundra-screensaver}"
 APP_ID="tundra-screensaver"
 WORD="${TUNDRA_SCREEN_WORD:-tundra}"
 STYLE="${TUNDRA_SCREEN_STYLE:-random}"
@@ -31,14 +31,15 @@ die() {
     exit 1
 }
 
-command -v hyprctl >/dev/null 2>&1 || die "hyprctl is not available"
+command -v mmsg >/dev/null 2>&1 || die "mmsg is not available"
 command -v foot >/dev/null 2>&1 || die "foot is not available"
 [[ -x "$ASCII" ]] || die "missing $ASCII"
 [[ -x "$EFFECT" ]] || die "missing $EFFECT"
 
-# Never stack a second screensaver on top of a running one: a second fullscreen
-# window would fight the first for the workspace and neither would clean up.
-if hyprctl clients -j 2>/dev/null | grep -q "\"class\": *\"$APP_ID\""; then
+# Never stack a second screensaver on top of a running one: a second window on
+# the special overlay would fight the first for the tag and neither would
+# clean up.
+if mmsg get all-clients 2>/dev/null | grep -q "\"appid\":\"$APP_ID\""; then
     exit 0
 fi
 
@@ -52,9 +53,17 @@ fi
 art_file="$(mktemp -t tundra-screensaver.XXXXXX.flf)"
 cleanup() {
     rm -f "$art_file"
-    # The effect normally closes the workspace itself; this catches the case
-    # where it died before it could.
-    hyprctl dispatch exitspecialworkspace "$WORKSPACE" >/dev/null 2>&1 || true
+    # If the effect never ran to completion its window is still registered and
+    # visible, so put the special overlay away again to leave the desktop clean.
+    # When the effect exits normally, mango returns from the overlay by itself
+    # once the last special window closes.
+    # The window's own is_visible flag always lies within 200 characters after
+    # its appid, well before any other client's object begins, so this cannot
+    # mistake another focused window for the screensaver.
+    if mmsg get all-clients 2>/dev/null |
+        grep -qE "\"appid\":\"$APP_ID\".{0,200}\"is_visible\":true"; then
+        mmsg dispatch toggle_special_tag >/dev/null 2>&1 || true
+    fi
 }
 trap cleanup EXIT
 
@@ -66,34 +75,32 @@ else
     "$ASCII" --font "$STYLE" "$WORD" >"$art_file"
 fi
 
-# hyprctl dispatch exec runs the command in the compositor's environment, not
-# ours, so the theme colours have to be passed through explicitly.
+# mmsg dispatch spawn_shell runs the command through `sh -c` in the compositor's
+# environment, not ours, so the theme colours have to be passed explicitly.
 env_prefix=""
 for var in TUNDRA_SCREEN_RAIN TUNDRA_SCREEN_RAIN_DIM TUNDRA_SCREEN_INK \
     TUNDRA_SCREEN_GLINT TUNDRA_SCREEN_FPS TUNDRA_SCREEN_CYCLE TUNDRA_GAWK; do
     [[ -n "${!var:-}" ]] && env_prefix+="$var=${!var} "
 done
-env_prefix+="TUNDRA_SCREEN_WORKSPACE=$WORKSPACE TUNDRA_FIGLET=$FIGLET "
+env_prefix+="TUNDRA_FIGLET=$FIGLET "
 
-# -T sets the window title and --app-id the class, which is how the singleton
-# check above recognises its own window.
-hyprctl dispatch exec \
-    "[workspace special:$WORKSPACE silent; float; exec $env_prefix foot --app-id=$APP_ID -T $APP_ID $EFFECT $art_file]" \
+# -T sets the window title and --app-id the class, which the window rule and the
+# singleton check above recognise. The rule maps the window to tag 0 silently
+# and fullscreen, so the plain spawn is all that is needed here.
+mmsg dispatch "spawn_shell,${env_prefix}foot --app-id=$APP_ID -T $APP_ID $EFFECT $art_file" \
     >/dev/null
 
-# The workspace has to be shown after the window is mapped, otherwise the toggle
-# races the exec and nothing appears.
+# The overlay has to be shown after the window is mapped, otherwise the toggle
+# races the spawn and nothing appears.
 for _ in $(seq 1 50); do
-    if hyprctl clients -j 2>/dev/null | grep -q "\"class\": *\"$APP_ID\""; then
+    if mmsg get all-clients 2>/dev/null | grep -q "\"appid\":\"$APP_ID\""; then
         break
     fi
     sleep 0.05
 done
 
-if ! hyprctl clients -j 2>/dev/null | grep -q "\"class\": *\"$APP_ID\""; then
+if ! mmsg get all-clients 2>/dev/null | grep -q "\"appid\":\"$APP_ID\""; then
     die "the screensaver window did not start"
 fi
 
-hyprctl dispatch togglespecialworkspace "$WORKSPACE" >/dev/null
-sleep 0.2
-hyprctl dispatch fullscreen 1 >/dev/null
+mmsg dispatch toggle_special_tag >/dev/null

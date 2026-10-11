@@ -22,13 +22,25 @@
     niri.url = "github:sodiboo/niri-flake";
     niri.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Mango — dwl-based Wayland compositor for the desktop host. The flake
+    # ships both the NixOS module (programs.mango) and the home-manager module
+    # (wayland.windowManager.mango, used by hosts/desktop/home.nix); nixpkgs
+    # does not provide the home-manager side.
+    mango.url = "github:mangowm/mango";
+    mango.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Mangobar — the status bar that talks to Mango over IPC. Its flake
+    # exports the package plus a home-manager module (services.mangobar).
+    mangobar.url = "github:mangowm/mangobar";
+    mangobar.inputs.nixpkgs.follows = "nixpkgs";
+
     # agenix — encrypted secrets. Used via agenix.decipher in
     # modules/shared/secrets.nix, which is pure Nix, so one code path covers
     # nix-darwin, NixOS, and standalone home-manager hosts.
     agenix.url = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager, hermes-agent, zen-browser, niri, agenix, ... }:
+  outputs = { self, nixpkgs, darwin, home-manager, hermes-agent, zen-browser, niri, mango, mangobar, agenix, ... }:
   let
     darwinSystem   = "aarch64-darwin";
     linuxSystem    = "x86_64-linux";
@@ -141,12 +153,22 @@
       specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/desktop/configuration.nix
+        # NixOS module for Mango: programs.mango (portals, xwayland, session
+        # entry, polkit). This is pinned ahead of any nixpkgs copy via the
+        # flake's own disabledModules.
+        mango.nixosModules.mango
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
-          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
+          # `wayland.windowManager.mango` (settings/autostart_sh/systemd) and
+          # `services.mangobar` (the Mango status bar) come from their flakes.
+          home-manager.sharedModules        = [
+            mango.hmModules.mango
+            mangobar.homeManagerModules.default
+            agenix.homeManagerModules.default
+          ];
           home-manager.extraSpecialArgs = { inherit zen-browser; };
           home-manager.users.elias = import ./hosts/desktop/home.nix;
         }

@@ -358,7 +358,7 @@ cmd_edit() {
   local editor="${EDITOR:-nvim}"
   case "${1:-config}" in
     config|nix) "$editor" "$NIX_CONFIG_DIR" ;;
-    hyprland) "$editor" "$NIX_CONFIG_DIR/modules/nixos/hyprland" ;;
+    mango|hyprland) "$editor" "$NIX_CONFIG_DIR/modules/nixos/mango" ;;
     aerospace) "$editor" "$HOME/.config/aerospace/aerospace.toml" ;;
     sketchybar) "$editor" "$HOME/.config/sketchybar" ;;
     karabiner) "$editor" "$HOME/.config/karabiner" ;;

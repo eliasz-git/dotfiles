@@ -546,12 +546,12 @@ let
         echo "Run 'darwin-rebuild switch --flake ~/.config/nix-config#macbook' to apply"
       fi
 
-      # Apply runtime changes for Hyprland/Waybar/Rofi/Dunst if running
-      if command -v hyprctl >/dev/null 2>&1; then
-        hyprctl reload
+      # Apply runtime changes for Mango/mangobar/Rofi/Dunst if running
+      if command -v mmsg >/dev/null 2>&1; then
+        mmsg dispatch reload_config >/dev/null 2>&1 || true
       fi
-      if command -v waybar >/dev/null 2>&1; then
-        pkill -SIGUSR2 waybar 2>/dev/null || true
+      if pgrep -x mangobar >/dev/null 2>&1; then
+        systemctl --user restart mangobar.service 2>/dev/null || true
       fi
       if command -v rofi >/dev/null 2>&1; then
         # Rofi picks up theme on next launch
