@@ -103,12 +103,13 @@
       font-size: 13px;
     }
     #bar {
-      background-color: @tundra-mantle;
+      background-color: transparent;
       padding: 0 8px;
     }
     #tags {
       padding: 0 4px;
       margin: 0 2px;
+      border-radius: 6px;
     }
     #tags.active {
       background-color: @tundra-blue;
@@ -124,7 +125,10 @@
     #volume,
     #custom-media,
     #tray {
-      padding: 0 12px;
+      padding: 0 10px;
+      border-radius: 6px;
+      background-color: @tundra-mantle;
+      margin: 0 2px;
     }
     #cpu.critical,
     #mem.critical {
