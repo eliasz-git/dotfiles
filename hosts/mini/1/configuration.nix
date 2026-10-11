@@ -126,6 +126,14 @@
     docker-compose
     smartmontools hdparm
     hermes-agent.packages.x86_64-linux.default
+    # Remote wake for the desktop: magic packets are not routed over the
+    # internet, so the sender has to live on the LAN. Call it off-LAN with
+    # `ssh mini1 wake-desktop` (Tailscale's mobile app has a built-in SSH
+    # client), or pass another MAC: `wake-desktop <mac>`.
+    wakeonlan
+    (writeShellScriptBin "wake-desktop" ''
+      exec ${wakeonlan}/bin/wakeonlan "''${1:-74:56:3c:99:ab:69}"
+    '')
   ];
 
   # ── SMART — STORAGE disk health ───────────────────────────────

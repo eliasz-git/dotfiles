@@ -30,6 +30,19 @@
   networking.hostName = "desktop";
   networking.networkmanager.enable = true;
 
+  # Wake-on-LAN. NixOS ships this as a udev .link (WakeOnLan=magic) applied at
+  # device enumeration, so NetworkManager taking the interface does not clobber
+  # it. BIOS ErP/Deep Sleep must be Disabled or the NIC loses standby power.
+  networking.interfaces.enp4s0.wakeOnLan = {
+    enable = true;
+    policy = [ "magic" ];
+  };
+
+  # Tailnet transport: Moonlight from off-LAN without port forwarding, and the
+  # path to `wakeonlan` on mini for remote wake. Run `sudo tailscale up` once
+  # after the rebuild.
+  services.tailscale.enable = true;
+
   # ── LOCALE ────────────────────────────────────────────────────
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -68,6 +81,15 @@
     wayland.enable = true;
     autoNumlock = true;
   };
+
+  # Sunshine runs as a user service on graphical-session.target, so after a
+  # reboot it does not exist until a session is up. Without auto-login a remote
+  # wake would land on the greeter with no way in. hypridle locks at 300s and
+  # before suspend (hosts/desktop/home.nix), so the unlocked window is brief.
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "elias";
+  };
   services.seatd.enable = true;
   services.displayManager.defaultSession = "hyprland";
 
@@ -82,6 +104,19 @@
   };
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
+
+  # ── REMOTE DESKTOP ────────────────────────────────────────────
+  # Sunshine (Moonlight-compatible host): AMD AMF/VAAPI encode on the RX 6600,
+  # capture through Hyprland's wlr-screencast via PipeWire.
+  # capSysAdmin installs a setuid-cap wrapper for direct KMS capture and
+  # cursor compositing; without it capture works but cursor handling is flaky.
+  # Pair at https://<host>:47989 (self-signed), then add the host in Moonlight.
+  services.sunshine = {
+    enable = true;
+    capSysAdmin = true;
+    openFirewall = true;
+    autoStart = true;
+  };
 
   # Controller/keyboard remapping. Udev rules for hotplug are left off (upstream
   # default): https://github.com/sezanzeb/input-remapper/issues/140 — devices
@@ -150,6 +185,8 @@
 
   environment.systemPackages = with pkgs; [
     git vim nano curl wget htop pciutils smartmontools usbutils
+    wakeonlan # magic packets to mini/other hosts; MAC lives in /sys/class/net/enp4s0/address
+    moonlight-qt # client, for testing the loopback from this machine
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────

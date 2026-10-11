@@ -94,6 +94,14 @@
     docker-compose
     ffmpeg libva-vdpau-driver libva-utils # for `vainfo` testing
     smartmontools hdparm
+    # Remote wake for the desktop: magic packets are not routed over the
+    # internet, so the sender has to live on the LAN. Call it off-LAN with
+    # `ssh mini2 wake-desktop` (Tailscale's mobile app has a built-in SSH
+    # client), or pass another MAC: `wake-desktop <mac>`.
+    wakeonlan
+    (writeShellScriptBin "wake-desktop" ''
+      exec ${wakeonlan}/bin/wakeonlan "''${1:-74:56:3c:99:ab:69}"
+    '')
   ];
 
   # ── Media services — Nix-native where trivial, else Docker compose ─
