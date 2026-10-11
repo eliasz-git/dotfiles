@@ -17,14 +17,24 @@ APP_ID="tundra-screensaver"
 WORD="${TUNDRA_SCREEN_WORD:-tundra}"
 STYLE="${TUNDRA_SCREEN_STYLE:-random}"
 
-resolve() {
-    readlink -f "$1" 2>/dev/null || printf '%s' "$1"
+# Locate the sibling helper scripts. Home Manager installs each of the three
+# scripts as its own file and symlink under ~/.local/bin (without the .sh
+# suffix), so the realpath of this script is a lone store file whose directory
+# holds no siblings. Look in ~/.local/bin first, then next to this script for
+# development runs from the checkout (where the .sh suffix is kept).
+here="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P 2>/dev/null || true)"
+pick_sibling() {
+    local base="$1" cand
+    for cand in "$HOME/.local/bin/$base" "$here/$base" "$here/$base.sh"; do
+        if [[ -x "$cand" ]]; then
+            printf '%s' "$cand"
+            return 0
+        fi
+    done
+    printf '%s' "$HOME/.local/bin/$base"
 }
-
-SCRIPT_PATH="$(resolve "${BASH_SOURCE[0]}")"
-SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-ASCII="$SCRIPT_DIR/tundra-ascii.sh"
-EFFECT="$SCRIPT_DIR/tundra-screensaver-effect.sh"
+ASCII="$(pick_sibling tundra-ascii)"
+EFFECT="$(pick_sibling tundra-screensaver-effect)"
 
 die() {
     echo "tundra-screensaver: $*" >&2
@@ -53,18 +63,12 @@ fi
 art_file="$(mktemp -t tundra-screensaver.XXXXXX.flf)"
 cleanup() {
     rm -f "$art_file"
-    # If the effect never ran to completion its window is still registered and
-    # visible, so put the special overlay away again to leave the desktop clean.
-    # When the effect exits normally, mango returns from the overlay by itself
-    # once the last special window closes.
-    # The window's own is_visible flag always lies within 200 characters after
-    # its appid, well before any other client's object begins, so this cannot
-    # mistake another focused window for the screensaver.
-    if mmsg get all-clients 2>/dev/null |
-        grep -qE "\"appid\":\"$APP_ID\".{0,200}\"is_visible\":true"; then
-        mmsg dispatch toggle_special_tag >/dev/null 2>&1 || true
-    fi
 }
+# Do not tear the overlay down here. This script exits as soon as the effect
+# window is mapped and the overlay has been revealed, but the effect keeps
+# running until a keypress, so hiding the overlay in this trap would dismiss
+# the screensaver the instant it appeared. mango leaves the overlay on its own
+# when the effect exits and the last special window closes.
 trap cleanup EXIT
 
 # The wordmark is chosen fresh on every activation, so the screensaver rarely
