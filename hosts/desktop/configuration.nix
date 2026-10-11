@@ -60,6 +60,12 @@
   };
   programs.zsh.enable = true;
 
+  # Provides pkgs.dconf via services.dbus.packages so the `ca.desrt.dconf`
+  # D-Bus activation service exists for Home Manager's dconfSettings step
+  # (gtk.enable in home.nix). It stopped leaking in transitively after the
+  # 2026-10-10 nixpkgs bump.
+  programs.dconf.enable = true;
+
   # ── GRAPHICS (AMD, Mesa/RADV) ─────────────────────────────────
   hardware.graphics = {
     enable = true;
