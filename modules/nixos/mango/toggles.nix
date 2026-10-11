@@ -10,6 +10,7 @@ let
   # which is the runtime-only equivalent of a config keyword (see bind.c:
   # setoption -> parse_option + override_config).
   toggledir = "$HOME/.cache/tundra";
+  notify = "${pkgs.libnotify}/bin/notify-send";
 in
 {
   # Animation toggle
@@ -24,11 +25,11 @@ in
         if [ "$CURRENT" = "1" ]; then
           mmsg dispatch setoption,animations,0
           echo 0 > ${toggledir}/animations
-          notify-send "Animations disabled"
+          ${notify} "Animations disabled"
         else
           mmsg dispatch setoption,animations,1
           echo 1 > ${toggledir}/animations
-          notify-send "Animations enabled"
+          ${notify} "Animations enabled"
         fi
       ''}/bin/mango-toggle-animations";
     };
@@ -46,11 +47,11 @@ in
         if [ "$CURRENT" = "1" ]; then
           mmsg dispatch setoption,blur,0
           echo 0 > ${toggledir}/blur
-          notify-send "Blur disabled"
+          ${notify} "Blur disabled"
         else
           mmsg dispatch setoption,blur,1
           echo 1 > ${toggledir}/blur
-          notify-send "Blur enabled"
+          ${notify} "Blur enabled"
         fi
       ''}/bin/mango-toggle-blur";
     };
@@ -71,14 +72,14 @@ in
           mmsg dispatch setoption,gap_outer_horizontal,10
           mmsg dispatch setoption,gap_outer_vertical,10
           echo 1 > ${toggledir}/gaps
-          notify-send "Gaps enabled"
+          ${notify} "Gaps enabled"
         else
           mmsg dispatch setoption,gap_inner_horizontal,0
           mmsg dispatch setoption,gap_inner_vertical,0
           mmsg dispatch setoption,gap_outer_horizontal,0
           mmsg dispatch setoption,gap_outer_vertical,0
           echo 0 > ${toggledir}/gaps
-          notify-send "Gaps disabled"
+          ${notify} "Gaps disabled"
         fi
       ''}/bin/mango-toggle-gaps";
     };
@@ -97,12 +98,12 @@ in
           mmsg dispatch setoption,focused_opacity,0.9
           mmsg dispatch setoption,unfocused_opacity,0.8
           echo 0 > ${toggledir}/opacity
-          notify-send "Opacity reduced"
+          ${notify} "Opacity reduced"
         else
           mmsg dispatch setoption,focused_opacity,1.0
           mmsg dispatch setoption,unfocused_opacity,0.9
           echo 1 > ${toggledir}/opacity
-          notify-send "Opacity normal"
+          ${notify} "Opacity normal"
         fi
       ''}/bin/mango-toggle-opacity";
     };
@@ -118,12 +119,12 @@ in
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-vrr" ''
         #!/usr/bin/env bash
         VRR_CONF="$HOME/.config/tundra/mango-vrr.conf"
-        if grep -q ',vrr:1\$' "$VRR_CONF" 2>/dev/null; then
+        if grep -q ',vrr:1$' "$VRR_CONF" 2>/dev/null; then
           sed -i 's/,vrr:1/,vrr:0/' "$VRR_CONF"
-          notify-send "VRR disabled"
+          ${notify} "VRR disabled"
         else
           sed -i 's/,vrr:0/,vrr:1/' "$VRR_CONF"
-          notify-send "VRR enabled"
+          ${notify} "VRR enabled"
         fi
         mmsg dispatch reload_config
       ''}/bin/mango-toggle-vrr";
@@ -139,10 +140,10 @@ in
         #!/usr/bin/env bash
         if systemctl --user is-active swayidle >/dev/null 2>&1; then
           systemctl --user stop swayidle
-          notify-send "Idle management stopped"
+          ${notify} "Idle management stopped"
         else
           systemctl --user start swayidle
-          notify-send "Idle management started"
+          ${notify} "Idle management started"
         fi
       ''}/bin/mango-toggle-idle";
     };
@@ -157,10 +158,10 @@ in
         #!/usr/bin/env bash
         if systemctl --user is-active wlsunset >/dev/null 2>&1; then
           systemctl --user stop wlsunset
-          notify-send "Night light disabled"
+          ${notify} "Night light disabled"
         else
           systemctl --user start wlsunset
-          notify-send "Night light enabled"
+          ${notify} "Night light enabled"
         fi
       ''}/bin/mango-toggle-nightlight";
     };
