@@ -53,6 +53,13 @@ if mmsg get all-clients 2>/dev/null | grep -q "\"appid\":\"$APP_ID\""; then
     exit 0
 fi
 
+# Do not start the screensaver while a client is in fullscreen. Media/video
+# playback is usually fullscreen and should not be interrupted by the idle
+# screensaver.
+if mmsg get all-clients 2>/dev/null | grep -q "\"is_fullscreen\":true"; then
+    exit 0
+fi
+
 # Figlet is not on the interactive PATH in a fresh session, so fall back to the
 # profile-provided binary when the plain name is missing.
 FIGLET="${TUNDRA_FIGLET:-figlet}"
