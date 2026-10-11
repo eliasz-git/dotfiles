@@ -49,7 +49,7 @@ EOF
           chmod 600 $HOME/.config/ai-keys.sh
         fi
       ''}";
-      ExecStart = "true";
+      ExecStart = "${pkgs.coreutils}/bin/true";
     };
   };
 
