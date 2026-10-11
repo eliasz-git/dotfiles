@@ -107,14 +107,15 @@
       padding: 0 8px;
     }
     #tags {
-      padding: 0 4px;
+      padding: 0 6px;
       margin: 0 2px;
-      border-radius: 6px;
+      border-radius: 8px;
+      background-color: @tundra-surface0;
     }
     #tags.active {
       background-color: @tundra-blue;
       color: @tundra-base;
-      border-radius: 6px;
+      border-radius: 8px;
     }
     #layout,
     #title,
@@ -127,8 +128,8 @@
     #tray {
       padding: 0 10px;
       border-radius: 6px;
-      background-color: @tundra-mantle;
-      margin: 0 2px;
+      background-color: transparent;
+      margin: 0 4px;
     }
     #cpu.critical,
     #mem.critical {
