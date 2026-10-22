@@ -58,6 +58,9 @@ let
 in {
   imports = [
     ../../modules/shared/shell.nix
+    # Anki — official upstream binaries via nixpkgs `anki-bin`; the data
+    # directory stays user-owned (see the module for the sync story).
+    ../../modules/shared/anki.nix
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix

@@ -53,6 +53,19 @@ let
       keywords = "logout;reboot;poweroff;suspend;session;";
     }
     {
+      id = "anki";
+      name = "Anki";
+      genericName = "Flashcards";
+      comment = "Spaced repetition flashcards";
+      exec = lib.getExe pkgs.anki-bin;
+      # The upstream .desktop file asks for the icon theme name "anki", which
+      # Papirus does not ship. The package keeps the real one here, so point
+      # the entry at the file directly.
+      icon = "${pkgs.anki-bin}/share/pixmaps/anki.png";
+      keywords = "anki;flashcards;spaced repetition;study;fsrs;";
+      categories = "Education;Languages";
+    }
+    {
       id = "tundra-record";
       name = "Record Screen";
       genericName = "Screen Recorder";
@@ -75,7 +88,7 @@ let
       TryExec=${lib.head (lib.splitString " " e.exec)}
       Icon=${e.icon}
       Terminal=false
-      Categories=Development;Utility;
+      Categories=${e.categories or "Development;Utility;"};
       Keywords=${e.keywords}
       StartupNotify=true
     '';

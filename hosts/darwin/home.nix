@@ -3,6 +3,9 @@
 {
   imports = [
     ../../modules/shared/programs.nix
+    # Anki — official upstream binaries via nixpkgs `anki-bin`; the data
+    # directory stays user-owned (see the module for the sync story).
+    ../../modules/shared/anki.nix
     ../../modules/shared/shell.nix
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
