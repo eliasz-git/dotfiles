@@ -50,7 +50,7 @@
     gaps.inner.vertical = 16
     gaps.outer.left = 16
     gaps.outer.bottom = 16
-    gaps.outer.top = 45
+    gaps.outer.top = 20
     gaps.outer.right = 16
 
     # Default layout for new workspaces

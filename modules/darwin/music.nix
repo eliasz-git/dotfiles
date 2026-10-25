@@ -30,8 +30,13 @@ in
         version = "1.2.1";
         inherit src;
         # Upstream commits Cargo.lock, so the vendor hash is reproducible without
-        # vendoring into this repo.
-        cargoLock.lockFile = "${src}/Cargo.lock";
+        # vendoring sources into this repo. A verbatim copy of that lock file
+        # lives beside this module and is what gets read: importCargoLock reads
+        # the lock file during evaluation, so pointing it at "${src}/Cargo.lock"
+        # would force this aarch64-darwin source to be built whenever the config
+        # is evaluated, which fails on any non-darwin machine (CI runs the darwin
+        # output check on x86_64-linux). Re-copy it when the `rev` above moves.
+        cargoLock.lockFile = ./Cargo.lock;
         doCheck = false;
         meta = {
           description = "Scrobble Apple Music plays to Last.fm";

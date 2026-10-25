@@ -32,3 +32,6 @@ pi-session*.html
 # Hand-made backups
 *.bak
 *.bak[0-9]*
+
+# Wallpaper daemon backups (wallpapers/wallpaper_backup_<timestamp>.<ext>)
+wallpapers/wallpaper_backup_*

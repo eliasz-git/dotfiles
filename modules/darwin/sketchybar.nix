@@ -25,6 +25,9 @@ in {
       MARGIN=4
       Y_OFFSET=4
       CORNER_RADIUS=16
+      # Gap between workspace digits. Spacer items are inert, so this can be
+      # widened freely without enlarging any workspace's clickable area.
+      WORKSPACE_GAP=8
 
       sketchybar --bar position=top height=$BAR_HEIGHT margin=$MARGIN y_offset=$Y_OFFSET corner_radius=$CORNER_RADIUS border_width=0 blur_radius=20 color=$BG_COLOR padding_left=8 padding_right=8 notch_width=0
 
@@ -33,26 +36,38 @@ in {
       sketchybar --default "''${default[@]}"
 
       # Workspaces (match AeroSpace config)
+      #
+      # Padding is forced to 0 on each item and its icon. SketchyBar hit-tests
+      # the whole item frame, including padding, and background.drawing=off does
+      # not shrink it — so the default padding (4 item + 6 icon + 2 background)
+      # left roughly 10pt of invisible clickable space beside every digit, and a
+      # click just off the number still ran `aerospace workspace $sid`.
+      #
+      # Gaps come from inert spacer items instead: they occupy layout width but
+      # carry no click_script, so they cannot reintroduce the phantom clicks
+      # padding caused. These must be items, not `--add space` — in SketchyBar
+      # 2.24.0 a space created while the config loads is never laid out and sits
+      # at x=-9999, so it contributes no gap. `drawing` stays on (drawing=off
+      # collapses the item to 1x1); only the contents are hidden.
       sketchybar --add event aerospace_workspace_change
       for sid in 1-web 2-code 3-term 4-chat 5-media 6-games 7-docs 8-sys 9-vm 10-misc; do
         num="''${sid%%-*}"
         [ "$num" = "10" ] && display="0" || display="$num"
         sketchybar --add item "workspace.$sid" left \
-          --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 background.padding_left=2 background.padding_right=2 \
+          --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 padding_left=0 padding_right=0 icon.padding_left=0 icon.padding_right=0 \
           script="$PLUGIN_DIR/aerospace.sh" click_script="aerospace workspace $sid" \
           --subscribe "workspace.$sid" aerospace_workspace_change
+        [ "$sid" = "10-misc" ] || sketchybar --add item "gap.$sid" left --set "gap.$sid" drawing=on width=$WORKSPACE_GAP icon.drawing=off label.drawing=off background.drawing=off padding_left=0 padding_right=0 icon.padding_left=0 icon.padding_right=0
       done
 
+      # Separator between workspaces and front app
+      sketchybar --add item separator left --set separator icon="│" label.drawing=off icon.color=$ACCENT_COLOR icon.padding_left=6 icon.padding_right=6 background.drawing=off
+
       # Front app
-      sketchybar --add item front_app center \
+      sketchybar --add item front_app left \
         --set front_app icon.drawing=off label.max_chars=28 label.color=${opaque palette.subtext0} \
         script="$PLUGIN_DIR/front_app.sh" \
         --subscribe front_app front_app_switched
-
-# Media
-      sketchybar --add item media center \
-        --set media icon="" icon.color=$ACCENT_COLOR label.max_chars=30 scroll_texts=on label.scroll_duration=140 label.color=$ACCENT_COLOR drawing=off update_freq=5 \
-        script="$PLUGIN_DIR/media.sh" click_script="$PLUGIN_DIR/media_click.sh"
 
       # Right side: cpu, mem, net, battery, volume, clock
       sketchybar --add item cpu right --set cpu update_freq=5 icon="" icon.color=$ACCENT_COLOR script="$PLUGIN_DIR/cpu.sh"
@@ -93,36 +108,6 @@ in {
   # Clock plugin
   home.file.".config/sketchybar/plugins/clock.sh" = { executable = true; text = '' #!/bin/sh
 sketchybar --set "$NAME" label="$(date '+%a %d  %I:%M %p')" ''; };
-
-  # Media plugin (nowplaying-cli)
-  home.file.".config/sketchybar/plugins/media.sh" = {
-    executable = true;
-    text = ''
-      #!/bin/sh
-      RAW="$(nowplaying-cli get --json title artist 2>/dev/null)"
-      TITLE="$(echo "$RAW" | sed -n 's/.*"title" *: *"\(.*\)".*/\1/p')"
-      ARTIST="$(echo "$RAW" | sed -n 's/.*"artist" *: *"\(.*\)".*/\1/p')"
-
-      if [ -z "$TITLE" ]; then
-        sketchybar --set "$NAME" drawing=off 2>/dev/null
-        exit 0
-      fi
-
-      if [ -n "$ARTIST" ]; then LABEL="$TITLE — $ARTIST"; else LABEL="$TITLE"; fi
-      sketchybar --set "$NAME" drawing=on icon="" label="$LABEL" label.drawing=on \
-        icon.color="${opaque palette.blue}" label.color="${opaque palette.text}"
-    '';
-  };
-
-  # Media click plugin (play/pause)
-  home.file.".config/sketchybar/plugins/media_click.sh" = {
-    executable = true;
-    text = ''
-      #!/bin/sh
-      nowplaying-cli togglePlayPause 2>/dev/null
-      sketchybar --update "$NAME" 2>/dev/null
-    '';
-  };
 
   # Front app plugin
   home.file.".config/sketchybar/plugins/front_app.sh" = {
@@ -253,18 +238,22 @@ sketchybar --set "$NAME" label="$(date '+%a %d  %I:%M %p')" ''; };
     '';
   };
 
-  # The Homebrew LaunchAgent is KeepAlive, so killing the bar makes launchd
-  # respawn it against the freshly swapped config. `sketchybar --reload` does
-  # not replace properties or rebuild the item set, which leaves the bar
-  # serving stale properties (observed as a blank bar after activation).
+  # `sketchybar --reload` does not replace properties or rebuild the item set,
+  # which leaves the bar serving stale items (observed as a blank bar, and as
+  # layout frozen at the previous config). Restart the service instead so the
+  # bar re-runs the whole sketchybarrc.
+  #
+  # brew is resolved by absolute path: Home Manager activation does not
+  # guarantee Homebrew on PATH, and a `command -v` guard made this block skip
+  # silently, leaving the bar on the old config with no error.
   home.activation.sketchybarReload = lib.mkAfter ''
-    if command -v sketchybar >/dev/null 2>&1; then
-      pkill -x sketchybar || true
-      for _ in 1 2 3 4 5 6 7 8 9 10; do
-        pgrep -x sketchybar >/dev/null 2>&1 && break
-        sleep 0.5
-      done
-      pgrep -x sketchybar >/dev/null 2>&1 || brew services start sketchybar || true
+    brew_bin="/opt/homebrew/bin/brew"
+    [ -x "$brew_bin" ] || brew_bin="$(command -v brew 2>/dev/null || true)"
+    if [ -n "$brew_bin" ] && [ -x "$brew_bin" ]; then
+      if ! "$brew_bin" services restart sketchybar >/dev/null 2>&1; then
+        pkill -x sketchybar >/dev/null 2>&1 || true
+        "$brew_bin" services start sketchybar >/dev/null 2>&1 || true
+      fi
     fi
   '';
 }

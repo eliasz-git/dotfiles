@@ -45,8 +45,20 @@
     darwinSystem   = "aarch64-darwin";
     linuxSystem    = "x86_64-linux";
 
-    darwinPkgs     = import nixpkgs { system = darwinSystem; config.allowUnfree = true; };
-    linuxPkgs      = import nixpkgs { system = linuxSystem;  config.allowUnfree = true; };
+    # ltrace 0.7.91 runs a dejagnu suite in its checkPhase that fails 15 tests
+    # on Linux — the ptrace and ASLR expectations are sensitive to the build
+    # environment. Because nixpkgs CI hits the same failures, no output is
+    # published to cache.nixos.org, so anything depending on ltrace compiles it
+    # from source and then fails on the test suite. The package itself builds
+    # and works; only the suite is at fault. Drop this once nixpkgs fixes it.
+    overlays = [
+      (final: prev: {
+        ltrace = prev.ltrace.overrideAttrs (_: { doCheck = false; });
+      })
+    ];
+
+    darwinPkgs     = import nixpkgs { system = darwinSystem; config.allowUnfree = true; inherit overlays; };
+    linuxPkgs      = import nixpkgs { system = linuxSystem;  config.allowUnfree = true; inherit overlays; };
     unstablePkgs   = linuxPkgs;
   in {
 

@@ -84,7 +84,7 @@
       "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font"
       # "font-sf-mono-nerd-font" not available in Homebrew
       # Additional tools
-      "hiddenbar" "monitorcontrol"
+      "hiddenbar" "monitorcontrol" "xquartz"
       # Restored 2026-10-12 — previously undeclared, removed by zap cleanup
       "localsend" "android-platform-tools"
     ];
