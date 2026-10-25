@@ -60,6 +60,9 @@
       # "pay-respects" not in Homebrew
       # Utils
       "jq" "yq" "git-delta" "lazygit" "btop" "dust" "procs" "tealdeer"
+      # Restored 2026-10-12 — zap cleanup removed these previously undeclared strays
+      "apfel" "ggml" "libusb" "llama.cpp" "python@3.11" "scrcpy"
+      # (syncthing not re-added — nix-managed via launchd agent, modules/darwin/syncthing.nix)
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc"
@@ -67,7 +70,7 @@
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
       "knockknock" "oversight" "tuta-mail" "boring-notch"
       "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "fuse-t" "loop"
-      "tor-browser" "utm" "veracrypt" "stats" "microsoft-teams"
+      "tor-browser" "utm" "veracrypt" "microsoft-teams"
       "opencode-desktop"
       "calibre" "discord" "gramps" "openwork" "protonvpn"
       # "copilot-cli" not in Homebrew casks - install via npm
@@ -75,13 +78,15 @@
       "zen" "balenaetcher" "tinymediamanager" "godot"
       "aerospace" "vorssaint"
       "foobar2000" "xld" "musicbrainz-picard" "soulseek"
-      "ghostty" "betterdisplay" "openlogi"
-      "hermes-desktop" "wakatime"
+      "ghostty" "openlogi"
+      "hermes-desktop" "pear-desktop" "wakatime"
       # Fonts
       "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font"
       # "font-sf-mono-nerd-font" not available in Homebrew
       # Additional tools
-      "rectangle" "hiddenbar" "monitorcontrol"
+      "hiddenbar" "monitorcontrol"
+      # Restored 2026-10-12 — previously undeclared, removed by zap cleanup
+      "localsend" "android-platform-tools"
     ];
   };
 
