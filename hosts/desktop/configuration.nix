@@ -60,6 +60,12 @@
   };
   programs.zsh.enable = true;
 
+  # Puts ~/.local/bin on PATH through /etc/profile, which the SDDM session
+  # wrapper sources, so Mango and everything it spawns can run the tundra-*
+  # scripts that home.nix links there (bindings call tundra-screensaver by
+  # name). The zsh initContent export only reaches interactive shells.
+  environment.localBinInPath = true;
+
   # Provides pkgs.dconf via services.dbus.packages so the `ca.desrt.dconf`
   # D-Bus activation service exists for Home Manager's dconfSettings step
   # (gtk.enable in home.nix). It stopped leaking in transitively after the

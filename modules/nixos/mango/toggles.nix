@@ -10,6 +10,21 @@ let
   # which is the runtime-only equivalent of a config keyword (see bind.c:
   # setoption -> parse_option + override_config).
   toggledir = "$HOME/.cache/tundra";
+
+  # A user unit gets a minimal PATH. The scripts start with `#!/usr/bin/env
+  # bash` and call mmsg (user profile, from the mango hm module), notify-send,
+  # sed, grep, cat and systemctl, so each of those locations is named here.
+  togglePath =
+    lib.makeBinPath [
+      pkgs.bash
+      pkgs.coreutils
+      pkgs.gnused
+      pkgs.gnugrep
+      pkgs.libnotify
+      pkgs.systemd
+    ]
+    + ":"
+    + "${config.home.profileDirectory}/bin";
 in
 {
   # Animation toggle
@@ -17,6 +32,7 @@ in
     Unit.Description = "Toggle Mango animations";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-animations" ''
         #!/usr/bin/env bash
         CURRENT=1
@@ -39,6 +55,7 @@ in
     Unit.Description = "Toggle Mango blur";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-blur" ''
         #!/usr/bin/env bash
         CURRENT=1
@@ -61,6 +78,7 @@ in
     Unit.Description = "Toggle Mango gaps";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-gaps" ''
         #!/usr/bin/env bash
         CURRENT=0
@@ -89,6 +107,7 @@ in
     Unit.Description = "Toggle window opacity";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-opacity" ''
         #!/usr/bin/env bash
         CURRENT=1
@@ -115,6 +134,7 @@ in
     Unit.Description = "Toggle VRR (FreeSync)";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-vrr" ''
         #!/usr/bin/env bash
         VRR_CONF="$HOME/.config/tundra/mango-vrr.conf"
@@ -135,6 +155,7 @@ in
     Unit.Description = "Toggle idle management";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-idle" ''
         #!/usr/bin/env bash
         if systemctl --user is-active swayidle >/dev/null 2>&1; then
@@ -153,6 +174,7 @@ in
     Unit.Description = "Toggle night light (wlsunset)";
     Service = {
       Type = "oneshot";
+      Environment = "PATH=${togglePath}";
       ExecStart = "${pkgs.writeScriptBin "mango-toggle-nightlight" ''
         #!/usr/bin/env bash
         if systemctl --user is-active wlsunset >/dev/null 2>&1; then
