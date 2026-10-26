@@ -11,7 +11,6 @@ Multi-host Nix configuration for macOS, NixOS desktop systems, a showcase workst
 | MacBook | `darwinConfigurations.macbook` | AeroSpace, SketchyBar, Ghostty, Homebrew |
 | Laptop | `nixosConfigurations.laptop` | Niri + Waybar |
 | Desktop | `nixosConfigurations.desktop` | Mango + mangobar + Steam/gaming stack |
-| Beattie | `nixosConfigurations.beattie` | Showcase/lab workstation |
 | Mini 1 | `nixosConfigurations.mini1` | Headless infrastructure |
 | Mini 2 | `nixosConfigurations.mini2` | Headless media services |
 

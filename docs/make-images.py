@@ -126,7 +126,7 @@ LEFT = [
     ("cli", "gc --yes                    Destructive garbage collection"),
     ("blank", ""),
     ("hdr", "SUPPORTED HOSTS:"),
-    ("hosts", "macbook laptop desktop beattie mini1 mini2"),
+    ("hosts", "macbook laptop desktop mini1 mini2"),
 ]
 
 RIGHT = [
@@ -147,7 +147,6 @@ RIGHT = [
     ("tick", "homeConfigurations.mini1"),
     ("tick", "homeConfigurations.mini2"),
     ("tick", "nixosConfigurations.laptop"),
-    ("tick", "nixosConfigurations.beattie"),
     ("tick", "nixosConfigurations.desktop"),
     ("tick", "nixosConfigurations.mini1"),
     ("tick", "nixosConfigurations.mini2"),
@@ -219,7 +218,6 @@ HOSTS = [
     ("macbook", "darwinConfigurations.macbook", "macOS", "AeroSpace · SketchyBar · Ghostty · Homebrew"),
     ("laptop", "nixosConfigurations.laptop", "NixOS", "Niri · Waybar · portable profile"),
     ("desktop", "nixosConfigurations.desktop", "NixOS", "Mango · mangobar · Steam and gaming stack"),
-    ("beattie", "nixosConfigurations.beattie", "NixOS", "showcase and lab workstation"),
     ("mini1", "nixosConfigurations.mini1", "headless", "infrastructure services · Home Manager fallback"),
     ("mini2", "nixosConfigurations.mini2", "headless", "media services · Home Manager fallback"),
 ]
@@ -375,7 +373,7 @@ def banner_labels_svg():
     out.append(f'<rect x="140" y="652" width="120" height="4" rx="2" fill="{GREEN}"/>')
 
     px = 140
-    for p in ["macbook", "laptop", "desktop", "beattie", "mini1", "mini2"]:
+    for p in ["macbook", "laptop", "desktop", "mini1", "mini2"]:
         wdt = 26 + len(p) * 15
         out.append(
             f'<rect x="{px}" y="714" width="{wdt}" height="52" rx="26" fill="{BASE}" '

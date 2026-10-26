@@ -7,7 +7,6 @@ This repository keeps host outputs explicit. A successful evaluation of one host
 | MacBook | `darwinConfigurations.macbook` | `aarch64-darwin` | Personal macOS workstation | AeroSpace, SketchyBar, Ghostty | `tundra switch macbook` |
 | Laptop | `nixosConfigurations.laptop` | `x86_64-linux` | NixOS laptop | Niri + Waybar | `tundra switch laptop` |
 | Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Mango + mangobar; rotating painting wallpaper hidden only on a fullscreen monitor | `tundra switch desktop` |
-| Beattie | `nixosConfigurations.beattie` | `x86_64-linux` | Showcase and lab workstation | GNOME/KDE configuration owned by host files | `tundra switch beattie` |
 | Mini 1 | `nixosConfigurations.mini1` | `x86_64-linux` | Headless infrastructure | None | `tundra switch mini1` |
 | Mini 2 | `nixosConfigurations.mini2` | `x86_64-linux` | Headless media services | None | `tundra switch mini2` |
 
@@ -18,7 +17,7 @@ Standalone Home Manager outputs remain available for the minis:
 
 They are fallback/user-environment outputs, not replacements for the NixOS system outputs.
 
-`hosts/alpine/` is retained as legacy material but has no flake output. It is not part of the supported output matrix or CI gate.
+Retired hosts (`alpine`, `beattie`, `beattie-minimal`, `nixos`) were removed on 2026-10-26; recover them from git history if needed.
 
 ## Ownership boundaries
 

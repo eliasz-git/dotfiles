@@ -28,13 +28,13 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 usage_host() {
-  echo "Hosts: macbook, laptop, desktop, beattie, mini1, mini2" >&2
+  echo "Hosts: macbook, laptop, desktop, mini1, mini2" >&2
 }
 
 host_kind() {
   case "$1" in
     macbook) echo darwin ;;
-    laptop|desktop|beattie|mini1|mini2) echo nixos ;;
+    laptop|desktop|mini1|mini2) echo nixos ;;
     *) return 1 ;;
   esac
 }
@@ -57,7 +57,7 @@ resolve_host() {
     Darwin) [[ "$machine" == "macbook" ]] && printf '%s\n' macbook && return 0 ;;
     Linux)
       case "$machine" in
-        laptop|desktop|beattie|mini1|mini2) printf '%s\n' "$machine"; return 0 ;;
+        laptop|desktop|mini1|mini2) printf '%s\n' "$machine"; return 0 ;;
       esac
       ;;
   esac
@@ -168,7 +168,7 @@ cmd_rebuild() {
     argument="$1"
     case "$argument" in
       --no-pull|--offline) pull=false ;;
-      macbook|laptop|desktop|beattie|mini1|mini2) host="$argument" ;;
+      macbook|laptop|desktop|mini1|mini2) host="$argument" ;;
       *) log_error "Unknown rebuild option or host: $argument"; echo "Usage: tundra rb [--no-pull|--offline] [host]" >&2; exit 2 ;;
     esac
     shift
@@ -211,7 +211,7 @@ cmd_update() {
     argument="$1"
     case "$argument" in
       --no-pull|--offline) pull=false ;;
-      macbook|laptop|desktop|beattie|mini1|mini2) host="$argument" ;;
+      macbook|laptop|desktop|mini1|mini2) host="$argument" ;;
       *) log_error "Unknown update option or host: $argument"; echo "Usage: tundra rbu [--no-pull|--offline] [host]" >&2; exit 2 ;;
     esac
     shift
@@ -409,7 +409,7 @@ INPUTS AND OTHER:
   help                         Show this help
 
 SUPPORTED HOSTS:
-  macbook laptop desktop beattie mini1 mini2
+  macbook laptop desktop mini1 mini2
 
 Examples:
   tundra eval desktop

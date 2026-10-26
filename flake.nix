@@ -139,25 +139,6 @@
       ];
     };
 
-    # ── Beattie showcase — NixOS GNOME (Wayland, Tundra Dark) ────
-    nixosConfigurations.beattie = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit hermes-agent; };
-      system = linuxSystem;
-      pkgs   = linuxPkgs;
-      modules = [
-        ./hosts/beattie/configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs           = true;
-          home-manager.useUserPackages         = true;
-          home-manager.backupFileExtension     = "backup";
-          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
-          home-manager.users.demo   = import ./hosts/beattie/home.nix;
-          home-manager.users.elias  = import ./hosts/beattie/home.nix;
-        }
-      ];
-    };
-
     # ── DESKTOP (formerly Gaming PC) ───────────────────────────
     nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
