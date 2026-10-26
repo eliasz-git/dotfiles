@@ -304,7 +304,6 @@ in {
     # Apps
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     discord
-    bottles
     brightnessctl
     heroic
     keepassxc
@@ -325,6 +324,9 @@ in {
     # by name from tundra-screensaver, so they have to be on the session PATH
     # that swayidle and the Mango keybindings run with.
     figlet gawk
+    # tundra-wallpaper runs `file --mime-type` to pick the extension; without it
+    # every file prompts as "may not be an image" and PNG/WebP are saved as .jpg.
+    file
     nnn lf
     # Clipboard
     cliphist
