@@ -62,6 +62,8 @@
       "jq" "yq" "git-delta" "lazygit" "btop" "dust" "procs" "tealdeer"
       # Restored 2026-10-12 — zap cleanup removed these previously undeclared strays
       "apfel" "ggml" "libusb" "llama.cpp" "python@3.11" "scrcpy"
+      # Declared 2026-10-26 — installed but undeclared, would be removed by zap cleanup
+      "i2pd"
       # (syncthing not re-added — nix-managed via launchd agent, modules/darwin/syncthing.nix)
     ];
     casks = [
@@ -87,6 +89,8 @@
       "hiddenbar" "monitorcontrol" "xquartz"
       # Restored 2026-10-12 — previously undeclared, removed by zap cleanup
       "localsend" "android-platform-tools"
+      # Declared 2026-10-26 — installed but undeclared, would be removed by zap cleanup
+      "aerial"
     ];
   };
 

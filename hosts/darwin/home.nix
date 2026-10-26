@@ -178,12 +178,43 @@
     antigravity = "agy";
     gemini = "agy";
     # copilot = "copilot-cli";  # Not in Homebrew - install via npm: npm i -g @github/copilot-cli
+    # Galaxy S6 hacking deck (migrated from the unused ~/.zshrc, 2026-10-26)
+    s6 = "scrcpy -K -S -w";               # USB mirror: UHID keyboard, phone screen off, stay awake
+    s6w = "scrcpy --tcpip";               # switch to wireless (run once while USB'd)
+    s6conn = "adb connect 192.168.68.66:5555";  # wireless adb; update the IP (or use the Tailscale IP)
+    s6ssh = "adb forward tcp:8022 tcp:8022 >/dev/null && ssh -p 8022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null u0_a212@127.0.0.1";
+    s6vnc = "adb forward tcp:5901 tcp:5901 >/dev/null && open vnc://localhost:5901";  # Kali KeX desktop
+    s6frida = "~/s6/tools/venv/bin/frida-ps -U";
+    s6obj = "~/s6/tools/venv/bin/objection";
   };
 
   # macOS-specific update function
   programs.zsh.initContent = lib.mkOrder 600 ''
     update-all() {
         rbu
+    }
+
+    # s6menu: launch the phone's cybersecurity menu over SSH or USB
+    s6menu() {
+      echo "=== S6 Deck transport ==="
+      echo "  [1] SSH    (ssh -p 8022 u0_a212@127.0.0.1)"
+      echo "  [2] USB    (adb shell)"
+      echo "  [3] cancel"
+      printf 'choice [1-3]: '
+      read -r c
+      case "$c" in
+        1)
+          adb forward tcp:8022 tcp:8022 >/dev/null 2>&1
+          ssh -p 8022 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            u0_a212@127.0.0.1 'export PATH=/data/data/com.termux/files/usr/bin:$PATH && export HOME=/data/data/com.termux/files/home && s6menu'
+          ;;
+        2)
+          adb shell "su u0_a212 -c 'export PATH=/data/data/com.termux/files/usr/bin:\$PATH && export HOME=/data/data/com.termux/files/home && s6menu'"
+          ;;
+        3|*)
+          echo "cancelled"
+          ;;
+      esac
     }
 
     # Source AI keys if present
