@@ -1,5 +1,7 @@
 # Tundra Nix configuration
 
+![Tundra banner](docs/branding/tundra-banner-2x1.png)
+
 Multi-host Nix configuration for macOS, NixOS desktop systems, a showcase workstation, and two headless homelab minis. Host outputs stay explicit so a build for one machine cannot be mistaken for validation of another.
 
 ## Supported outputs
@@ -8,7 +10,7 @@ Multi-host Nix configuration for macOS, NixOS desktop systems, a showcase workst
 |---|---|---|
 | MacBook | `darwinConfigurations.macbook` | AeroSpace, SketchyBar, Ghostty, Homebrew |
 | Laptop | `nixosConfigurations.laptop` | Niri + Waybar |
-| Desktop | `nixosConfigurations.desktop` | Hyprland + Waybar + Steam/gaming stack |
+| Desktop | `nixosConfigurations.desktop` | Mango + mangobar + Steam/gaming stack |
 | Beattie | `nixosConfigurations.beattie` | Showcase/lab workstation |
 | Mini 1 | `nixosConfigurations.mini1` | Headless infrastructure |
 | Mini 2 | `nixosConfigurations.mini2` | Headless media services |
@@ -81,18 +83,31 @@ The wallpaper collection includes public-domain painting sources and attribution
 ./scripts/wallpaper.sh wallpapers/saal-forest-landscape-moonlight.jpg
 ```
 
-On the desktop, Hyprland rotates the painting set every 15 minutes. The daemon runs one `swaybg` per monitor and hides the wallpaper only on a monitor showing a fullscreen window, so fullscreen media or games on one display leave the other display's wallpaper untouched.
+On the desktop, a daemon rotates the painting set every 15 minutes. The daemon runs one `swaybg` per monitor and hides the wallpaper only on a monitor showing a fullscreen window, so fullscreen media or games on one display leave the other display's wallpaper untouched.
+
+## Screenshots
+
+![tundra CLI help and doctor output](docs/screenshots/terminal.png)
+
+![Six explicit host outputs](docs/screenshots/hosts.png)
+
+![Everforest Blue palette](docs/screenshots/theme.png)
+
+![Wallpaper rotation](docs/screenshots/wallpapers.png)
+
+The terminal panel is drawn from the `tundra` help text and a real `doctor` run, with the longest descriptions shortened to fit. The host, palette, and wallpaper graphics are built from `flake.nix`, `modules/home/themes.nix`, and `wallpapers/`, so they cannot drift from the code.
 
 ## Repository layout
 
-- `flake.nix` — explicit system and Home Manager outputs.
-- `hosts/` — host-owned hardware, services, and role-specific configuration.
-- `modules/shared/` — cross-platform CLI/home modules.
-- `modules/home/` — Home Manager-wide options such as the canonical palette.
-- `modules/nixos/` and `modules/system/` — Linux/NixOS-only consumers and services.
-- `modules/darwin/` — macOS-specific consumers.
-- `scripts/` — validation and operational helpers.
-- `docs/` — maintained output and operations documentation.
+- `flake.nix`: explicit system and Home Manager outputs.
+- `hosts/`: host-owned hardware, services, and role-specific configuration.
+- `modules/shared/`: cross-platform CLI/home modules.
+- `modules/home/`: Home Manager-wide options such as the canonical palette.
+- `modules/nixos/` and `modules/system/`: Linux/NixOS-only consumers and services.
+- `modules/darwin/`: macOS-specific consumers.
+- `scripts/`: validation and operational helpers.
+- `docs/`: maintained output and operations documentation.
+- `docs/screenshots/`: images used in this README.
 
 ## CI and contribution contract
 

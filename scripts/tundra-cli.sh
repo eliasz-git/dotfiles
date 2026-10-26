@@ -379,7 +379,7 @@ cmd_gc() {
 
 cmd_help() {
   cat <<EOF
-Tundra CLI v$VERSION — explicit Nix configuration operations
+Tundra CLI v$VERSION: explicit Nix configuration operations
 
 USAGE:
   tundra <command> [host]

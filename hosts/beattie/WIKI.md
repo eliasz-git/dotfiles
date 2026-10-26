@@ -36,8 +36,8 @@ This wiki lives at `hosts/beattie/WIKI.md` — open anytime with **Super → wik
 All three run the **same NixOS config**, different desktops:
 
 - **This: beattie — KDE Plasma** — polished, simple, and customizable. Best first desktop.
-- **Gaming station** — Hyprland tiling, Wayland-native, and gaming-focused.
-- **Omarchy station** — Hyprland tiling, keyboard-driven, for power users.
+- **Gaming station** — Mango tiling, Wayland-native, and gaming-focused.
+- **Omarchy station** — Mango tiling, keyboard-driven, for power users.
 
 Try all three. Same apps, same terminal, different shell.
 

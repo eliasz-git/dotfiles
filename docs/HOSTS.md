@@ -6,7 +6,7 @@ This repository keeps host outputs explicit. A successful evaluation of one host
 |---|---|---|---|---|---|
 | MacBook | `darwinConfigurations.macbook` | `aarch64-darwin` | Personal macOS workstation | AeroSpace, SketchyBar, Ghostty | `tundra switch macbook` |
 | Laptop | `nixosConfigurations.laptop` | `x86_64-linux` | NixOS laptop | Niri + Waybar | `tundra switch laptop` |
-| Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Hyprland + Waybar; rotating painting wallpaper hidden only on a fullscreen monitor | `tundra switch desktop` |
+| Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Mango + mangobar; rotating painting wallpaper hidden only on a fullscreen monitor | `tundra switch desktop` |
 | Beattie | `nixosConfigurations.beattie` | `x86_64-linux` | Showcase and lab workstation | GNOME/KDE configuration owned by host files | `tundra switch beattie` |
 | Mini 1 | `nixosConfigurations.mini1` | `x86_64-linux` | Headless infrastructure | None | `tundra switch mini1` |
 | Mini 2 | `nixosConfigurations.mini2` | `x86_64-linux` | Headless media services | None | `tundra switch mini2` |
@@ -29,7 +29,7 @@ They are fallback/user-environment outputs, not replacements for the NixOS syste
 - `modules/darwin/`: nix-darwin and macOS-specific Home Manager consumers.
 - `hosts/<name>/`: host hardware, services, role-specific packages, and host selection.
 
-The minis intentionally do not import Hyprland, Waybar, Rofi, or other desktop modules. The desktop owns Hyprland and gaming services. The MacBook owns AeroSpace/SketchyBar/Ghostty rather than Linux desktop components.
+The minis intentionally do not import Mango, mangobar, Rofi, or other desktop modules. The desktop owns Mango and gaming services. The MacBook owns AeroSpace/SketchyBar/Ghostty rather than Linux desktop components.
 
 ## Hardware and secrets
 

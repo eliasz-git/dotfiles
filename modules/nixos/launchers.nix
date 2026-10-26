@@ -2,8 +2,8 @@
 
 # Desktop entries for tools that ship no .desktop file of their own.
 #
-# Most of these are TUIs that the desktop already exposes through Hyprland
-# keybindings (see modules/nixos/hyprland/bindings.nix), but a keybinding only
+# Most of these are TUIs that the desktop already exposes through Mango
+# keybindings (see modules/nixos/mango/bindings.nix), but a keybinding only
 # helps someone who already remembers it. Advertising them in the launcher makes
 # them discoverable and keeps the icon list honest.
 #
