@@ -121,6 +121,7 @@
             niri.homeModules.config
             agenix.homeManagerModules.default
           ];
+          home-manager.extraSpecialArgs        = { inherit zen-browser; };
           home-manager.users.elias            = import ./hosts/laptop/home.nix;
         }
       ];

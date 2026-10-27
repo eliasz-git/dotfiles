@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, zen-browser, ... }:
 
 {
   imports = [
@@ -26,7 +26,9 @@
     bluetuith netop
     wl-clipboard grim slurp swappy
     dunst rofi swaybg
-    librewolf vscodium signal-desktop
+    # Zen comes from the zen-browser flake input (not in nixpkgs); binary is `zen-beta`.
+    zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    vscodium signal-desktop
     bitwarden-desktop obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
     steam calibre discord gramps rustdesk tailscale docker
@@ -220,14 +222,14 @@
       window-rules = [
         { matches = [ { app-id = "^ghostty$"; } ]; opacity = 0.85; }
         { matches = [ { app-id = "^VSCodium$"; } ]; opacity = 0.88; }
-        { matches = [ { app-id = "^librewolf$"; } ]; opacity = 0.92; }
+        { matches = [ { app-id = "^zen-beta$"; } ]; opacity = 0.92; }
         { matches = [ { app-id = "^thunar$"; } ]; opacity = 0.85; }
         { matches = [ { app-id = "^obsidian$"; } ]; opacity = 0.88; }
       ];
 
       binds = with config.lib.niri.actions; {
         "Mod+G".action = spawn "ghostty";
-        "Mod+B".action = spawn "librewolf";
+        "Mod+B".action = spawn "zen-beta";
         "Mod+U".action = spawn "vscodium";
         "Mod+M".action = spawn "rmpc";            # music (rmpc)
         "Mod+Return".action = spawn "thunar";
