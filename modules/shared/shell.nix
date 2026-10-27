@@ -8,6 +8,10 @@ let
     yellow = "#dbbc7f"; green = "#a7c080"; red = "#e67e80"; teal = "#83c092";
   };
 in {
+  home.file.".shellcheckrc" = {
+    text = '# Sourced files are resolved at runtime through $CONFIG_DIR.\ndisable=SC1091';
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;

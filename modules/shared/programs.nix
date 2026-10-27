@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     eza bat fzf zoxide ripgrep fastfetch yq tree yazi btop nano
-    curl wget git htop tmux bottom lazydocker
+    curl wget git htop tmux bottom lazydocker thefuck topgrade
     gh lazygit delta python312 nodejs_22 go rustup uv
     wakeonlan wireguard-tools nmap tcpdump mtr speedtest-cli
     ffmpeg mediainfo p7zip unzip unrar gzip bzip2 xz zip syncthing

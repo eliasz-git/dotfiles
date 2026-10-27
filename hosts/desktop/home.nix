@@ -62,6 +62,9 @@ in {
     # directory stays user-owned (see the module for the sync story).
     ../../modules/shared/anki.nix
     ../../modules/shared/git.nix
+    ../../modules/shared/thefuck.nix
+    ../../modules/shared/tmux.nix
+    ../../modules/shared/topgrade.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
     ../../modules/shared/operations.nix
