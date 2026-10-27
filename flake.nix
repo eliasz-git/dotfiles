@@ -51,9 +51,22 @@
     # published to cache.nixos.org, so anything depending on ltrace compiles it
     # from source and then fails on the test suite. The package itself builds
     # and works; only the suite is at fault. Drop this once nixpkgs fixes it.
+    #
+    # pyopenjtalk-plus 0.4.1-post9 builds, but its test suite has one failing
+    # test (an error message was reworded: it expects "must be str", the
+    # interpreter now says "Expected str, got int"). calibre pulls it in
+    # through piper-tts, so the laptop's Home Manager generation failed to
+    # build in CI. Skip its checkPhase until nixpkgs fixes the test.
     overlays = [
       (final: prev: {
         ltrace = prev.ltrace.overrideAttrs (_: { doCheck = false; });
+
+        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+          (pyFinal: pyPrev:
+            prev.lib.optionalAttrs (pyPrev ? pyopenjtalk-plus) {
+              pyopenjtalk-plus = pyPrev.pyopenjtalk-plus.overridePythonAttrs (_: { doCheck = false; });
+            })
+        ];
       })
     ];
 
