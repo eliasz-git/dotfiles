@@ -1,0 +1,66 @@
+---
+- Media:
+    - Jellyfin:
+        href: https://media.adal-matrix.ts.net
+        description: Jellyfin Media Server
+    - Navidrome:
+        href: https://music.adal-matrix.ts.net
+        description: Navidrome Music
+    - Immich Photos:
+        href: https://photos.adal-matrix.ts.net
+        description: Immich Photos on 2TB
+- Arr:
+    - Lidarr:
+        href: https://lidarr.adal-matrix.ts.net
+        description: Music Downloader
+    - Prowlarr:
+        href: https://prowlarr.adal-matrix.ts.net
+        description: Indexer Manager
+    - Sonarr:
+        href: https://sonarr.adal-matrix.ts.net
+        description: TV Shows
+    - Radarr:
+        href: https://radarr.adal-matrix.ts.net
+        description: Movies
+    - Seerr:
+        href: https://seerr.adal-matrix.ts.net
+        description: Requests (was Jellyseerr)
+    - Bazarr:
+        href: https://bazarr.adal-matrix.ts.net
+        description: Subtitles
+    - Tautulli:
+        href: https://tautulli.adal-matrix.ts.net
+        description: Jellyfin Stats
+    - RDT-Client:
+        href: https://rdt-client.adal-matrix.ts.net
+        description: TorBox Bridge
+    - Maintainerr:
+        href: https://maintainerr.adal-matrix.ts.net
+        description: Auto-clean watched media
+- Docs:
+    - Paperless-NGX:
+        href: https://paperless.adal-matrix.ts.net
+        description: Document Archive 8010
+- Infra (mini1):
+    - AdGuard Home:
+        href: https://adguard.adal-matrix.ts.net
+        description: AdGuard DNS 192.168.1.75:53
+    - Home Assistant:
+        href: https://ha.adal-matrix.ts.net
+        description: Home Assistant 8123
+    - Cockpit mini1:
+        href: http://192.168.1.75:9090
+        description: mini1 System
+- Tools:
+    - Homepage:
+        href: https://home.adal-matrix.ts.net
+        description: Dashboard
+    - Uptime Kuma:
+        href: https://status.adal-matrix.ts.net
+        description: Uptime Monitor 3001
+    - Cockpit mini2:
+        href: http://192.168.1.76:9090
+        description: mini2 System
+    - ARM:
+        href: https://arm.adal-matrix.ts.net
+        description: DVD Auto Rip

@@ -1,0 +1,37 @@
+{
+    "global": { "show_in_menu_bar": false },
+    "machine_specific": { "krbn-empty-machine-identifier": { "enable_multitouch_extension": true } },
+    "profiles": [
+        {
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "Caps Lock -> Command+Control (AeroSpace Mod), tap -> Escape",
+                        "manipulators": [
+                            {
+                                "description": "Caps Lock -> Left Command + Left Control, tap -> Escape",
+                                "from": { "key_code": "caps_lock" },
+                                "to": [{ "key_code": "left_command", "modifiers": ["left_control"] }],
+                                "to_if_alone": [{ "key_code": "escape" }],
+                                "type": "basic"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "devices": [
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 50495,
+                        "vendor_id": 1133
+                    },
+                    "ignore_vendor_events": true
+                }
+            ],
+            "name": "Default profile",
+            "selected": true,
+            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+        }
+    ]
+}

@@ -1,0 +1,264 @@
+# mini2 — media stack (R5 2400GE Vega 11, headless, 16GB)
+# Deploy: systemctl start homelab-compose-media (NixOS manages this lifecycle)
+# Requires: /mnt/storage mounted from mini1 and /var/lib/secrets/stacks/media.env
+# PUID/PGID 1000 = elias. Change if your user id differs (id -u / id -g).
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  prowlarr:
+    <<: *common
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    ports: ["9696:9696"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/prowlarr:/config
+
+  flaresolverr:
+    <<: *common
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    ports: ["8191:8191"]
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=America/New_York
+
+  sonarr:
+    <<: *common
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    ports: ["8989:8989"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/sonarr:/config
+      - /mnt/storage/tvshows:/tv
+      - /mnt/storage/downloads:/downloads
+
+  radarr:
+    <<: *common
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    ports: ["7878:7878"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/radarr:/config
+      - /mnt/storage/movies:/movies
+      - /mnt/storage/downloads:/downloads
+
+  lidarr:
+    <<: *common
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    ports: ["8686:8686"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/lidarr:/config
+      - /mnt/storage/music:/music
+      - /mnt/storage/downloads:/downloads
+
+  seerr:
+    <<: *common
+    image: seerr/seerr:latest
+    container_name: seerr
+    ports: ["5055:5055"]
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/seerr:/app/config
+
+  jellyfin:
+    <<: *common
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    ports: ["8096:8096", "8920:8920"]
+    devices: ["/dev/dri:/dev/dri"]  # Vega 11 VAAPI
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/jellyfin/config:/config
+      - /mnt/storage/appdata/media/jellyfin/cache:/cache
+      - /mnt/storage/tvshows:/media/tv:ro
+      - /mnt/storage/movies:/media/movies:ro
+      - /mnt/storage/music:/media/music:ro
+
+  navidrome:
+    <<: *common
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    ports: ["4533:4533"]
+    env_file: [/var/lib/secrets/stacks/media.env]
+    environment:
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+      - ND_LASTFM_ENABLED=true
+      # API key/secret via /var/lib/secrets/stacks/media.env (not in git).
+    volumes:
+      - /mnt/storage/appdata/media/navidrome:/data
+      - /mnt/storage/music:/music:ro
+
+  immich-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: immich-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD must be set}
+      POSTGRES_DB: immich
+    volumes:
+      - /mnt/storage/appdata/media/immich-postgres:/var/lib/postgresql/data
+
+  immich-redis:
+    image: redis:7
+    container_name: immich-redis
+    restart: unless-stopped
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    container_name: immich-machine-learning
+    restart: unless-stopped
+    volumes:
+      - /mnt/storage/appdata/media/immich-ml:/cache
+    environment:
+      - TZ=America/New_York
+
+  arm:
+    image: automaticrippingmachine/automatic-ripping-machine:latest
+    container_name: arm
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/sr0:/dev/sr0
+    ports: ["8080:8080"]
+    volumes:
+      - /mnt/storage/appdata/media/arm:/home/arm
+      - /mnt/storage/appdata/media/arm/logs:/home/arm/logs
+      - /mnt/storage/appdata/media/arm/config:/etc/arm/config
+      - /mnt/storage/movies:/home/arm/media/movies:rw
+      - /mnt/storage/music:/home/arm/media/music:rw
+      - /mnt/storage/tvshows:/home/arm/media/tvshows:rw
+    environment:
+      - ARM_UID=1000
+      - ARM_GID=100
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports: ["3000:3000"]
+    volumes:
+      - /mnt/storage/appdata/media/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - HOMEPAGE_ALLOWED_HOSTS=home.adal-matrix.ts.net,mini2.adal-matrix.ts.net,localhost,127.0.0.1
+    restart: unless-stopped
+
+  rdt-client:
+    image: rogerfar/rdtclient:latest
+    container_name: rdt-client
+    ports: ["6500:6500"]
+    volumes:
+      # Upstream docs: /data/db for sqlite + /data/downloads for downloads. We keep /downloads for
+      # Lidarr compat (Lidarr/radarr/sonarr all use /mnt/storage/downloads:/downloads). If you use
+      # /data/downloads here, set rdt-client Settings Download path=/data/downloads and add Lidarr
+      # Remote Path Mapping Remote=/data/downloads Local=/downloads (or Local=/data/downloads if you
+      # also change Lidarr mount). Host path is same for all arrs so /downloads/lidarr is visible
+      # in both containers once systemd.tmpfiles creates it.
+      - /mnt/storage/appdata/media/rdt-client:/data
+      - /mnt/storage/downloads:/downloads
+    environment:
+      - TZ=America/New_York
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+
+  bazarr:
+    <<: *common
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    ports: ["6767:6767"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/bazarr:/config
+      - /mnt/storage/movies:/movies
+      - /mnt/storage/tvshows:/tv
+
+  tautulli:
+    <<: *common
+    image: ghcr.io/tautulli/tautulli:latest
+    container_name: tautulli
+    ports: ["8181:8181"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/storage/appdata/media/tautulli:/config
+      - /mnt/storage/appdata/media/jellyfin/config:/config-jellyfin:ro
+
+  maintainerr:
+    image: ghcr.io/maintainerr/maintainerr:latest
+    container_name: maintainerr
+    ports: ["6246:6246"]
+    user: "1000:1000"
+    volumes:
+      - /mnt/storage/appdata/media/maintainerr:/opt/data
+    environment:
+      - TZ=America/New_York
+    restart: unless-stopped
+
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:8
+    container_name: recyclarr
+    volumes:
+      - /mnt/storage/appdata/media/recyclarr:/config
+    environment:
+      - TZ=America/New_York
+      - CRON_SCHEDULE=@daily
+    restart: unless-stopped
+
+  immich:
+    <<: *common
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: immich
+    ports: ["2283:2283"]
+    # serves photos at /mnt/storage/photos → https://photos.adal-matrix.ts.net via svc:photos
+    depends_on:
+      - immich-postgres
+      - immich-redis
+    devices:
+      - /dev/dri:/dev/dri  # Vega 11 VAAPI for video transcode
+    volumes:
+      - /mnt/storage/immich:/usr/src/app/upload
+      - /mnt/storage/photos:/usr/src/app/external:ro
+    environment:
+      - TZ=America/New_York
+      - DB_HOSTNAME=immich-postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD must be set}
+      - DB_DATABASE_NAME=immich
+      - REDIS_HOSTNAME=immich-redis

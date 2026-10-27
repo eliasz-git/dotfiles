@@ -1,0 +1,48 @@
+name: Weekly flake update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: weekly-flake-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - name: Update flake inputs
+        run: nix flake update
+      - name: Evaluate all outputs
+        run: nix flake check --all-systems --no-build
+      - name: Open or update pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update flake inputs'
+          title: 'chore: update flake inputs'
+          body: |
+            Automated weekly flake input update.
+
+            The PR is opened for review and CI validation. No host activation occurs.
+          branch: automation/flake-update
+          delete-branch: true
+          labels: dependencies,nix
+      # Pull requests created with GITHUB_TOKEN do not trigger other workflows,
+      # so the PR would sit with no checks. Dispatch the validation run on the
+      # update branch instead; its check runs attach to the PR's head commit.
+      - name: Run CI on the update branch
+        if: steps.cpr.outputs.pull-request-operation == 'created' || steps.cpr.outputs.pull-request-operation == 'updated'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run nix.yml --ref automation/flake-update

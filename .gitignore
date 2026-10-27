@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Nix
+result
+result-*
+*.backup
+
+# NixOS hardware configuration (system-specific)
+hosts/laptop/hardware-configuration.nix
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Secrets / local env
+hosts/mini/**/stacks/**/.env
+hosts/mini/secrets.yaml
+
+# Logs
+*.log
+pi-session*.html
+
+# Manus local runtime artifacts
+.manus/
+
+# Hand-made backups
+*.bak
+*.bak[0-9]*
+
+# Wallpaper daemon backups (wallpapers/wallpaper_backup_<timestamp>.<ext>)
+wallpapers/wallpaper_backup_*
+
+# Karabiner writes timestamped backups next to the config
+modules/darwin/karabiner/automatic_backups/
+.opencode/
+standalone-dotfiles/
+*.DS_Store
