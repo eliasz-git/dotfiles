@@ -52,20 +52,24 @@
     # from source and then fails on the test suite. The package itself builds
     # and works; only the suite is at fault. Drop this once nixpkgs fixes it.
     #
-    # pyopenjtalk-plus 0.4.1-post9 builds, but its test suite has one failing
-    # test (an error message was reworded: it expects "must be str", the
-    # interpreter now says "Expected str, got int"). calibre pulls it in
-    # through piper-tts, so the laptop's Home Manager generation failed to
-    # build in CI. Skip its checkPhase until nixpkgs fixes the test.
+    # Python packages whose own test suites break the build in CI even though
+    # the packages themselves compile and work. Their checkPhase is skipped
+    # until nixpkgs fixes or stabilises the tests:
+    #  - pyopenjtalk-plus 0.4.1-post9: one test expects "must be str" but the
+    #    interpreter now says "Expected str, got int". calibre pulls it in
+    #    through piper-tts, which broke the laptop's Home Manager generation.
+    #  - pyrate-limiter 4.5.0: test_limiter_async_factory_get asserts on timing
+    #    (assert 300 <= 270) and fails on a loaded runner. lutris reaches it
+    #    through moddb, which made the desktop build fail intermittently.
     overlays = [
       (final: prev: {
         ltrace = prev.ltrace.overrideAttrs (_: { doCheck = false; });
 
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (pyFinal: pyPrev:
-            prev.lib.optionalAttrs (pyPrev ? pyopenjtalk-plus) {
-              pyopenjtalk-plus = pyPrev.pyopenjtalk-plus.overridePythonAttrs (_: { doCheck = false; });
-            })
+            prev.lib.genAttrs
+              (builtins.filter (n: pyPrev ? ${n}) [ "pyopenjtalk-plus" "pyrate-limiter" ])
+              (n: pyPrev.${n}.overridePythonAttrs (_: { doCheck = false; })))
         ];
       })
     ];
