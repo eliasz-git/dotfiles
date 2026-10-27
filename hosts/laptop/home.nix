@@ -5,8 +5,6 @@
     ../../modules/shared/programs.nix
     ../../modules/shared/shell.nix
     ../../modules/shared/git.nix
-    ../../modules/shared/thefuck.nix
-    ../../modules/shared/tmux.nix
     ../../modules/shared/topgrade.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix

@@ -9,7 +9,10 @@ let
   };
 in {
   home.file.".shellcheckrc" = {
-    text = '# Sourced files are resolved at runtime through $CONFIG_DIR.\ndisable=SC1091';
+    text = ''
+      # Sourced files are resolved at runtime through $CONFIG_DIR.
+      disable=SC1091
+    '';
   };
 
   programs.zsh = {
