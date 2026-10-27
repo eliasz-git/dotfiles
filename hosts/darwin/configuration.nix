@@ -49,7 +49,7 @@
       "imsg" "remindctl"
       "mole"
       "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
-      "docker" "blueutil"
+      "docker" "docker-compose" "blueutil"
       # AI tools - not in Homebrew, install via npm:
       # "antigravity-cli" -> npm i -g
       # "claude-code" -> npm i -g @anthropic-ai/claude-code
@@ -82,6 +82,8 @@
       "foobar2000" "xld" "musicbrainz-picard" "soulseek"
       "ghostty" "openlogi"
       "hermes-desktop" "pear-desktop" "wakatime"
+      # Docker Desktop (daemon) — needed for docker-compose; CLI `docker` is in brews above
+      "docker"
       # Fonts
       "font-jetbrains-mono-nerd-font" "font-fira-code-nerd-font" "font-victor-mono-nerd-font"
       # "font-sf-mono-nerd-font" not available in Homebrew
