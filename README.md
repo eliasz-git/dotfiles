@@ -1,4 +1,4 @@
-# tundra-dots
+# dotfiles
 
 ![Tundra banner](docs/branding/tundra-banner-2x1.png)
 
@@ -26,8 +26,8 @@ See [the host inventory](docs/HOSTS.md) for architecture, ownership boundaries, 
 2. Clone this repository:
 
    ```sh
-   git clone https://github.com/tundra-node/tundra-dots ~/.config/tundra-dots
-   cd ~/.config/tundra-dots
+   git clone git@github.com:eliasz-git/dotfiles.git ~/Developer/dotfiles
+   cd ~/Developer/dotfiles
    ```
 
 3. Generate the hardware file on the target NixOS machine when required:
