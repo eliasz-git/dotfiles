@@ -34,10 +34,10 @@
   programs.apple-music-scrobbler.enable = true;
 
   # Karabiner — keeps keyboard remaps under version control
-  # Caps Lock → Command+Control (AeroSpace Mod), tap → Escape
+  # Caps Lock → Left Command (super/meta), tap → Escape
   home.file.".config/karabiner".source =
     config.lib.file.mkOutOfStoreSymlink
-      "/Users/elias/.config/nix-config/modules/darwin/karabiner";
+      "/Users/elias/Developer/dotfiles/modules/darwin/karabiner";
 
   # AeroSpace — i3-style tiling window manager
   # Mod key: cmd+ctrl, produced by Karabiner from Caps Lock

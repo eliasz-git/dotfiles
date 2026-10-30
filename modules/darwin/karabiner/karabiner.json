@@ -6,12 +6,12 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Caps Lock -> Command+Control (AeroSpace Mod), tap -> Escape",
+                        "description": "Caps Lock -> Left Command (super/meta), tap -> Escape",
                         "manipulators": [
                             {
-                                "description": "Caps Lock -> Left Command + Left Control, tap -> Escape",
+                                "description": "Caps Lock -> Left Command, tap -> Escape",
                                 "from": { "key_code": "caps_lock" },
-                                "to": [{ "key_code": "left_command", "modifiers": ["left_control"] }],
+                                "to": [{ "key_code": "left_command" }],
                                 "to_if_alone": [{ "key_code": "escape" }],
                                 "type": "basic"
                             }
