@@ -39,5 +39,4 @@ wallpapers/wallpaper_backup_*
 # Karabiner writes timestamped backups next to the config
 modules/darwin/karabiner/automatic_backups/
 .opencode/
-standalone-dotfiles/
 *.DS_Store
