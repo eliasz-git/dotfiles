@@ -5,11 +5,15 @@ let
   # $mod = SUPER (Caps Lock mapped via input.nix: xkb_rules_options = caps:super).
   # Mango joins multiple modifiers with '+', i.e. SUPER+CTRL (Hyprland's
   # SUPER CTRL syntax becomes SUPER+CTRL).
+  #
+  # The compositor inherits a PATH without ~/.local/bin, so local helpers
+  # must be invoked by absolute path; mmsg and jq inside the helper are on
+  # the session PATH.
+  focusTag = "${config.home.homeDirectory}/.local/bin/tundra-focus-tag";
   bindings = [
     # ── Core ────────────────────────────────────────────────────────
     "SUPER,Return,spawn,foot"
     "SUPER,Space,spawn,rofi -show drun"
-    "SUPER,Escape,spawn,tundra-screensaver"
     "SUPER,w,spawn,rofi -show window"
     "SUPER,d,spawn,rofi -show ssh"
     "SUPER+ALT,c,spawn,rofi -show calc"
@@ -39,25 +43,40 @@ let
     # ── Tags (workspaces) ───────────────────────────────────────────
     # Mango has 9 tags by default (tag_num=9). Tag 0 is the special
     # workspace overlay. Hyprland had workspaces 1-10; 10 is dropped.
-    "SUPER,1,view,1"
-    "SUPER,2,view,2"
-    "SUPER,3,view,3"
-    "SUPER,4,view,4"
-    "SUPER,5,view,5"
-    "SUPER,6,view,6"
-    "SUPER,7,view,7"
-    "SUPER,8,view,8"
-    "SUPER,9,view,9"
+    #
+    # dwl/mango keeps a separate selected tagset per monitor, so plain
+    # `view,N` would create a second workspace N on the focused display
+    # even when workspace N is already showing on the other one.
+    # tundra-focus-tag enforces one shared list instead: there is only one
+    # workspace N. SUPER+N focuses the display currently viewing N, or
+    # claims N on the focused display when nobody is viewing it.
+    # SUPER+SHIFT+N sends the focused window to N wherever that lives.
+    # The helper uses mmsg + jq from the session PATH.
+    "SUPER,1,spawn,${focusTag} 1"
+    "SUPER,2,spawn,${focusTag} 2"
+    "SUPER,3,spawn,${focusTag} 3"
+    "SUPER,4,spawn,${focusTag} 4"
+    "SUPER,5,spawn,${focusTag} 5"
+    "SUPER,6,spawn,${focusTag} 6"
+    "SUPER,7,spawn,${focusTag} 7"
+    "SUPER,8,spawn,${focusTag} 8"
+    "SUPER,9,spawn,${focusTag} 9"
 
-    "SUPER+SHIFT,1,tag,1"
-    "SUPER+SHIFT,2,tag,2"
-    "SUPER+SHIFT,3,tag,3"
-    "SUPER+SHIFT,4,tag,4"
-    "SUPER+SHIFT,5,tag,5"
-    "SUPER+SHIFT,6,tag,6"
-    "SUPER+SHIFT,7,tag,7"
-    "SUPER+SHIFT,8,tag,8"
-    "SUPER+SHIFT,9,tag,9"
+    "SUPER+SHIFT,1,spawn,${focusTag} -m 1"
+    "SUPER+SHIFT,2,spawn,${focusTag} -m 2"
+    "SUPER+SHIFT,3,spawn,${focusTag} -m 3"
+    "SUPER+SHIFT,4,spawn,${focusTag} -m 4"
+    "SUPER+SHIFT,5,spawn,${focusTag} -m 5"
+    "SUPER+SHIFT,6,spawn,${focusTag} -m 6"
+    "SUPER+SHIFT,7,spawn,${focusTag} -m 7"
+    "SUPER+SHIFT,8,spawn,${focusTag} -m 8"
+    "SUPER+SHIFT,9,spawn,${focusTag} -m 9"
+
+    # Move this display's workspace to the other display and follow it. The
+    # other display's workspace swaps here, so both stay visible. There are
+    # only two monitors, so both brackets run the same action.
+    "SUPER+ALT,bracketright,spawn,${focusTag} -M"
+    "SUPER+ALT,bracketleft,spawn,${focusTag} -M"
 
     # ── Navigation ──────────────────────────────────────────────────
     "SUPER,left,focusdir,left"
@@ -68,9 +87,13 @@ let
     "SUPER,l,focusdir,right"
     "SUPER,k,focusdir,up"
     "SUPER,j,focusdir,down"
-    # Keyboard tag cycling (Mango does not deliver modifier+pointer binds).
-    "SUPER+SHIFT,bracketright,viewtoright"
-    "SUPER+SHIFT,bracketleft,viewtoleft"
+    # Do not bind viewtoleft/viewtoright or tagmon here: both change one
+    # monitor's selected tag directly, so they can show the same workspace
+    # index on both displays. Workspace switching goes through the helper
+    # above, which keeps the list unique. These brackets only move focus
+    # between displays without touching either workspace.
+    "SUPER+SHIFT,bracketright,focusmon,next"
+    "SUPER+SHIFT,bracketleft,focusmon,prev"
 
     # ── Window Movement ─────────────────────────────────────────────
     "SUPER+SHIFT,left,move_client,left"
@@ -155,6 +178,10 @@ let
     "SUPER+SHIFT,u,spawn,foot -e tundra rbu"
   ];
 in {
+  # Shared-workspace helper called by SUPER+N / SUPER+SHIFT+N above.
+  home.file.".local/bin/tundra-focus-tag".source =
+    ../../../scripts/tundra-focus-tag.sh;
+
   # circle_layout drives SUPER+SHIFT+R (switch_layout): dwindle ↔ master-stack.
   wayland.windowManager.mango.settings = {
     circle_layout = "dwindle,tile";

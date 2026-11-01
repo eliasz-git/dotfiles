@@ -25,6 +25,14 @@
       # Per-output wallpaper daemon (scripts/wallpaper-daemon.sh).
       # The TUNDRA_WALLPAPER_DIR env var it needs is set via env below.
       "${config.home.homeDirectory}/.local/bin/tundra-wallpaper-daemon"
+
+      # Put each display on the workspace it owns at session start, so the
+      # two monitors never show the same workspace index: HDMI-A-1 (main)
+      # starts on workspace 1 and HDMI-A-2 (secondary) on workspace 2.
+      # Without this both outputs default to tag 1. The second dispatch
+      # leaves the main display focused. mmsg can run here because the IPC
+      # socket is created during setup, before exec_once is launched.
+      "mmsg dispatch viewcrossmon,2,HDMI-A-2; mmsg dispatch viewcrossmon,1,HDMI-A-1"
     ];
 
     # Environment variables. Set as config.env so they apply to the whole

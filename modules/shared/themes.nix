@@ -551,7 +551,7 @@ let
         mmsg dispatch reload_config >/dev/null 2>&1 || true
       fi
       if pgrep -x mangobar >/dev/null 2>&1; then
-        systemctl --user restart mangobar.service 2>/dev/null || true
+        systemctl --user --no-block restart mangobar.service 2>/dev/null || true
       fi
       if command -v rofi >/dev/null 2>&1; then
         # Rofi picks up theme on next launch

@@ -186,7 +186,7 @@
             mangobar.homeManagerModules.default
             agenix.homeManagerModules.default
           ];
-          home-manager.extraSpecialArgs = { inherit zen-browser; };
+          home-manager.extraSpecialArgs = { inherit zen-browser mangobar; };
           home-manager.users.elias = import ./hosts/desktop/home.nix;
         }
       ];
