@@ -54,11 +54,7 @@ in {
         num="''${sid%%-*}"
         [ "$num" = "10" ] && display="0" || display="$num"
         sketchybar --add item "workspace.$sid" left \
-<<<<<<< HEAD
-          --set "workspace.$sid" icon="$display" drawing=off label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 background.padding_left=2 background.padding_right=2 \
-=======
           --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 padding_left=0 padding_right=0 icon.padding_left=0 icon.padding_right=0 \
->>>>>>> origin/main
           script="$PLUGIN_DIR/aerospace.sh" click_script="aerospace workspace $sid" \
           --subscribe "workspace.$sid" aerospace_workspace_change
         [ "$sid" = "10-misc" ] || sketchybar --add item "gap.$sid" left --set "gap.$sid" drawing=on width=$WORKSPACE_GAP icon.drawing=off label.drawing=off background.drawing=off padding_left=0 padding_right=0 icon.padding_left=0 icon.padding_right=0

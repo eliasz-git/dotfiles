@@ -10,9 +10,6 @@ let
   # which is the runtime-only equivalent of a config keyword (see bind.c:
   # setoption -> parse_option + override_config).
   toggledir = "$HOME/.cache/tundra";
-<<<<<<< HEAD
-  notify = "${pkgs.libnotify}/bin/notify-send";
-=======
 
   # A user unit gets a minimal PATH. The scripts start with `#!/usr/bin/env
   # bash` and call mmsg (user profile, from the mango hm module), notify-send,
@@ -28,7 +25,6 @@ let
     ]
     + ":"
     + "${config.home.profileDirectory}/bin";
->>>>>>> origin/main
 in
 {
   # Animation toggle
