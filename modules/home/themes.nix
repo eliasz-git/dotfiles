@@ -161,10 +161,11 @@ in {
           '${lib.removePrefix "#" palette.red}' > "$HOME/.config/tundra/colors/swaylock.conf"
       fi
       if [ ! -e "$HOME/.config/tundra/colors/mangobar.css" ]; then
-        printf '/* Default Tundra mangobar fragment - will be overwritten by tundra-theme-apply */\n@define-color tundra-mantle %s;\n@define-color tundra-base %s;\n@define-color tundra-surface0 %s;\n@define-color tundra-surface1 %s;\n@define-color tundra-text %s;\n@define-color tundra-subtext0 %s;\n@define-color tundra-blue %s;\n@define-color tundra-pink %s;\n@define-color tundra-red %s;\n@define-color tundra-yellow %s;\n@define-color tundra-green %s;\n' \
+        printf '/* Default Tundra mangobar fragment - will be overwritten by tundra-theme-apply */\n@define-color tundra-mantle %s;\n@define-color tundra-base %s;\n@define-color tundra-surface0 %s;\n@define-color tundra-surface1 %s;\n@define-color tundra-text %s;\n@define-color tundra-subtext0 %s;\n@define-color tundra-subtext1 %s;\n@define-color tundra-blue %s;\n@define-color tundra-pink %s;\n@define-color tundra-red %s;\n@define-color tundra-yellow %s;\n@define-color tundra-green %s;\n@define-color tundra-teal %s;\n' \
           '${palette.mantle}' '${palette.base}' '${palette.surface0}' '${palette.surface1}' \
-          '${palette.text}' '${palette.subtext0}' '${palette.blue}' '${palette.pink}' \
-          '${palette.red}' '${palette.yellow}' '${palette.green}' > "$HOME/.config/tundra/colors/mangobar.css"
+          '${palette.text}' '${palette.subtext0}' '${palette.subtext1}' '${palette.blue}' \
+          '${palette.pink}' '${palette.red}' '${palette.yellow}' '${palette.green}' \
+          '${palette.teal}' > "$HOME/.config/tundra/colors/mangobar.css"
       fi
     '';
 

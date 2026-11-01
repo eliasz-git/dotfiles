@@ -22,17 +22,17 @@ in
     root_color = hex palette.base;
 
     # ── Effects ──────────────────────────────────────────────────
-    blur = true;
-    blur_optimized = true;
+    blur = 1;
+    blur_optimized = 1;
     blur_params = {
       radius = 10;
       num_passes = 2;
     };
-    shadows = true;
+    shadows = 1;
     shadows_size = 10;
     shadows_blur = 10;
     shadows_color = shadow palette.base;
-    shadow_only_floating = true;
+    shadow_only_floating = 1;
 
     # ── Opacity ──────────────────────────────────────────────────
     focused_opacity = 1.0;
@@ -41,11 +41,11 @@ in
     # ── Animations ───────────────────────────────────────────────
     # layer_animations stays off (mango default) so menubars/rofi don't
     # animate, mirroring Hyprland where only client windows animated.
-    animations = true;
+    animations = 1;
     animation_type_open = "slide";
     animation_type_close = "slide";
-    animation_fade_in = true;
-    animation_fade_out = true;
+    animation_fade_in = 1;
+    animation_fade_out = 1;
     animation_duration_move = 500;
     animation_duration_open = 400;
     animation_duration_tag = 600;
@@ -66,9 +66,9 @@ in
     # Cursor behaviour: always warp to the focus target (Hyprland's
     # cursor.no_warps = false), ignore fractional XWayland scaling
     # (Hyprland's xwayland.force_zero_scaling = true), no tearing.
-    warp_cursor = true;
-    xwayland_ignore_scale = true;
-    allow_tearing = false;
+    warp_cursor = 1;
+    xwayland_ignore_scale = 1;
+    allow_tearing = 0;
     cursor_size = 24;
     cursor_theme = "Bibata-Modern-Classic";
 
@@ -89,22 +89,19 @@ in
       "focused_opacity:0.85,unfocused_opacity:0.85,app_id:^thunar$"
       "focused_opacity:0.88,unfocused_opacity:0.88,app_id:^obsidian$"
 
-      # Tag assignments (open on this tag, silently when the tag is unfocused)
-      "tags:1,is_tag_silent:1,app_id:^(zen-beta|firefox|chromium)$"
-      "tags:2,is_tag_silent:1,app_id:^(code|VSCodium|vscodium)$"
-      "tags:3,is_tag_silent:1,app_id:^(foot|ghostty|alacritty|kitty)$"
-      "tags:4,is_tag_silent:1,app_id:^(discord|signal|telegram|beeper)$"
-      "tags:5,is_tag_silent:1,app_id:^(obsidian|thunar|libreoffice)$"
-      "tags:6,is_tag_silent:1,app_id:^(spotify|mpv|iina|vlc)$"
-      "tags:7,is_tag_silent:1,app_id:^(steam|heroic|bottles|lutris|prismlauncher)$"
-      "tags:8,is_tag_silent:1,app_id:^(keepassxc|bitwarden|veracrypt)$"
-      "tags:9,is_tag_silent:1,app_id:^(virt-manager|UTM|docker|qemu)$"
-
-      # Screensaver: opened by tundra-screensaver.sh on the special overlay
-      # (tag 0). is_tag_silent keeps the window from stealing the view or focus
-      # when it maps, floating avoids layout in the overlay, and is_fullscreen
-      # makes the art fill the screen once the overlay is revealed.
-      "tags:0,is_tag_silent:1,is_floating:1,is_fullscreen:1,no_border:1,no_shadow:1,no_radius:1,app_id:^tundra-screensaver$"
+      # Tag assignments (open on this tag, silently when the tag is unfocused).
+      # tundra-focus-tag gathers a tag's windows onto whichever display is
+      # currently viewing that tag, so these spawn pins still arrive with the
+      # rest of the workspace instead of staying stranded on the other output.
+      "tags:1,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(zen-beta|firefox|chromium)$"
+      "tags:2,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(code|VSCodium|vscodium)$"
+      "tags:3,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(foot|ghostty|alacritty|kitty)$"
+      "tags:4,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(discord|signal|telegram|beeper)$"
+      "tags:5,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(obsidian|thunar|libreoffice)$"
+      "tags:6,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(spotify|mpv|iina|vlc)$"
+      "tags:7,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(steam|heroic|bottles|lutris|prismlauncher)$"
+      "tags:8,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(keepassxc|bitwarden|veracrypt)$"
+      "tags:9,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(virt-manager|UTM|docker|qemu)$"
 
       # Size/position rules (floats centre by default in mango)
       "width:800,height:600,app_id:^(pavucontrol|blueman-manager)$"

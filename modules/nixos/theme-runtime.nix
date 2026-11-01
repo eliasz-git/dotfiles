@@ -56,6 +56,7 @@ in {
       # mechanism a PathChanged= line would use, expressed so that Home Manager
       # activation can act on it.
       X-Restart-Triggers = [
+        (toString applier)
         catalog.sh.source
         catalog.json.source
       ];

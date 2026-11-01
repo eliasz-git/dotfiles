@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, hermes-agent, ... }:
 
 # Desktop — Ryzen 5 5600 + AMD Radeon GPU, Mango (Wayland), Steam.
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop
@@ -80,6 +80,7 @@
   # flake module (imported in flake.nix) configures xdg-portal (wlr + gtk),
   # xwayland and polkit, and registers the Mango session for SDDM.
   programs.mango.enable = true;
+  services.flatpak.enable = true;
 
   # Graphical SDDM login: a dark, image-capable surface fits the Omarchy/Tundra
   # visual language much better than a terminal greeter with ANSI colors.
@@ -130,6 +131,13 @@
   # plugged in before the service starts still work; hotplugged ones need
   # `sudo systemctl restart input-remapper` until that's fixed.
   services.input-remapper.enable = true;
+
+  # Virtual webcam support
+  boot.kernelModules = [ "v4l2loopback" ];
+  boot.extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback devices=1 video_nr=10 card_label="VirtualCam" exclusive_caps=1
+  '';
 
   # ── SOUND ─────────────────────────────────────────────────────
   security.rtkit.enable = true;
@@ -195,16 +203,22 @@
     wakeonlan # magic packets to mini/other hosts; MAC lives in /sys/class/net/enp4s0/address
     moonlight-qt # client, for testing the loopback from this machine
     android-tools # Android SDK platform tools (adb/fastboot)
+    # Hermes Agent (Nous Research). Portable state (skills/memory/config)
+    # syncs Mac <-> desktop via Syncthing; state.db stays local per machine.
+    hermes-agent.packages.x86_64-linux.default
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────
-  # nvme0n1p2 — the first SSD (gaming drive) with existing Steam games
+  # nvme1n1p2 — the data/games NVMe, now a native ext4 filesystem so Steam and
+  # Proton get real POSIX semantics (case-sensitivity, symlinks, permissions).
+  # The old ntfs3 mount kept failing whenever Windows left the volume dirty,
+  # which silently broke the boot-time mount and hid the library from Steam.
   fileSystems."/Games" = {
-    device = "/dev/disk/by-uuid/14882C93882C7580";
-    fsType = "ntfs3";
-    # Keep boot resilient if the data drive is temporarily unavailable, then
-    # mount it on first access so Steam sees the library at its stable path.
-    options = [ "uid=1000" "gid=1000" "umask=022" "nofail" "x-systemd.automount" ];
+    device = "/dev/disk/by-uuid/4ac39be5-bc86-45d6-9bab-fb0276adbe7e";
+    fsType = "ext4";
+    # nofail: a temporarily absent data drive must never block boot. noatime
+    # matches the other data mounts and trims needless metadata writes.
+    options = [ "nofail" "noatime" ];
   };
 
   # Monitor both internal NVMe drives for failing sectors and controller health.

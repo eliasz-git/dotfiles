@@ -16,8 +16,8 @@
     # Tap-to-click and tap-and-drag are mango's default anyway; naming them
     # keeps the intent explicit. Mango spells them tap_* (pointer-global), not
     # the trackpad_* prefix the older Hyprland layout used.
-    tap_to_click = true;
-    tap_and_drag = true;
-    trackpad_natural_scrolling = false;
+    tap_to_click = 1;
+    tap_and_drag = 1;
+    trackpad_natural_scrolling = 0;
   };
 }

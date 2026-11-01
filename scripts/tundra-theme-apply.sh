@@ -220,11 +220,13 @@ write_fragment mangobar.css <<EOF
 @define-color tundra-surface1 $(hex surface1);
 @define-color tundra-text $(hex text);
 @define-color tundra-subtext0 $(hex subtext0);
+@define-color tundra-subtext1 $(hex subtext1);
 @define-color tundra-blue $(hex blue);
 @define-color tundra-pink $(hex pink);
 @define-color tundra-red $(hex red);
 @define-color tundra-yellow $(hex yellow);
 @define-color tundra-green $(hex green);
+@define-color tundra-teal $(hex teal);
 EOF
 
 # ── Shell consumers ─────────────────────────────────────────────────────────
@@ -295,8 +297,12 @@ else
 
     # mangobar reads style.css once and has no reload signal, so a theme switch
     # needs a restart; systemctl is on the applier's PATH (theme-runtime.nix).
+    # MUST be --no-block: when this service is triggered by a nixos-rebuild
+    # switch, mangobar's restart job is queued behind this very unit in the
+    # user manager — a blocking restart deadlocks both the service AND the
+    # whole switch (observed 2026-10-14).
     if pgrep -x mangobar >/dev/null 2>&1; then
-        reload mangobar systemctl --user restart mangobar.service
+        reload mangobar systemctl --user --no-block restart mangobar.service
     fi
 
     if pgrep -x dunst >/dev/null 2>&1; then

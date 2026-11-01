@@ -1,0 +1,30 @@
+--- a/mangobar.c
++++ b/mangobar.c
+@@ -2865,6 +2865,10 @@
+       ipc_send_command("dispatch toggleoverview\n");
+       return;
+     }
++    if (strstr(cmd, "{}")) {
++      ipc_send_command("dispatch toggleoverview\n");
++      return;
++    }
+   }
+ 
+   if (tag >= 0 && strcmp(module, "tags") == 0) {
+@@ -2884,6 +2888,16 @@
+       ipc_send_command("dispatch toggletag,%d\n", tag + 1);
+       return;
+     }
++    // Custom workspace commands: substitute "{}" with the 1-based tag.
++    const char *ph = strstr(cmd, "{}");
++    if (ph) {
++      char expanded[1024];
++      int prefix = (int)(ph - cmd);
++      snprintf(expanded, sizeof(expanded), "%.*s%d%s", prefix, cmd, tag + 1,
++               ph + 2);
++      run_command(expanded);
++      return;
++    }
+   }
+   if (strncmp(cmd, "@ipc:", 5) == 0) {
+     ipc_send_command("%s\n", cmd + 5);

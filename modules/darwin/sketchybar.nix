@@ -38,7 +38,7 @@ in {
         num="''${sid%%-*}"
         [ "$num" = "10" ] && display="0" || display="$num"
         sketchybar --add item "workspace.$sid" left \
-          --set "workspace.$sid" icon="$display" label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 background.padding_left=2 background.padding_right=2 \
+          --set "workspace.$sid" icon="$display" drawing=off label.drawing=off background.drawing=off background.color=${translucent "40" palette.blue} background.corner_radius=11 background.height=22 background.padding_left=2 background.padding_right=2 \
           script="$PLUGIN_DIR/aerospace.sh" click_script="aerospace workspace $sid" \
           --subscribe "workspace.$sid" aerospace_workspace_change
       done
@@ -78,13 +78,13 @@ in {
       if [ -z "$FOCUSED" ]; then FOCUSED="$(aerospace list-workspaces --focused 2>/dev/null)"; fi
       WORKSPACE="''${NAME#workspace.}"
       if [ "$WORKSPACE" = "$FOCUSED" ]; then
-        sketchybar --set "$NAME" background.drawing=on background.color=${opaque palette.blue} icon.color=${opaque palette.base}
+        sketchybar --set "$NAME" drawing=on background.drawing=on background.color=${opaque palette.blue} icon.color=${opaque palette.base}
       else
         COUNT="$(aerospace list-windows --workspace "$WORKSPACE" --count 2>/dev/null || echo 0)"
         if [ "$COUNT" -eq 0 ]; then
-          sketchybar --set "$NAME" background.drawing=off icon.color=${opaque palette.subtext0}
+          sketchybar --set "$NAME" drawing=off background.drawing=off icon.color=${opaque palette.subtext0}
         else
-          sketchybar --set "$NAME" background.drawing=off icon.color=${opaque palette.subtext1}
+          sketchybar --set "$NAME" drawing=on background.drawing=off icon.color=${opaque palette.subtext1}
         fi
       fi
     '';

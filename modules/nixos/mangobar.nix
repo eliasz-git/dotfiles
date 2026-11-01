@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, mangobar, ... }:
 
 # Top bar (mangobar).
 #
@@ -20,6 +20,14 @@
 {
   services.mangobar = {
     enable = true;
+
+    # Teach mangobar to substitute `{}` in workspace click commands with the
+    # 1-based tag. Clicks then go through tundra-focus-tag instead of the
+    # built-in `dispatch view,N`, which can duplicate an index across outputs.
+    package = mangobar.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+      patches = (old.patches or []) ++ [ ./patches/mangobar-focus-tag.patch ];
+    });
+
     # The mangos hm module owns the session target, so the bar lives there.
     systemdTarget = "mango-session.target";
     settings = {
@@ -27,26 +35,28 @@
       position = "top";
       height = 32;
       buffer-scale = 1;
-      "modules-left" = [ "workspaces" "window" ];
-      "modules-center" = [ "clock" ];
-      "modules-right" = [ "custom/media" "cpu" "memory" "network" "pulseaudio" "tray" ];
+      "modules-left" = [ "workspaces" ];
+      "modules-center" = [ "window" "custom/media" ];
+      "modules-right" = [ "cpu" "memory" "network" "tray" "pulseaudio" "clock" ];
 
-      # Same behaviour as the old hyprland/workspaces: hiding empty tags,
-      # an OVERVIEW label for the overview toggled by SUPER+TAB, click to
-      # activate a view and right-click to toggle it.
+      # Show only workspaces in use, with an OVERVIEW label for the overview
+      # toggled by SUPER+TAB. Clicks go through tundra-focus-tag, so a
+      # workspace index is only ever active on one output: left focuses it
+      # wherever it lives, right sends the focused window there. The `{}`
+      # substitution comes from the patch above.
       workspaces = {
         "hide-empty" = true;
         "overview-label" = "OVERVIEW";
-        "on-click" = "activate";
-        "on-click-right" = "toggle";
+        "on-click" = "${config.home.homeDirectory}/.local/bin/tundra-focus-tag {}";
+        "on-click-right" = "${config.home.homeDirectory}/.local/bin/tundra-focus-tag -m {}";
       };
 
       window.format = "{}"; # titles truncate to 50 chars built-in
 
-      clock.format = "{:%a %b %d  %I:%M %p}";
+      clock.format = "󰥔 {:L%a %d  %I:%M %p}";
 
       cpu = {
-        format = "󰻠 {load}%";
+        format = " {load}%";
         interval = 5;
       };
       memory = {
@@ -54,9 +64,9 @@
         interval = 5;
       };
       network = {
-        format = "{icon} {ifname}";
-        "format-wifi" = "󰖩 {strength}%";
-        "format-ethernet" = "󰈀 {ipaddr}";
+        format = "{icon}";
+        "format-wifi" = "󰖩";
+        "format-ethernet" = "󰈀";
         "format-disconnected" = "󰖪";
         "icon-wifi" = "󰖩";
         "icon-ethernet" = "󰈀";
@@ -64,29 +74,26 @@
         interval = 10;
       };
       pulseaudio = {
-        format = "vol {volume}%";
-        "format-muted" = "muted";
+        format = "󰕾 {volume}%";
+        "format-muted" = "󰖁 muted";
         on-click = "pavucontrol";
       };
       "custom/media" = {
         format = "{}";
-        # Identical to the old waybar block: playerctl status decides the icon
-        # and the title/artist is printed afterwards. A stopped player exits 0
-        # with no output, which renders as an empty module.
+        # Match the SketchyBar media item: label only, hidden while stopped.
         exec = ''
           status=$(playerctl status 2>/dev/null) || exit 0
           case "$status" in
-            Playing) icon="󰐊" ;;
-            Paused) icon="󰏔" ;;
+            Playing|Paused) ;;
             *) exit 0 ;;
           esac
           title=$(playerctl metadata title 2>/dev/null)
           artist=$(playerctl metadata artist 2>/dev/null)
           [ -n "$title" ] || title="Unknown title"
           if [ -n "$artist" ] && [ "$artist" != "$title" ]; then
-            printf "%s  %s — %s" "$icon" "$title" "$artist"
+            printf "%s — %s" "$title" "$artist"
           else
-            printf "%s  %s" "$icon" "$title"
+            printf "%s" "$title"
           fi
         '';
         interval = 5;
@@ -98,42 +105,108 @@
 
   xdg.configFile."mangobar/style.css".text = ''
     @import url("~/.config/tundra/colors/mangobar.css");
+
     * {
       font-family: "JetBrainsMono Nerd Font";
-      font-size: 13px;
-    }
-    #bar {
+      font-size: 12px;
+      font-weight: 700;
+      color: @tundra-text;
       background-color: transparent;
       padding: 0 8px;
-    }
-    #tags {
-      padding: 0 6px;
-      margin: 0 2px;
+      margin: 0;
       border-radius: 8px;
-      background-color: @tundra-surface0;
+    }
+
+    #bar {
+      background-color: transparent;
+      border-radius: 16px;
+      margin: 4px;
+      padding: 0 8px;
+    }
+
+    #tags {
+      background-color: transparent;
+      border-radius: 11px;
+      margin: 0 1px;
+      padding: 0 8px;
+    }
+    #tags.empty {
+      color: @tundra-subtext0;
+    }
+    #tags.occupied {
+      color: @tundra-subtext1;
     }
     #tags.active {
       background-color: @tundra-blue;
       color: @tundra-base;
-      border-radius: 8px;
     }
-    #layout,
-    #title,
-    #clock,
-    #cpu,
-    #mem,
-    #network,
-    #volume,
-    #custom-media,
+    #tags.urgent {
+      background-color: @tundra-red;
+      color: @tundra-base;
+    }
+    #tags:hover {
+      background-color: alpha(@tundra-blue, 0.35);
+    }
+
+    #layout {
+      color: @tundra-blue;
+      min-width: 20px;
+    }
+    #title {
+      color: @tundra-subtext0;
+    }
+    #clock {
+      color: @tundra-text;
+      padding: 0 4px 0 10px;
+    }
+    #clock.date {
+      color: @tundra-subtext1;
+    }
+
+    #cpu {
+      color: @tundra-blue;
+    }
+    #mem {
+      color: @tundra-green;
+    }
+    #network {
+      color: @tundra-green;
+    }
+    #volume {
+      color: @tundra-teal;
+    }
+    #custom-media {
+      color: @tundra-text;
+    }
+    #network.wifi {
+      color: @tundra-green;
+    }
+    #network.ethernet {
+      color: @tundra-blue;
+    }
+    #network.disconnected {
+      color: @tundra-red;
+    }
     #tray {
-      padding: 0 10px;
-      border-radius: 6px;
-      background-color: transparent;
-      margin: 0 4px;
+      padding: 0 4px;
     }
     #cpu.critical,
     #mem.critical {
       color: @tundra-red;
+    }
+
+    menu {
+      background-color: alpha(@tundra-base, 0.96);
+      border-color: @tundra-surface1;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    menuitem {
+      color: @tundra-text;
+    }
+    menuitem:hover {
+      background-color: @tundra-surface1;
+      color: @tundra-text;
     }
   '';
 }
