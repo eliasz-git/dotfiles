@@ -45,8 +45,43 @@
     darwinSystem   = "aarch64-darwin";
     linuxSystem    = "x86_64-linux";
 
-    darwinPkgs     = import nixpkgs { system = darwinSystem; config.allowUnfree = true; };
-    linuxPkgs      = import nixpkgs { system = linuxSystem;  config.allowUnfree = true; };
+    # ltrace 0.7.91 runs a dejagnu suite in its checkPhase that fails 15 tests
+    # on Linux — the ptrace and ASLR expectations are sensitive to the build
+    # environment. Because nixpkgs CI hits the same failures, no output is
+    # published to cache.nixos.org, so anything depending on ltrace compiles it
+    # from source and then fails on the test suite. The package itself builds
+    # and works; only the suite is at fault. Drop this once nixpkgs fixes it.
+    #
+    # Python packages whose own test suites break the build in CI even though
+    # the packages themselves compile and work. Their checkPhase is skipped
+    # until nixpkgs fixes or stabilises the tests:
+    #  - pyopenjtalk-plus 0.4.1-post9: one test expects "must be str" but the
+    #    interpreter now says "Expected str, got int". calibre pulls it in
+    #    through piper-tts, which broke the laptop's Home Manager generation.
+    #  - pyrate-limiter 4.5.0: test_limiter_async_factory_get asserts on timing
+    #    (assert 300 <= 270) and fails on a loaded runner. lutris reaches it
+    #    through moddb, which made the desktop build fail intermittently.
+    overlays = [
+      (final: prev: {
+        ltrace = prev.ltrace.overrideAttrs (_: { doCheck = false; });
+
+        # calibre 9.16.0 runs its own test_build suite as an install check; one
+        # test (test_speech_dispatcher) fails because the speechd Python module
+        # is not importable in the build sandbox. 672 of 673 other tests pass
+        # and the package builds. Only the laptop installs it.
+        calibre = prev.calibre.overrideAttrs (_: { doInstallCheck = false; });
+
+        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+          (pyFinal: pyPrev:
+            prev.lib.genAttrs
+              (builtins.filter (n: pyPrev ? ${n}) [ "pyopenjtalk-plus" "pyrate-limiter" ])
+              (n: pyPrev.${n}.overridePythonAttrs (_: { doCheck = false; })))
+        ];
+      })
+    ];
+
+    darwinPkgs     = import nixpkgs { system = darwinSystem; config.allowUnfree = true; inherit overlays; };
+    linuxPkgs      = import nixpkgs { system = linuxSystem;  config.allowUnfree = true; inherit overlays; };
     unstablePkgs   = linuxPkgs;
   in {
 
@@ -86,6 +121,7 @@
             niri.homeModules.config
             agenix.homeManagerModules.default
           ];
+          home-manager.extraSpecialArgs        = { inherit zen-browser; };
           home-manager.users.elias            = import ./hosts/laptop/home.nix;
         }
       ];
@@ -123,25 +159,6 @@
           home-manager.backupFileExtension = "backup";
           home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
           home-manager.users.elias         = import ./hosts/mini/2/home.nix;
-        }
-      ];
-    };
-
-    # ── Beattie showcase — NixOS GNOME (Wayland, Tundra Dark) ────
-    nixosConfigurations.beattie = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit hermes-agent; };
-      system = linuxSystem;
-      pkgs   = linuxPkgs;
-      modules = [
-        ./hosts/beattie/configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs           = true;
-          home-manager.useUserPackages         = true;
-          home-manager.backupFileExtension     = "backup";
-          home-manager.sharedModules        = [ agenix.homeManagerModules.default ];
-          home-manager.users.demo   = import ./hosts/beattie/home.nix;
-          home-manager.users.elias  = import ./hosts/beattie/home.nix;
         }
       ];
     };

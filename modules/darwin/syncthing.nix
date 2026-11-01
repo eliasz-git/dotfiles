@@ -27,8 +27,9 @@
         STNOUPGRADE = "1";
         STNORESTART = "1";
       };
-      StandardOutPath = "/tmp/syncthing.log";
-      StandardErrorPath = "/tmp/syncthing.err.log";
+      # ~/Library/Logs survives a reboot; /tmp does not.
+      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/syncthing.log";
+      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/syncthing.err.log";
     };
   };
 

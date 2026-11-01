@@ -252,7 +252,6 @@
     wget
     curl
     git
-    librewolf
     thunar
     thunar-archive-plugin
     polkit_gnome

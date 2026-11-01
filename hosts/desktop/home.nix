@@ -34,6 +34,9 @@ let
 in {
   imports = [
     ../../modules/shared/shell.nix
+    # Anki — official upstream binaries via nixpkgs `anki-bin`; the data
+    # directory stays user-owned (see the module for the sync story).
+    ../../modules/shared/anki.nix
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
@@ -276,7 +279,6 @@ in {
     # Apps
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     discord
-    bottles
     brightnessctl
     heroic
     keepassxc
@@ -295,6 +297,13 @@ in {
     swaybg wl-clipboard grim slurp playerctl
     swaylock # tundra-lock (lock screen) calls it by name
     pulsemixer pavucontrol
+    # figlet draws the screensaver wordmark; gawk animates it. Both are invoked
+    # by name from tundra-screensaver, so they have to be on the session PATH
+    # that swayidle and the Mango keybindings run with.
+    figlet gawk
+    # tundra-wallpaper runs `file --mime-type` to pick the extension; without it
+    # every file prompts as "may not be an image" and PNG/WebP are saved as .jpg.
+    file
     nnn lf
     # Clipboard
     cliphist

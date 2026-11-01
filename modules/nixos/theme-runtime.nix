@@ -33,7 +33,7 @@ let
       pkgs.systemd
     ]
     + ":"
-    + "${config.home.homeDirectory}/.nix-profile/bin";
+    + "${config.home.profileDirectory}/bin";
 in {
   imports = [ ../../modules/home/themes.nix ];
 

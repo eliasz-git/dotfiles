@@ -28,7 +28,7 @@ tundra boot <host>      # add a boot generation without switching now
 tundra rollback <host>  # roll back the active system where supported
 ```
 
-Host names are explicit: `macbook`, `laptop`, `desktop`, `beattie`, `mini1`, and `mini2`. Unknown hostnames fail closed; the tool never silently assumes `desktop`.
+Host names are explicit: `macbook`, `laptop`, `desktop`, `mini1`, and `mini2`. Unknown hostnames fail closed; the tool never silently assumes `desktop`.
 
 Every supported Home Manager profile installs the same `tundra` CLI and aliases:
 
@@ -54,7 +54,7 @@ tundra rbu <host>
 
 This updates `flake.lock`, shows the changed lockfile, and builds the selected host. It does not activate the result. Review and commit the lockfile separately, then run `tundra rb <host>`.
 
-On the gaming host, the Hyprland wallpaper daemon rotates the painting collection every 15 minutes and hides the background on whichever monitor holds a fullscreen window. It runs one `swaybg` per output, so hiding a fullscreen monitor leaves the other displays' wallpapers in place; each hidden monitor is repainted when its fullscreen window closes.
+On the gaming host, the wallpaper daemon rotates the painting collection every 15 minutes and hides the background on whichever monitor holds a fullscreen window. It runs one `swaybg` per output, so hiding a fullscreen monitor leaves the other displays' wallpapers in place; each hidden monitor is repainted when its fullscreen window closes.
 
 ## Destructive operations
 

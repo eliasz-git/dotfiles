@@ -127,7 +127,7 @@ let
     "NONE,XF86AudioStop,spawn,playerctl stop"
     "NONE,XF86MonBrightnessUp,spawn,brightnessctl set +5%"
     "NONE,XF86MonBrightnessDown,spawn,brightnessctl set 5%-"
-    "NONE,XF86Calculator,spawn,foot -e python3 -ic \"from math import *; print(eval(input('> ')))\""
+    "NONE,XF86Calculator,spawn,foot -e ${pkgs.python3}/bin/python3 -ic \"from math import *; print(eval(input('> ')))\""
     "NONE,XF86Sleep,spawn_shell,systemctl suspend"
     "NONE,XF86PowerOff,spawn,wlogout"
 

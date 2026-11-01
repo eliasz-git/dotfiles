@@ -16,7 +16,8 @@
     # Still dropped: ncmpcpp/musikcube (duplicate MPD stack).
     cmus termusic
     # Email — Tuta/Himalaya already + TUI
-    neomutt aerc himalaya
+    # himalaya is brew-declared in configuration.nix (like mpd/rmpc), so brew's 2.1.0 isn't shadowed by stale nixpkgs 2.0.0
+    neomutt aerc
     # Chat — Beeper/Discord
     weechat discordo gurk-rs
     # RSS — NetNewsWire
@@ -35,9 +36,6 @@
     duf dust ncdu
     # Misc TUI
     cmatrix cbonsai pipes
-  ] ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
-    # LibreWolf removed on macOS (kept on Linux hosts)
-    librewolf
   ] ++ lib.optionals stdenv.hostPlatform.isLinux [
     veracrypt
   ];
