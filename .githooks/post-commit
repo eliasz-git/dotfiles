@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Post-commit hook: mirror Codeberg (primary) → GitHub after every commit.
+# Runs in the background so it never blocks your commit on network latency.
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+LOG_FILE="${REPO_ROOT}/.git/mirror-post-commit.log"
+
+HOOK_SRC="${REPO_ROOT}/.githooks/post-commit"
+if [ ! -x "$HOOK_SRC" ]; then
+  echo "[post-commit] tracked hook not found at $HOOK_SRC, skipping" >>"$LOG_FILE"
+  exit 0
+fi
+
+if [ ! -x "${REPO_ROOT}/scripts/mirror-to-github.sh" ]; then
+  echo "[post-commit] mirror-to-github.sh not executable, skipping" >>"$LOG_FILE"
+  exit 0
+fi
+
+echo "[post-commit] $(date '+%Y-%m-%d %H:%M:%S') mirroring codeberg → github" >>"$LOG_FILE"
+nohup "${REPO_ROOT}/scripts/mirror-to-github.sh" >>"$LOG_FILE" 2>&1 &
+echo "[post-commit] mirror started (pid $!), log: $LOG_FILE"
