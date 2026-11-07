@@ -43,10 +43,6 @@
     "amdgpu.dcdebugmask=0x10"
     # Mode1 GPU reset is more reliable on RDNA2 than the default auto.
     "amdgpu.reset_method=2"
-    # Disable all GPU power features (DPM, clock gating, etc.) — the RDNA2 blanking-period
-    # bug at 120Hz on HDMI-A-1 causes the GPU to hang when switching VRAM states. This keeps
-    # clocks pinned, trading idle power for stability. Last resort before dropping to 60Hz.
-    "amdgpu.ppfeaturemask=0x0"
     # kdump capture target so a vmcore is written after a real kernel panic.
     "crashkernel=256M"
 
