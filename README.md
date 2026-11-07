@@ -1,8 +1,8 @@
-# Tundra Nix configuration
+# dotfiles
 
 ![Tundra banner](docs/branding/tundra-banner-2x1.png)
 
-Multi-host Nix configuration for macOS, NixOS desktop systems, a showcase workstation, and two headless homelab minis. Host outputs stay explicit so a build for one machine cannot be mistaken for validation of another.
+Single source of truth for the live macOS / NixOS system: merged Nix configuration (hosts/ + modules/) plus standalone dotfiles (standalone-dotfiles/). Host outputs stay explicit so a build for one machine cannot be mistaken for validation of another.
 
 ## Supported outputs
 
@@ -24,7 +24,7 @@ See [the host inventory](docs/HOSTS.md) for architecture, ownership boundaries, 
 2. Clone this repository:
 
    ```sh
-   git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
+   git clone git@github.com:eliasz-git/dotfiles.git ~/.config/nix-config
    cd ~/.config/nix-config
    ```
 
