@@ -2,7 +2,16 @@
 
 # Desktop — Ryzen 5 5600 + AMD Radeon GPU, Mango (Wayland), Steam.
 # Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/dotfiles#desktop
-{
+let
+  # Local package for Ghostty terminfo (xterm-ghostty)
+  # Ghostty's terminfo is not in nixpkgs for Linux, so we compile it from source
+  ghostty-terminfo = import ../../pkgs/ghostty-terminfo {
+    inherit lib;
+    stdenv = pkgs.stdenv;
+    ncurses = pkgs.ncurses;
+    writeTextFile = pkgs.writeTextFile;
+  };
+in {
     imports = [
       ./hardware-configuration.nix
       ../../modules/system/themes.nix
@@ -248,6 +257,7 @@
     # syncs Mac <-> desktop via Syncthing; state.db stays local per machine.
     hermes-agent.packages.x86_64-linux.default
     bemenu # menu program for xdg-desktop-portal-wlr screen/window picker (OBS screen capture)
+    ghostty-terminfo # terminfo for xterm-ghostty (Ghostty terminal)
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────
