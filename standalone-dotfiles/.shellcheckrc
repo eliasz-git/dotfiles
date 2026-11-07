@@ -1,0 +1,2 @@
+# Sourced files are resolved at runtime through $CONFIG_DIR.
+disable=SC1091
