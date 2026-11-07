@@ -26,6 +26,13 @@
       # The TUNDRA_WALLPAPER_DIR env var it needs is set via env below.
       "${config.home.homeDirectory}/.local/bin/tundra-wallpaper-daemon"
 
+      # Webcam & mic quality app. Launched at login so it's ready to use.
+      "${pkgs.webcamoid}/bin/webcamoid"
+
+      # System-wide audio effects (EQ, compressor, etc.). PipeWire-based;
+      # starts with the session and stays resident.
+      "${pkgs.easyeffects}/bin/easyeffects"
+
       # Put each display on the workspace it owns at session start, so the
       # two monitors never show the same workspace index: HDMI-A-1 (main)
       # starts on workspace 1 and HDMI-A-2 (secondary) on workspace 2.

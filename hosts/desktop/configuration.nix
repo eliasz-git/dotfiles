@@ -24,7 +24,37 @@
 
   # Zen 3 P-state driver. Falls back to acpi-cpufreq on its own if the BIOS
   # has CPPC turned off, so it is safe either way.
-  boot.kernelParams = [ "amd_pstate=active" ];
+  boot.kernelParams = [
+    "amd_pstate=active"
+
+    # ── AMD GPU (RX 6600 / Navi 23) stability mitigations ──
+    # BACO / runtime PM is a frequent RDNA2 hang source with VRR + multi-monitor.
+    "amdgpu.runpm=0"
+    # ASPM link power-saving on the GPU PCIe link — another hang trigger.
+    "amdgpu.aspm=0"
+    "pcie_aspm=off"
+    # Attempt GPU reset/recovery instead of escalating to a full panic.
+    "amdgpu.gpu_recovery=1"
+    # Stop on GPU VM faults so they're captured rather than escalating.
+    "amdgpu.vm_fault_stop=1"
+    # Give display commits highest priority — helps with HDMI-A-1 VRR atomic commit hangs.
+    "amdgpu.disp_priority=2"
+    # Mask panel self-refresh — one RDNA2 user reported it prevents VRAM-stuck hangs at high refresh.
+    "amdgpu.dcdebugmask=0x10"
+    # Mode1 GPU reset is more reliable on RDNA2 than the default auto.
+    "amdgpu.reset_method=2"
+    # Disable all GPU power features (DPM, clock gating, etc.) — the RDNA2 blanking-period
+    # bug at 120Hz on HDMI-A-1 causes the GPU to hang when switching VRAM states. This keeps
+    # clocks pinned, trading idle power for stability. Last resort before dropping to 60Hz.
+    "amdgpu.ppfeaturemask=0x0"
+    # kdump capture target so a vmcore is written after a real kernel panic.
+    "crashkernel=256M"
+
+    # ── Diagnostics (verbose DRM logging) ──
+    # amdgpu.dcdebug is NOT a valid kernel param (ignored at boot). drm.debug=0x14
+    # enables DPM + driver debug output; displayed in journal during hangs.
+    "drm.debug=0x14"
+  ];
 
   # ── NETWORK ───────────────────────────────────────────────────
   networking.hostName = "desktop";
@@ -139,7 +169,13 @@
   services.input-remapper.enable = true;
 
   # Virtual webcam support
-  boot.kernelModules = [ "v4l2loopback" ];
+  # kvm-amd (from hardware-configuration.nix) + v4l2loopback + efi_pstore + netconsole.
+  # efi_pstore gives a persistent pstore backend so crash dumps survive reboot.
+  # netconsole streams kernel log over UDP *before* the CPU dies — essential for
+  # capturing hard GPU hangs where the journal can't flush (pstore won't help
+  # without a real panic). Uncomment and set your remote syslog host below:
+  #   "netconsole=6666@<your-ip>/<your-mac>@<remote-ip>/<remote-mac>"
+  boot.kernelModules = [ "kvm-amd" "v4l2loopback" "efi_pstore" "netconsole" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   boot.extraModprobeConfig = ''
     options v4l2loopback devices=1 video_nr=10 card_label="VirtualCam" exclusive_caps=1
@@ -162,8 +198,11 @@
   services.blueman.enable = true;
 
   # ── POWER ─────────────────────────────────────────────────────
-  # Desktop: no TLP (it is laptop-oriented). power-profiles-daemon is enough.
-  services.power-profiles-daemon.enable = true;
+  # Desktop: no TLP (laptop-oriented). power-profiles-daemon is DISABLED here
+  # because it conflicts with LACT on amdgpu_dpm (both try to own GPU power
+  # state, which can race the GPU into a hang). LACT is the GPU-specific
+  # manager and is left enabled above (services.lact.enable = true).
+  services.power-profiles-daemon.enable = false;
   zramSwap.enable = true;
 
   # ── INPUT ─────────────────────────────────────────────────────
@@ -212,6 +251,7 @@
     # Hermes Agent (Nous Research). Portable state (skills/memory/config)
     # syncs Mac <-> desktop via Syncthing; state.db stays local per machine.
     hermes-agent.packages.x86_64-linux.default
+    bemenu # menu program for xdg-desktop-portal-wlr screen/window picker (OBS screen capture)
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────

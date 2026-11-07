@@ -28,6 +28,7 @@
     dunst rofi swaybg
     # Zen comes from the zen-browser flake input (not in nixpkgs); binary is `zen-beta`.
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    firefox
     vscodium signal-desktop
     bitwarden-desktop obsidian libreoffice
     mpd rmpc mpdscribble mpc slskd
