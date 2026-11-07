@@ -77,7 +77,7 @@
       "calibre" "discord" "gramps" "openwork" "protonvpn"
       # "copilot-cli" not in Homebrew casks - install via npm
       "burn" "crossover" "tailscale-app"
-      "zen" "balenaetcher" "tinymediamanager" "godot"
+      "zen" "firefox" "balenaetcher" "tinymediamanager" "godot"
       "aerospace" "vorssaint"
       "foobar2000" "xld" "musicbrainz-picard" "soulseek"
       "ghostty" "openlogi"

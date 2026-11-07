@@ -25,12 +25,13 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: tundra-focus-tag [-m] <1-9> | tundra-focus-tag -M [1-9]" >&2
+  echo "usage: tundra-focus-tag [-s] <1-9> <cmd...> | tundra-focus-tag [-m] <1-9> | tundra-focus-tag -M [1-9]" >&2
   exit 1
 }
 
 mode=focus
 case "${1:-}" in
+  -s|--spawn) mode=spawn; shift ;;
   -m) mode=move; shift ;;
   -M) mode=move-workspace; shift ;;
 esac
@@ -79,6 +80,21 @@ monitor_with_tag_clients() { # prints the monitor with clients tagged $tag, or e
       | .monitor][0]' <<<"$clients"
 }
 
+# gather_tag_to_monitor() — move every client tagged $tag onto monitor $1,
+# so the workspace is whole on the display viewing it.
+gather_tag_to_monitor() {
+  local dest=$1
+  mmsg get all-clients |
+    jq -r --arg t "$tag" --arg d "$dest" '
+      .clients[]
+      | select((.tags | map(tostring) | index($t)) != null)
+      | select(.monitor != $d)
+      | "\(.monitor) \(.id)"' |
+    while read -r mon id; do
+      mmsg dispatch "tagmon,$dest,$tag" "client,$id"
+    done
+}
+
 # ── -M: move whole workspace to the other display ─────────────────────
 if [[ "$mode" == move-workspace ]]; then
   [[ -n "${other:-}" ]] || exit 0
@@ -125,6 +141,36 @@ if [[ "$mode" == move ]]; then
   exit 0
 fi
 
+# ── --spawn: launch an app on the monitor where its tag already lives ────
+#
+# If any monitor has clients tagged $tag (viewing it or not), focus that
+# monitor first so the new window opens there instead of under the cursor.
+# Otherwise spawn on the current focused monitor. This keeps all windows of
+# a workspace on the same display.
+if [[ "$mode" == spawn ]]; then
+  tag="${1:-}"
+  [[ "$tag" =~ ^[1-9]$ ]] || usage
+  shift
+  layout=""
+  if [[ "${1:-}" == "--layout" ]]; then
+    layout="${2:-}"
+    shift 2
+  fi
+  target=$(monitor_that_views_tag)
+  if [[ -z "$target" || "$target" == "null" ]]; then
+    target=$(monitor_with_tag_clients)
+  fi
+  if [[ -n "$target" && "$target" != "null" ]]; then
+    mmsg dispatch "focusmon,$target"
+  fi
+  # Set the layout on the target/focused monitor before spawning, so the
+  # new window opens in the requested layout.
+  if [[ -n "$layout" ]]; then
+    mmsg dispatch "set_layout,$layout"
+  fi
+  exec "$@"
+fi
+
 # ── Focus/claim only — never drag a workspace between displays here ────
 #
 # Priority:
@@ -136,11 +182,15 @@ fi
 viewing=$(monitor_that_views_tag)
 if [[ -n "$viewing" && "$viewing" != "null" ]]; then
   mmsg dispatch "focusmon,$viewing"
+  gather_tag_to_monitor "$viewing"
 elif [[ -n "$(monitor_with_tag_clients)" && "$(monitor_with_tag_clients)" != "null" ]]; then
   target=$(monitor_with_tag_clients)
   mmsg dispatch "viewcrossmon,$tag,$target"
+  gather_tag_to_monitor "$target"
 elif [[ "$(views_tag "$current")" == "yes" ]]; then
-  : # already viewing it on this display; stay put
+  # Already viewing it on this display; gather any clients tagged $tag
+  # stranded on the other monitor so the workspace is whole here.
+  gather_tag_to_monitor "$current"
 else
   mmsg dispatch "viewcrossmon,$tag,$current"
 fi

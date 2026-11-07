@@ -90,18 +90,19 @@ in
       "focused_opacity:0.88,unfocused_opacity:0.88,app_id:^obsidian$"
 
       # Tag assignments (open on this tag, silently when the tag is unfocused).
-      # tundra-focus-tag gathers a tag's windows onto whichever display is
-      # currently viewing that tag, so these spawn pins still arrive with the
-      # rest of the workspace instead of staying stranded on the other output.
-      "tags:1,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(zen-beta|firefox|chromium)$"
-      "tags:2,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(code|VSCodium|vscodium)$"
-      "tags:3,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(foot|ghostty|alacritty|kitty)$"
-      "tags:4,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(discord|signal|telegram|beeper)$"
-      "tags:5,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(obsidian|thunar|libreoffice)$"
-      "tags:6,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(spotify|mpv|iina|vlc)$"
-      "tags:7,monitor:HDMI-A-1,is_tag_silent:1,app_id:^(steam|heroic|bottles|lutris|prismlauncher)$"
-      "tags:8,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(keepassxc|bitwarden|veracrypt)$"
-      "tags:9,monitor:HDMI-A-2,is_tag_silent:1,app_id:^(virt-manager|UTM|docker|qemu)$"
+      # No monitor pin: apps open on whichever monitor is focused when they
+      # spawn. tundra-focus-tag gathers a tag's windows onto whichever display
+      # is currently viewing that tag, so they arrive with the workspace
+      # instead of staying stranded on the other output.
+      "tags:1,is_tag_silent:1,app_id:^(zen-beta|firefox|chromium)$"
+      "tags:2,is_tag_silent:1,app_id:^(code|VSCodium|vscodium)$"
+      "tags:3,is_tag_silent:1,app_id:^(foot|ghostty|alacritty|kitty)$"
+      "tags:4,is_tag_silent:1,app_id:^(discord|signal|telegram|beeper)$"
+      "tags:5,is_tag_silent:1,app_id:^(obsidian|thunar|libreoffice)$"
+      "tags:6,is_tag_silent:1,app_id:^(spotify|mpv|iina|vlc)$"
+      "tags:7,is_tag_silent:1,app_id:^(steam|heroic|bottles|lutris|prismlauncher)$"
+      "tags:8,is_tag_silent:1,app_id:^(keepassxc|bitwarden|veracrypt)$"
+      "tags:9,is_tag_silent:1,app_id:^(virt-manager|UTM|docker|qemu)$"
 
       # Size/position rules (floats centre by default in mango)
       "width:800,height:600,app_id:^(pavucontrol|blueman-manager)$"

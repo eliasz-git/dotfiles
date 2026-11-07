@@ -12,22 +12,27 @@ let
   focusTag = "${config.home.homeDirectory}/.local/bin/tundra-focus-tag";
   bindings = [
     # ── Core ────────────────────────────────────────────────────────
-    "SUPER,Return,spawn,foot"
+    # Tag-aware spawn with layout: opens the app on the monitor where its tag's
+    # workspace already lives, and sets the requested layout first.
+    # Layouts: tile, scroller, grid, monocle, deck, center_tile, right_tile,
+    #          vertical_scroller, vertical_tile, vertical_grid, vertical_deck,
+    #          dwindle, fair, vertical_fair
+    "SUPER,Return,spawn,${focusTag} --spawn 3 --layout tile foot"
     "SUPER,Space,spawn,rofi -show drun"
     "SUPER,w,spawn,rofi -show window"
     "SUPER,d,spawn,rofi -show ssh"
     "SUPER+ALT,c,spawn,rofi -show calc"
     "SUPER+ALT,e,spawn,rofi -show emoji"
-    "SUPER,b,spawn,zen-beta"
-    "SUPER,e,spawn,thunar"
+    "SUPER,b,spawn,${focusTag} --spawn 1 --layout monocle firefox"
+    "SUPER,e,spawn,${focusTag} --spawn 5 --layout tile thunar"
     # cliphist piping needs a shell, spawn_shell supports pipes.
     "SUPER,v,spawn_shell,cliphist list | rofi -dmenu | cliphist decode | wl-copy"
     "SUPER,q,killclient,"
     "SUPER+SHIFT,e,quit,"
     "SUPER,f,togglefullscreen,"
     "SUPER,t,togglefloating,"
-    "SUPER,g,spawn,gamescope -w 1920 -h 1080 -r 120 -- steam"
-    "SUPER,m,spawn,foot -e rmpc"
+    "SUPER,g,spawn,${focusTag} --spawn 7 --layout monocle gamescope -w 1920 -h 1080 -r 120 -- steam"
+    "SUPER,m,spawn,${focusTag} --spawn 3 --layout tile foot -e rmpc"
 
     # ── Screenshots ─────────────────────────────────────────────────
     "SUPER,Print,spawn_shell,grim -g \"$(slurp)\" - | wl-copy"
@@ -155,19 +160,19 @@ let
     "NONE,XF86PowerOff,spawn,wlogout"
 
     # ── Application Launchers ───────────────────────────────────────
-    "SUPER,c,spawn,foot -e opencode"
-    "SUPER,x,spawn,foot -e agy"
-    "SUPER,n,spawn,foot -e nnn"
-    "SUPER,i,spawn,foot -e htop"
+    "SUPER,c,spawn,${focusTag} --spawn 3 --layout tile foot -e opencode"
+    "SUPER,x,spawn,${focusTag} --spawn 3 --layout tile foot -e agy"
+    "SUPER,n,spawn,${focusTag} --spawn 3 --layout tile foot -e nnn"
+    "SUPER,i,spawn,${focusTag} --spawn 3 --layout tile foot -e htop"
     "SUPER,p,spawn,pavucontrol"
-    "SUPER,u,spawn,foot -e nvim"
-    "SUPER,y,spawn,foot -e lazygit"
-    "SUPER,o,spawn,obsidian"
+    "SUPER,u,spawn,${focusTag} --spawn 3 --layout tile foot -e nvim"
+    "SUPER,y,spawn,${focusTag} --spawn 3 --layout tile foot -e lazygit"
+    "SUPER,o,spawn,${focusTag} --spawn 5 --layout tile obsidian"
     "SUPER+ALT,k,spawn,keepassxc"
-    "SUPER+ALT,f,spawn,foot -e lf"
+    "SUPER+ALT,f,spawn,${focusTag} --spawn 3 --layout tile foot -e lf"
 
     # ── Gaming ──────────────────────────────────────────────────────
-    "SUPER+SHIFT,g,spawn,gamescope -w 1920 -h 1080 -r 120 -- steam"
+    "SUPER+SHIFT,g,spawn,${focusTag} --spawn 7 --layout monocle gamescope -w 1920 -h 1080 -r 120 -- steam"
     "SUPER+ALT,h,spawn,heroic"
     "SUPER+SHIFT,b,spawn,bottles"
     "SUPER+ALT,l,spawn,lutris"
