@@ -21,7 +21,7 @@ in
       default = [
         "/etc/nixos"
         "/etc/stacks"
-        "/home/elias/.config/nix-config"
+        "/home/elias/.config/dotfiles"
         "/var/lib/homelab-backup/exports"
         "/mnt/storage/appdata"
         "/mnt/storage/photos"

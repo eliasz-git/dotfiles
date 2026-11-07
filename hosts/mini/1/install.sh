@@ -2,8 +2,8 @@
 set -euo pipefail
 
 USERNAME="elias"
-CONFIG_DIR="/home/elias/.config/nix-config"
-CONFIG_REPO="https://github.com/tundra-node/nix-config"
+CONFIG_DIR="/home/elias/.config/dotfiles"
+CONFIG_REPO="https://github.com/eliasz-git/dotfiles"
 
 info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*"; }
@@ -62,7 +62,7 @@ setup_groups() {
 }
 
 apply_config() {
-  info "Setting up nix-config repo..."
+  info "Setting up dotfiles repo..."
   if [[ -d "$CONFIG_DIR" ]]; then
     warn "$CONFIG_DIR already exists — skipping clone"
   else
@@ -78,7 +78,7 @@ main() {
   enable_services
   setup_groups
   apply_config
-  echo "Done. Run: home-manager switch --flake ~/.config/nix-config#mini1"
+  echo "Done. Run: home-manager switch --flake ~/.config/dotfiles#mini1"
 }
 
 main

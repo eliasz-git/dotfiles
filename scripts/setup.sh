@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # NixOS/macOS Nix Configuration Setup Script
-# This script helps set up the nix-config for first-time users
+# This script helps set up the dotfiles for first-time users
 
 set -e
 
@@ -47,7 +47,7 @@ echo ""
 
 # Validate we're in the right directory
 if [[ ! -f "$CONFIG_DIR/flake.nix" ]]; then
-    print_error "Could not find flake.nix. Make sure this script is run from the nix-config/scripts directory."
+    print_error "Could not find flake.nix. Make sure this script is run from the dotfiles/scripts directory."
     exit 1
 fi
 

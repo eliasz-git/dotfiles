@@ -541,9 +541,9 @@ let
 
       # Trigger rebuild if on NixOS
       if [ -f /etc/nixos/configuration.nix ] || [ -f /etc/nixos/flake.nix ]; then
-        echo "Run 'sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop' to apply"
-      elif [ -f /etc/nix-darwin/configuration.nix ] || [ -f ~/.config/nix-config/flake.nix ]; then
-        echo "Run 'darwin-rebuild switch --flake ~/.config/nix-config#macbook' to apply"
+        echo "Run 'sudo nixos-rebuild switch --flake ~/.config/dotfiles#desktop' to apply"
+      elif [ -f /etc/nix-darwin/configuration.nix ] || [ -f ~/.config/dotfiles/flake.nix ]; then
+        echo "Run 'darwin-rebuild switch --flake ~/.config/dotfiles#macbook' to apply"
       fi
 
       # Apply runtime changes for Mango/mangobar/Rofi/Dunst if running

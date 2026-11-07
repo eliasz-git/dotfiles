@@ -36,7 +36,7 @@
   # Caps Lock → Command+Control (AeroSpace Mod), tap → Escape
   home.file.".config/karabiner".source =
     config.lib.file.mkOutOfStoreSymlink
-      "/Users/elias/.config/nix-config/modules/darwin/karabiner";
+      "/Users/elias/.config/dotfiles/modules/darwin/karabiner";
 
   # AeroSpace — i3-style tiling window manager
   # Mod key: cmd+ctrl, produced by Karabiner from Caps Lock

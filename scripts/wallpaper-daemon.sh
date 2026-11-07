@@ -8,7 +8,7 @@
 # while the other displays keep their wallpaper.
 set -euo pipefail
 
-WALLPAPER_DIR="${TUNDRA_WALLPAPER_DIR:-${HOME}/.config/nix-config/wallpapers}"
+WALLPAPER_DIR="${TUNDRA_WALLPAPER_DIR:-${HOME}/.config/dotfiles/wallpapers}"
 INTERVAL="${TUNDRA_WALLPAPER_INTERVAL:-900}"
 CHECK_INTERVAL="${TUNDRA_WALLPAPER_CHECK_INTERVAL:-5}"
 REQUEST_FILE="$WALLPAPER_DIR/.wallpaper-request"

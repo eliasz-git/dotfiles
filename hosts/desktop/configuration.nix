@@ -1,7 +1,7 @@
 { config, pkgs, lib, hermes-agent, ... }:
 
 # Desktop — Ryzen 5 5600 + AMD Radeon GPU, Mango (Wayland), Steam.
-# Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop
+# Apply on the machine:  sudo nixos-rebuild switch --flake ~/.config/dotfiles#desktop
 {
     imports = [
       ./hardware-configuration.nix

@@ -25,7 +25,7 @@ Internet
 Deploy (only for services not already owned by NixOS):
 ```bash
 sudo mkdir -p /etc/stacks/infra
-sudo ln -sf ~/.config/nix-config/hosts/mini/1/stacks/infra/compose.yaml /etc/stacks/infra/compose.yaml
+sudo ln -sf ~/.config/dotfiles/hosts/mini/1/stacks/infra/compose.yaml /etc/stacks/infra/compose.yaml
 sudo docker compose -f /etc/stacks/infra/compose.yaml up -d
 # or enable the systemd unit in configuration.nix (commented example)
 ```

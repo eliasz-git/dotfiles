@@ -78,7 +78,7 @@
   home.file."wifi-setup.sh" = {
     text = ''
       #!/bin/sh
-      echo "Run the wifi-setup.sh from the repo: ~/.config/nix-config/hosts/alpine/wifi-setup.sh"
+      echo "Run the wifi-setup.sh from the repo: ~/.config/dotfiles/hosts/alpine/wifi-setup.sh"
     '';
     executable = true;
   };
@@ -86,7 +86,7 @@
   home.file."usb-mount.sh" = {
     text = ''
       #!/bin/sh
-      echo "Run the usb-mount.sh from the repo: ~/.config/nix-config/hosts/alpine/usb-mount.sh"
+      echo "Run the usb-mount.sh from the repo: ~/.config/dotfiles/hosts/alpine/usb-mount.sh"
     '';
     executable = true;
   };

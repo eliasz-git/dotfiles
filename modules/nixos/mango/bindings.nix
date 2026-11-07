@@ -174,7 +174,7 @@ let
 
     # ── System ──────────────────────────────────────────────────────
     "SUPER+SHIFT,q,spawn,wlogout"
-    "SUPER+CTRL+SHIFT,r,spawn_shell,sudo nixos-rebuild switch --flake ~/.config/nix-config#desktop"
+    "SUPER+CTRL+SHIFT,r,spawn_shell,sudo nixos-rebuild switch --flake ~/.config/dotfiles#desktop"
     "SUPER+SHIFT,u,spawn,foot -e tundra rbu"
   ];
 in {

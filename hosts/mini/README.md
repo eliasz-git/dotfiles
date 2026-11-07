@@ -25,10 +25,10 @@ You asked. **Docker** = most tutorials, linuxserver.io images, gluetun docs, Por
 ## First boot — fresh NixOS USB
 1. Flash NixOS 25.05 minimal ISO, boot mini, then:
    ```bash
-   git clone https://github.com/tundra-node/nix-config ~/.config/nix-config
-   nixos-generate-config --show-hardware-config > ~/.config/nix-config/hosts/mini/1/hardware-configuration.nix  # or 2
+   git clone https://github.com/eliasz-git/dotfiles ~/.config/dotfiles
+   nixos-generate-config --show-hardware-config > ~/.config/dotfiles/hosts/mini/1/hardware-configuration.nix  # or 2
    # edit authorizedKeys in configuration.nix, wifi if needed
-   sudo nixos-install --flake ~/.config/nix-config#mini1   # or #mini2
+   sudo nixos-install --flake ~/.config/dotfiles#mini1   # or #mini2
    reboot
    ```
 2. `sudo tailscale up` (paste auth or login via browser), `tailscale status` should show both minis on 100.x.y.z.
@@ -37,7 +37,7 @@ You asked. **Docker** = most tutorials, linuxserver.io images, gluetun docs, Por
    # mini2 example — /mnt/storage is an NFS mount from mini1
    mountpoint /mnt/storage
    sudo mkdir -p /etc/stacks/media
-   sudo cp -r ~/.config/nix-config/hosts/mini/2/stacks/media/* /etc/stacks/media/
+   sudo cp -r ~/.config/dotfiles/hosts/mini/2/stacks/media/* /etc/stacks/media/
    sudo cp /etc/stacks/media/.env.example /etc/stacks/media/.env; sudo nano /etc/stacks/media/.env  # Mullvad key
    sudo docker compose -f /etc/stacks/media/compose.yaml config
    sudo docker compose -f /etc/stacks/media/compose.yaml up -d
@@ -46,7 +46,7 @@ You asked. **Docker** = most tutorials, linuxserver.io images, gluetun docs, Por
 
 ## Daily use
 ```bash
-# On either mini, from ~/.config/nix-config
+# On either mini, from ~/.config/dotfiles
 tundra rb   # pull GitHub fast-forward-only, then rebuild the detected mini
 tundra rb --no-pull  # rebuild the current checkout without pulling
 tundra rbu  # pull, update the flake, and build without activation

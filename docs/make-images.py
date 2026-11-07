@@ -191,7 +191,7 @@ def terminal_svg():
     W, H = 1600, 1000
     x, y, w, h = 48, 44, W - 96, H - 88
     out = svg_open(W, H)
-    out += window_chrome(w, h, x, y, "elias@macbook  ~/.config/nix-config")
+    out += window_chrome(w, h, x, y, "elias@macbook  ~/.config/dotfiles")
 
     size, lh = 14.5, 25
     top = y + 92

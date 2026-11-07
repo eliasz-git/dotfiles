@@ -24,8 +24,8 @@ See [the host inventory](docs/HOSTS.md) for architecture, ownership boundaries, 
 2. Clone this repository:
 
    ```sh
-   git clone git@github.com:eliasz-git/dotfiles.git ~/.config/nix-config
-   cd ~/.config/nix-config
+   git clone git@github.com:eliasz-git/dotfiles.git ~/.config/dotfiles
+   cd ~/.config/dotfiles
    ```
 
 3. Generate the hardware file on the target NixOS machine when required:

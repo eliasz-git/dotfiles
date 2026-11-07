@@ -577,9 +577,9 @@ let
       echo "Theme set to: $name"
       echo "This host has no runtime theme engine, so a rebuild is required:"
       if [ -f /etc/nixos/configuration.nix ]; then
-        echo "  sudo nixos-rebuild switch --flake ~/.config/nix-config#laptop"
+        echo "  sudo nixos-rebuild switch --flake ~/.config/dotfiles#laptop"
       else
-        echo "  darwin-rebuild switch --flake ~/.config/nix-config#macbook"
+        echo "  darwin-rebuild switch --flake ~/.config/dotfiles#macbook"
       fi
 
       if command -v hyprctl >/dev/null 2>&1; then

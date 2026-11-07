@@ -8,12 +8,12 @@ VERSION="0.3.0"
 CONFIG_DIR="${HOME}/.config/tundra"
 if [[ -n "${TUNDRA_NIX_CONFIG_DIR:-}" ]]; then
   NIX_CONFIG_DIR="$TUNDRA_NIX_CONFIG_DIR"
-elif [[ -f "${HOME}/.config/nix-config/flake.nix" ]]; then
-  NIX_CONFIG_DIR="${HOME}/.config/nix-config"
+elif [[ -f "${HOME}/.config/dotfiles/flake.nix" ]]; then
+  NIX_CONFIG_DIR="${HOME}/.config/dotfiles"
 elif [[ -f /etc/nixos/flake.nix ]]; then
   NIX_CONFIG_DIR="/etc/nixos"
 else
-  NIX_CONFIG_DIR="${HOME}/.config/nix-config"
+  NIX_CONFIG_DIR="${HOME}/.config/dotfiles"
 fi
 
 RED='\033[0;31m'
@@ -286,7 +286,7 @@ cmd_github() {
 cmd_wallpaper() {
   local action="${1:-list}" directory target script candidate file
   directory=""
-  for candidate in "$HOME/.local/share/tundra/wallpapers" "$NIX_CONFIG_DIR/wallpapers" "$HOME/.config/nix-config/wallpapers"; do
+  for candidate in "$HOME/.local/share/tundra/wallpapers" "$NIX_CONFIG_DIR/wallpapers" "$HOME/.config/dotfiles/wallpapers"; do
     [[ -d "$candidate" ]] || continue
     shopt -s nullglob
     for file in "$candidate"/*.jpg "$candidate"/*.jpeg "$candidate"/*.png "$candidate"/*.webp; do
