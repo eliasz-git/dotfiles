@@ -28,8 +28,8 @@
     w3m lynx elinks browsh
     # Editor — VSCodium (nano kept, add helix)
     helix micro
-    # Password — KeePassXC/Yubico (pass/gopass disabled on macOS 26 Tahoe libredirect bug)
-    keepassxc yubikey-manager
+    # Password — Yubico (KeePassXC is brew-declared cask on macOS; nixpkgs build fails on darwin)
+    yubikey-manager
     # Media — IINA/GrayJay/YouTube
     mpv yt-dlp ytfzf
     # System — btop already + extras
@@ -37,6 +37,6 @@
     # Misc TUI
     cmatrix cbonsai pipes
   ] ++ lib.optionals stdenv.hostPlatform.isLinux [
-    veracrypt
+    veracrypt keepassxc
   ];
 }
