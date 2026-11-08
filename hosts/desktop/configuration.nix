@@ -237,7 +237,76 @@ in {
     openDefaultPorts = true;
     guiAddress = "127.0.0.1:8384";
     overrideDevices = false;
-    overrideFolders = false;
+    overrideFolders = true;
+    settings = {
+      folders = {
+        eagle-scout = {
+          id = "eagle-scout";
+          label = "Eagle Scout";
+          path = "/home/elias/Documents/Career/Eagle Scout";
+          type = "sendreceive";
+          devices = [ ];
+          versioning = {
+            type = "staggered";
+            params = {
+              maxAge = "31536000";
+            };
+          };
+        };
+        school-docs = {
+          id = "school-docs";
+          label = "School";
+          path = "/home/elias/Documents/School";
+          type = "sendreceive";
+          devices = [ ];
+          versioning = {
+            type = "staggered";
+            params = {
+              maxAge = "31536000";
+            };
+          };
+        };
+        desktop-sync = {
+          id = "desktop-sync";
+          label = "Desktop";
+          path = "/home/elias/Desktop";
+          type = "sendreceive";
+          devices = [ ];
+          versioning = {
+            type = "staggered";
+            params = {
+              maxAge = "31536000";
+            };
+          };
+        };
+        backups-sync = {
+          id = "backups-sync";
+          label = "Backups";
+          path = "/home/elias/Backups";
+          type = "sendreceive";
+          devices = [ ];
+          versioning = {
+            type = "staggered";
+            params = {
+              maxAge = "31536000";
+            };
+          };
+        };
+        genealogy-sync = {
+          id = "genealogy-sync";
+          label = "Genealogy";
+          path = "/home/elias/Documents/Genealogy";
+          type = "sendreceive";
+          devices = [ ];
+          versioning = {
+            type = "staggered";
+            params = {
+              maxAge = "31536000";
+            };
+          };
+        };
+      };
+    };
   };
   systemd.user.services.syncthing.enable = lib.mkForce false;
 
