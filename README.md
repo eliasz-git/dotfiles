@@ -10,13 +10,13 @@ Single source of truth for the live macOS / NixOS system: merged Nix configurati
 |---|---|---|
 | MacBook | `darwinConfigurations.macbook` | AeroSpace, SketchyBar, Ghostty, Homebrew |
 | Laptop | `nixosConfigurations.laptop` | Niri + Waybar |
-| Desktop | `nixosConfigurations.desktop` | Mango + mangobar + Steam/gaming stack |
+| Desktop | `nixosConfigurations.desktop` | Mango + mangobar + Steam/gaming stack; Syncthing folder sync |
 | Mini 1 | `nixosConfigurations.mini1` | Headless infrastructure |
 | Mini 2 | `nixosConfigurations.mini2` | Headless media services |
 
 Standalone Home Manager fallbacks also exist for `mini1` and `mini2`.
 
-See [the host inventory](docs/HOSTS.md) for architecture, ownership boundaries, hardware guidance, and rollback notes.
+See [the host inventory](docs/HOSTS.md) for architecture, ownership boundaries, hardware guidance, and rollback notes. Per-host Syncthing folders, GUI addresses, and macOS launchd behavior are documented in [docs/SYNCTHING.md](docs/SYNCTHING.md).
 
 ## First setup
 

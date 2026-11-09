@@ -6,7 +6,7 @@ This repository keeps host outputs explicit. A successful evaluation of one host
 |---|---|---|---|---|---|
 | MacBook | `darwinConfigurations.macbook` | `aarch64-darwin` | Personal macOS workstation | AeroSpace, SketchyBar, Ghostty | `tundra switch macbook` |
 | Laptop | `nixosConfigurations.laptop` | `x86_64-linux` | NixOS laptop | Niri + Waybar | `tundra switch laptop` |
-| Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Mango + mangobar; rotating painting wallpaper hidden only on a fullscreen monitor | `tundra switch desktop` |
+| Desktop | `nixosConfigurations.desktop` | `x86_64-linux` | Desktop and gaming | Mango + mangobar; Syncthing folder sync; rotating painting wallpaper hidden only on a fullscreen monitor | `tundra switch desktop` |
 | Mini 1 | `nixosConfigurations.mini1` | `x86_64-linux` | Headless infrastructure | None | `tundra switch mini1` |
 | Mini 2 | `nixosConfigurations.mini2` | `x86_64-linux` | Headless media services | None | `tundra switch mini2` |
 
@@ -29,6 +29,8 @@ Retired hosts (`alpine`, `beattie`, `beattie-minimal`, `nixos`) were removed on 
 - `hosts/<name>/`: host hardware, services, role-specific packages, and host selection.
 
 The minis intentionally do not import Mango, mangobar, Rofi, or other desktop modules. The desktop owns Mango and gaming services. The MacBook owns AeroSpace/SketchyBar/Ghostty rather than Linux desktop components.
+
+Syncthing runs on the desktop, mini1, and MacBook, each with its own folder set and GUI bind address. See [docs/SYNCTHING.md](SYNCTHING.md) for the per-host declaration, ports, and macOS launchd behavior.
 
 ## Hardware and secrets
 
