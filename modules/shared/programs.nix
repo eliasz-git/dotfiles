@@ -29,7 +29,9 @@
     # Editor — VSCodium (nano kept, add helix)
     helix micro
     # Password — Yubico (KeePassXC is brew-declared cask on macOS; nixpkgs build fails on darwin)
-    yubikey-manager
+    # yubikey-manager = ykman CLI (YubiKey configuration). yubioath-flutter is the
+    # YubiKey Authenticator GUI. KeePassXC stays in the isLinux list below.
+    yubikey-manager yubioath-flutter
     # Media — IINA/GrayJay/YouTube
     mpv yt-dlp ytfzf
     # System — btop already + extras

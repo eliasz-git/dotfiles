@@ -44,8 +44,6 @@ in {
     "pcie_aspm=off"
     # Attempt GPU reset/recovery instead of escalating to a full panic.
     "amdgpu.gpu_recovery=1"
-    # Stop on GPU VM faults so they're captured rather than escalating.
-    "amdgpu.vm_fault_stop=1"
     # Give display commits highest priority — helps with HDMI-A-1 VRR atomic commit hangs.
     "amdgpu.disp_priority=2"
     # Mask panel self-refresh — one RDNA2 user reported it prevents VRAM-stuck hangs at high refresh.
@@ -87,7 +85,7 @@ in {
   users.users.elias = {
     isNormalUser = true;
     description = "elias";
-    extraGroups = [ "wheel" "networkmanager" "video" "render" "input" ];
+    extraGroups = [ "wheel" "networkmanager" "video" "render" "input" "pcscd" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
@@ -149,7 +147,6 @@ in {
     enable = true;
     remotePlay.openFirewall = true;
     gamescopeSession.enable = true;
-    extraCompatPackages = [ pkgs.proton-ge-bin ];
   };
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
@@ -212,6 +209,17 @@ in {
 
   # ── INPUT ─────────────────────────────────────────────────────
   services.libinput.enable = true;
+
+  # YubiKey: let the logged-in user access the device directly so KeePassXC
+  # can use it for challenge-response (and FIDO2) without root. The uaccess
+  # tag makes systemd-logind grant the active session rw on the device node.
+  services.udev.extraRules = ''
+    ACTION=="add|change", SUBSYSTEM=="usb", ATTRS{idVendor}=="1050", TAG+="uaccess"
+  '';
+
+  # PC/SC smart card daemon — required for KeePassXC to talk to the YubiKey
+  # over CCID (challenge-response unlock).
+  services.pcscd.enable = true;
 
   # ── SERVICES ──────────────────────────────────────────────────
   services.openssh = {
@@ -327,6 +335,13 @@ in {
     hermes-agent.packages.x86_64-linux.default
     bemenu # menu program for xdg-desktop-portal-wlr screen/window picker (OBS screen capture)
     ghostty-terminfo # terminfo for xterm-ghostty (Ghostty terminal)
+    # ── Graphics (ensure Mesa/RADV + Vulkan loader are present for Proton) ──
+    mesa          # OpenGL + Vulkan RADV driver for AMD GPUs
+    vulkan-loader # Vulkan ICD loader
+    # ── Diagnostics ──
+    mesa-demos   # glxinfo — verify OpenGL renderer/hardware acceleration
+    vulkan-tools # vulkaninfo — verify Vulkan device + RADV driver
+    lm_sensors   # sensors — read GPU/CPU/mobo temps under load
   ];
 
   # ── SECOND SSD: Steam Games Library ─────────────────────────────
@@ -349,6 +364,10 @@ in {
     notifications.wall.enable = true;
     notifications.mail.enable = false;
   };
+
+  # Capture crash dumps when Steam/game/compositor segfaults — essential for
+  # diagnosing hard GPU hangs where the journal can't flush.
+  systemd.coredump.enable = true;
 
   # ── NIX ───────────────────────────────────────────────────────
   nix.settings = {

@@ -33,6 +33,12 @@
       # starts with the session and stays resident.
       "${pkgs.easyeffects}/bin/easyeffects"
 
+      # Password manager. Opens your database at login — you still get the
+      # master-password prompt (and YubiKey touch, if configured) so nothing
+      # is unlocked without you. Change the path to the cold-storage database
+      # if you want that one to open instead.
+      "${pkgs.keepassxc}/bin/keepassxc ${config.home.homeDirectory}/Passwords/Passwords.kdbx"
+
       # Put each display on the workspace it owns at session start, so the
       # two monitors never show the same workspace index: HDMI-A-1 (main)
       # starts on workspace 1 and HDMI-A-2 (secondary) on workspace 2.

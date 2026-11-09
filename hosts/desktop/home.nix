@@ -34,6 +34,8 @@ let
 in {
   imports = [
     ../../modules/shared/shell.nix
+    # Packages shared across hosts (KeePassXC, ykman, yubioath-flutter, etc.)
+    ../../modules/shared/programs.nix
     # Anki — official upstream binaries via nixpkgs `anki-bin`; the data
     # directory stays user-owned (see the module for the sync story).
     ../../modules/shared/anki.nix
