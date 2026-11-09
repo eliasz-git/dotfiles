@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# icloud-photos-sync — Download your iCloud Photos library to Linux.
+#
+# Uses icloudpd (https://github.com/icloud-photos-downloader/icloud_photos_downloader).
+# First run: enter your Apple ID password and complete 2FA on a trusted device.
+# Session/cookies are remembered by icloudpd, so later runs resume automatically.
+#
+# Environment:
+#   ICLOUD_USERNAME   Your Apple ID (email). If unset, icloudpd prompts or you
+#                     can pass --username yourself via ICLOUDPD_FLAGS / "$@".
+#   ICLOUD_PHOTOS_DIR Where photos are saved (default: ~/Pictures/iCloud Photos)
+#   ICLOUDPD_FLAGS    Extra flags passed to icloudpd (default: --size original)
+#
+# Example flags:
+#   --size original            Download full-resolution originals (default here)
+#   --size most_recent_compatible
+#   --recent-days 30           Only the last 30 days
+#   --folder-year-month        Sort into YYYY/MM folders
+#   --continue-on-error
+#
+set -euo pipefail
+
+OUTDIR="${ICLOUD_PHOTOS_DIR:-$HOME/Pictures/iCloud Photos}"
+USERNAME="${ICLOUD_USERNAME:-}"
+
+if ! command -v icloudpd >/dev/null 2>&1; then
+  echo "error: icloudpd not found. Install it: nix profile install nixpkgs#icloudpd" >&2
+  exit 1
+fi
+
+mkdir -p "$OUTDIR"
+
+ARGS=(--directory "$OUTDIR")
+if [[ -n "${ICLOUDPD_FLAGS:-}" ]]; then
+  # shellcheck disable=SC2206
+  ARGS+=(${ICLOUDPD_FLAGS})
+else
+  ARGS+=(--size original)
+fi
+[[ -n "$USERNAME" ]] && ARGS+=(--username "$USERNAME")
+[[ $# -gt 0 ]] && ARGS+=("$@")
+
+echo "==> iCloud Photos will be saved to: $OUTDIR"
+echo "==> Running: icloudpd ${ARGS[*]}"
+icloudpd "${ARGS[@]}"

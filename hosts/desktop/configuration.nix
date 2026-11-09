@@ -34,8 +34,6 @@ in {
   # Zen 3 P-state driver. Falls back to acpi-cpufreq on its own if the BIOS
   # has CPPC turned off, so it is safe either way.
   boot.kernelParams = [
-    "amd_pstate=active"
-
     # ── AMD GPU (RX 6600 / Navi 23) stability mitigations ──
     # BACO / runtime PM is a frequent RDNA2 hang source with VRR + multi-monitor.
     "amdgpu.runpm=0"

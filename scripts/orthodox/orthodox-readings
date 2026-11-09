@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# orthodox-readings — Open today's Eastern Orthodox daily readings.
+#
+# Defaults to the Orthodox Church in America (OCA) daily readings page.
+# Override with ORTHODOX_READINGS_URL.
+set -euo pipefail
+
+URL="${ORTHODOX_READINGS_URL:-https://dormitionpgh.org/}"
+
+if command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$URL"
+elif command -v open >/dev/null 2>&1; then
+  open "$URL"
+else
+  echo "No browser opener found. Visit: $URL" >&2
+  exit 1
+fi

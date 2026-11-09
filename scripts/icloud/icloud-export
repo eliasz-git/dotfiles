@@ -1,0 +1,253 @@
+#!/home/elias/icloud-venv/bin/python
+#
+# icloud-export — Export iCloud data (Drive, Notes, Contacts, Calendar,
+# Reminders, Bookmarks) from Apple iCloud to local files.
+#
+# Uses pyicloud (https://pypi.org/project/pyicloud/). First run is interactive:
+# you enter your Apple ID password and complete 2FA on a trusted device, after
+# which session cookies are kept in ~/.pyicloud so later runs are automatic.
+#
+# Output: ~/iCloud-export/{drive,notes,contacts.vcf,calendar.ics,reminders,bookmarks}
+#
+set -eu
+
+import os
+import sys
+import getpass
+import shutil
+from datetime import datetime
+
+from pyicloud import PyiCloudService
+
+APPLE_ID = os.environ.get("ICLOUD_APPLE_ID") or input("Apple ID email: ").strip()
+PASSWORD = os.environ.get("ICLOUD_PASSWORD")
+EXPORT_ROOT = os.path.expanduser(os.environ.get("ICLOUD_EXPORT_DIR", "~/iCloud-export"))
+COOKIE_DIR = os.path.expanduser("~/.pyicloud")
+
+os.makedirs(EXPORT_ROOT, exist_ok=True)
+
+
+def authenticate():
+    if PASSWORD:
+        api = PyiCloudService(APPLE_ID, PASSWORD, cookie_directory=COOKIE_DIR)
+    else:
+        api = PyiCloudService(APPLE_ID, cookie_directory=COOKIE_DIR)
+
+    # Two-factor authentication
+    if api.requires_2fa:
+        print("Two-factor authentication required.")
+        devices = api.trusted_devices
+        for i, device in enumerate(devices):
+            print(f"  {i}: {device.get('deviceName', 'Unknown')} "
+                  f"({device.get('deviceModel', 'Unknown')})")
+        choice = int(input("Choose device to send verification code to: "))
+        device = devices[choice]
+        api.send_verification_code(device)
+        code = input("Enter verification code: ").strip()
+        if not api.validate_verification_code(device, code):
+            sys.exit("Failed to validate verification code.")
+        if not api.trust_session():
+            sys.exit("Failed to trust session.")
+        print("Session trusted and cookies saved to ~/.pyicloud")
+    return api
+
+
+# ------------------------------------------------------------------ folders
+DRIVE_DIR = os.path.join(EXPORT_ROOT, "drive")
+NOTES_DIR = os.path.join(EXPORT_ROOT, "notes")
+REMINDERS_DIR = os.path.join(EXPORT_ROOT, "reminders")
+BOOKMARKS_DIR = os.path.join(EXPORT_ROOT, "bookmarks")
+for d in (DRIVE_DIR, NOTES_DIR, REMINDERS_DIR, BOOKMARKS_DIR):
+    os.makedirs(d, exist_ok=True)
+
+
+def safe_name(name):
+    return "".join(c for c in name if c.isalnum() or c in (" ", ".", "_", "-")).rstrip() or "untitled"
+
+
+def download_node(node, dest):
+    """pyicloud drive nodes expose .download() returning bytes in recent versions."""
+    data = None
+    for method in ("download", "get_contents"):
+        fn = getattr(node, method, None)
+        if callable(fn):
+            try:
+                data = fn()
+                break
+            except Exception:
+                data = None
+    if data is None:
+        # last resort: api-level download
+        data = api.drive.download(node)
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+    with open(dest, "wb") as f:
+        f.write(data)
+
+
+def export_drive(api, node, prefix=""):
+    for child in node.children.values():
+        name = safe_name(child.name)
+        path = os.path.join(DRIVE_DIR, prefix, name)
+        if getattr(child, "type", None) == "folder" or getattr(child, "children", None):
+            os.makedirs(path, exist_ok=True)
+            export_drive(api, child, os.path.join(prefix, name))
+        else:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            try:
+                download_node(child, path)
+                print(f"[drive] {path}")
+            except Exception as exc:
+                print(f"[drive] SKIP {path}: {exc}")
+
+
+def export_notes(api):
+    try:
+        notes = api.notes.all()
+    except Exception as exc:
+        print(f"[notes] unavailable: {exc}")
+        return
+    for i, note in enumerate(notes):
+        title = safe_name(getattr(note, "title", None) or f"note-{i}")
+        stamp = getattr(note, "modification_date", None) or getattr(note, "creation_date", None)
+        content = getattr(note, "content", "") or ""
+        if isinstance(content, bytes):
+            content = content.decode("utf-8", "replace")
+        body = f"iCloud Note\nTitle: {title}\nModified: {stamp}\n\n{content}"
+        with open(os.path.join(NOTES_DIR, f"{title}.txt"), "w", encoding="utf-8") as f:
+            f.write(body)
+        print(f"[notes] {title}.txt")
+
+
+def contacts_to_vcf(contacts):
+    blocks = []
+    for c in contacts:
+        lines = ["BEGIN:VCARD", "VERSION:3.0"]
+        fn = " ".join(filter(None, [getattr(c, "first_name", None), getattr(c, "last_name", None)])) or "Untitled"
+        lines.append(f"FN:{fn}")
+        lines.append(f"N:{getattr(c,'last_name','') or ''};{getattr(c,'first_name','') or ''};;;")
+        for email in getattr(c, "email", []) or []:
+            addr = getattr(email, "value", email) if not isinstance(email, str) else email
+            lines.append(f"EMAIL;TYPE=INTERNET:{addr}")
+        for phone in getattr(c, "phone_number", []) or []:
+            num = getattr(phone, "value", phone) if not isinstance(phone, str) else phone
+            lines.append(f"TEL:{num}")
+        lines.append("END:VCARD")
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks)
+
+
+def export_contacts(api):
+    try:
+        contacts = api.contacts.all()
+    except Exception as exc:
+        print(f"[contacts] unavailable: {exc}")
+        return
+    vcf = contacts_to_vcf(contacts)
+    with open(os.path.join(EXPORT_ROOT, "contacts.vcf"), "w", encoding="utf-8") as f:
+        f.write(vcf)
+    print(f"[contacts] contacts.vcf ({len(contacts)} cards)")
+
+
+def export_calendar(api):
+    try:
+        calendars = api.calendar.calendars()
+        events = []
+        for cal in calendars:
+            events.extend(api.calendar.events(cal.id))
+    except Exception as exc:
+        print(f"[calendar] unavailable: {exc}")
+        return
+
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//icloud-export//NONSGML v1.0//EN",
+        "CALSCALE:GREGORIAN",
+    ]
+    for ev in events:
+        lines.append("BEGIN:VEVENT")
+        lines.append(f"UID:{getattr(ev, 'title', 'event')}-{getattr(ev, 'guid', id(ev))}@icloud.com")
+        for attr in ("title", "location"):
+            val = getattr(ev, attr, None)
+            if val:
+                lines.append(f"{attr.upper()}:{val}")
+        for attr in ("start_date", "end_date"):
+            val = getattr(ev, attr, None)
+            if val:
+                if isinstance(val, datetime):
+                    val = val.strftime("%Y%m%dT%H%M%S")
+                lines.append(f"{attr.upper().replace('DATE','')}:{val}")
+        note = getattr(ev, "title", None)
+        lines.append(f"DESCRIPTION:iCloud event{(' — ' + str(note)) if note else ''}")
+        lines.append("END:VEVENT")
+    lines.append("END:VCALENDAR")
+    with open(os.path.join(EXPORT_ROOT, "calendar.ics"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print(f"[calendar] calendar.ics ({len(events)} events)")
+
+
+def export_reminders(api):
+    try:
+        lists = api.reminders.lists
+    except Exception as exc:
+        print(f"[reminders] unavailable: {exc}")
+        return
+    for lst in lists:
+        items = []
+        try:
+            items = api.reminders.items(lst.guid) or []
+        except Exception:
+            pass
+        fname = safe_name(getattr(lst, "title", "reminders")) + ".md"
+        with open(os.path.join(REMINDERS_DIR, fname), "w", encoding="utf-8") as f:
+            f.write(f"# {lst.title}\n")
+            for item in items:
+                title = getattr(item, "title", "") or ""
+                due = getattr(item, "due_date", None)
+                done = "[x]" if getattr(item, "completed", False) else "[ ]"
+                f.write(f"{done} {title}" + (f" _(due: {due})_" if due else "") + "\n")
+        print(f"[reminders] {fname} ({len(items)} items)")
+
+
+def export_bookmarks(api):
+    try:
+        bookmarks = api.bookmarks.children
+    except Exception as exc:
+        print(f"[bookmarks] unavailable: {exc}")
+        return
+    with open(os.path.join(BOOKMARKS_DIR, "bookmarks.html"), "w", encoding="utf-8") as f:
+        f.write("<html><body><h1>iCloud Bookmarks</h1><ul>\n")
+        count = 0
+        def walk(node):
+            nonlocal count
+            for child in getattr(node, "children", []) or []:
+                title = safe_name(getattr(child, "title", None) or getattr(child, "name", None) or "Link")
+                url = getattr(child, "url", None)
+                if url:
+                    f.write(f'<li><a href="{url}">{title}</a></li>\n')
+                    count += 1
+                walk(child)
+        walk(bookmarks)
+        f.write("</ul></body></html>\n")
+    print(f"[bookmarks] bookmarks.html ({count} links)")
+
+
+api = authenticate()
+
+print("\n==> iCloud Drive")
+export_drive(api, api.drive.root)
+print("\n==> Notes")
+export_notes(api)
+print("\n==> Contacts")
+export_contacts(api)
+print("\n==> Calendar")
+export_calendar(api)
+print("\n==> Reminders")
+export_reminders(api)
+print("\n==> Bookmarks")
+export_bookmarks(api)
+
+print(f"\nDone. Everything is under: {EXPORT_ROOT}")
+print("Tip: contacts.vcf imports into Thunderbird/Evolution/GNOME Contacts.")
+print("Tip: calendar.ics imports into Thunderbird/Lightning or GNOME Calendar.")

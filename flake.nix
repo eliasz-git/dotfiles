@@ -77,6 +77,14 @@
               (builtins.filter (n: pyPrev ? ${n}) [ "pyopenjtalk-plus" "pyrate-limiter" ])
               (n: pyPrev.${n}.overridePythonAttrs (_: { doCheck = false; })))
         ];
+
+        # patchelf 0.15.2 ships a patch that no longer applies to its source
+        # tarball on recent nixpkgs revisions, breaking the build (and
+        # cascading to ffmpeg → node → pnpm → hermes-agent). The patch fixes
+        # an executable-header load overlap that is not relevant here; skip it.
+        patchelf = prev.patchelf.overrideAttrs (_: {
+          patches = [];
+        });
       })
     ];
 
