@@ -4,6 +4,11 @@ stdenv.mkDerivation {
   pname = "ghostty-terminfo";
   version = "1.3.1";
 
+  # src is a single .ti text file (from writeTextFile), not an archive, so
+  # stdenv's generic unpackPhase ("do not know how to unpack source archive")
+  # fails. Skip unpacking; $src then points directly at the .ti file for tic.
+  dontUnpack = true;
+
   src = writeTextFile {
     name = "xterm-ghostty.ti";
     text = ''
