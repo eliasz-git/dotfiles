@@ -27,12 +27,13 @@ in {
   home.packages = with pkgs; [
     rclone
     icloudpd
-    python3
-    python3Packages.pip
     gnupg   # keyring / password storage for pyicloud
     curl
     wget
   ];
+  # python3 + pip are provided by the existing system python and the
+  # ~/icloud-venv virtualenv (which already has the `icloud` PyPI package).
+  # icloud-export's shebang points directly at ~/icloud-venv/bin/python.
 
   # Optional daily iCloud Photos sync. Enable the timer after rebuild with:
   #   systemctl --user enable --now icloud-photos-sync.timer
