@@ -315,7 +315,6 @@ in {
     # Apps
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
-    revolt
     brightnessctl
     heroic
     keepassxc

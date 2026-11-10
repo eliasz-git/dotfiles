@@ -250,17 +250,11 @@ in {
     };
 
     # ── Byzantine color theme ──
-    # Defer to the host's programs.gtk configuration when it owns
-    # ~/.config/gtk-3.0/settings.ini, to avoid a managed-target conflict.
-    home.file.".config/gtk-3.0/settings.ini" = lib.mkIf ( (config.services.orthodox.theme.enable or false) && !(config.programs.gtk.enable or false) ) {
-      text = ''
-        [Settings]
-        gtk-theme-name=Adwaita-dark
-        gtk-icon-theme-name=Papirus-Dark
-        gtk-font-name=JetBrainsMono Nerd Font 11
-        gtk-color-scheme=base_color:#1A1A1A\nfg_color:#D4AF37\nbg_color:#1A1A1A\ntext_color:#D4AF37\nselected_bg_color:#8B0000\nselected_fg_color:#D4AF37
-      '';
-    };
+    # NOTE: ~/.config/gtk-3.0/settings.ini is owned by the host's
+    # programs.gtk configuration (gtk.enable = true in home.nix), so
+    # Orthodox does not write it here to avoid a Home Manager
+    # "Conflicting managed target files" error.
+
 
     # ── Wallpaper reference ──
     home.file.".config/orthodox/wallpaper.txt" = lib.mkIf (config.services.orthodox.theme.wallpaper != null) {
