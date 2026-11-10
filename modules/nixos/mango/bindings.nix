@@ -19,14 +19,14 @@ let
     #          dwindle, fair, vertical_fair
     "SUPER,Return,spawn,${focusTag} --spawn 3 --layout tile foot"
     "SUPER,Space,spawn,fuzzel"
-    "SUPER,w,spawn,rofi -show window"
-    "SUPER,d,spawn,rofi -show ssh"
-    "SUPER+ALT,c,spawn,rofi -show calc"
-    "SUPER+ALT,e,spawn,rofi -show emoji"
+    # "SUPER,w,spawn,rofi -show window"    # rofi removed; fuzzel has no window-switcher mode
+    # "SUPER,d,spawn,rofi -show ssh"       # rofi removed; no direct fuzzel equivalent
+    # "SUPER+ALT,c,spawn,rofi -show calc"  # rofi removed; no direct fuzzel equivalent
+    # "SUPER+ALT,e,spawn,rofi -show emoji" # rofi removed; no direct fuzzel equivalent
     "SUPER,b,spawn,${focusTag} --spawn 1 --layout monocle firefox"
     "SUPER,e,spawn,${focusTag} --spawn 5 --layout tile thunar"
     # cliphist piping needs a shell, spawn_shell supports pipes.
-    "SUPER,v,spawn_shell,cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+    "SUPER,v,spawn_shell,cliphist list | fuzzel | cliphist decode | wl-copy"
     "SUPER,q,killclient,"
     "SUPER+SHIFT,e,quit,"
     "SUPER,f,togglefullscreen,"
