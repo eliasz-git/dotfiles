@@ -18,7 +18,7 @@ let
     #          vertical_scroller, vertical_tile, vertical_grid, vertical_deck,
     #          dwindle, fair, vertical_fair
     "SUPER,Return,spawn,${focusTag} --spawn 3 --layout tile foot"
-    "SUPER,Space,spawn,rofi -show drun"
+    "SUPER,Space,spawn,fuzzel"
     "SUPER,w,spawn,rofi -show window"
     "SUPER,d,spawn,rofi -show ssh"
     "SUPER+ALT,c,spawn,rofi -show calc"
