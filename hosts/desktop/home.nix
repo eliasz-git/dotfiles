@@ -42,6 +42,7 @@ in {
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/orthodox.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
     ../../modules/nixos/mango/monitors.nix
@@ -51,7 +52,7 @@ in {
     ../../modules/nixos/mango/autostart.nix
     ../../modules/nixos/mango/toggles.nix
     ../../modules/nixos/mangobar.nix
-    ../../modules/nixos/rofi.nix
+    ../../modules/nixos/fuzzel.nix
     ../../modules/nixos/mail.nix
     ../../modules/nixos/clipboard.nix
     ../../modules/nixos/screenshot.nix
@@ -184,8 +185,8 @@ in {
     };
   };
 
-  # ── LAUNCHER: ROFI (replaces wofi) ─────────────────────────
-  # Configured in rofi.nix
+  # ── LAUNCHER: FUZZEL (replaces stale X11 rofi) ────────────────
+  # Configured in modules/nixos/fuzzel.nix
 
   # ── NOTIFICATIONS ──────────────────────────────────────────
   services.dunst = {
@@ -269,7 +270,29 @@ in {
   # The /Games mount is a systemd automount; a GTK bookmark keeps it visible in Thunar.
   xdg.configFile."gtk-3.0/bookmarks".text = "file:///Games Gaming SSD\n";
 
-  # ── SHELL ──────────────────────────────────────────────────
+  # ── ORTHODOX / GOARCH LITURGICAL CALENDAR ──
+  services.orthodox = {
+    enable = true;
+    calendar.enable = true;
+    calendar.showFasting = true;
+    theme.enable = true;
+    theme.accentColor = "#D4AF37";
+    notifications.enable = true;
+    notifications.morningHour = 6;
+    notifications.eveningHour = 18;
+    notifications.vespersEnable = true;
+  };
+
+  # ── APPLE NOTES WEB APP ──
+  # Launch Apple Notes (iCloud) as a borderless Chromium web app window.
+  xdg.desktopEntries.apple-notes = {
+    name = "Apple Notes";
+    exec = "${pkgs.chromium}/bin/chromium --app=https://www.icloud.com/notes";
+    icon = "notes";
+    comment = "Apple Notes Web Application";
+    categories = [ "Office" "Utility" ];
+  };
+
   # Aliases defined in modules/shared/shell.nix
 
   # ── PACKAGES ───────────────────────────────────────────────
@@ -281,7 +304,7 @@ in {
     # Apps
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
-    discord
+    revolt
     brightnessctl
     heroic
     keepassxc
@@ -290,7 +313,7 @@ in {
     jq
     lutris
     neovim
-    obsidian
+    joplin-desktop
     rmpc
     thunar
     imv
@@ -308,6 +331,7 @@ in {
     # every file prompts as "may not be an image" and PNG/WebP are saved as .jpg.
     file
     nnn lf
+    vim nano htop
     # Clipboard
     cliphist
     (if selectedEverforest then materia-everforest-kvantum else catppuccin-kvantum.override {
