@@ -6,6 +6,7 @@
     ../../../modules/nixos/compose-stack.nix
     ../../../modules/nixos/homelab-backup.nix
     ../../../modules/nixos/tailscale-serve.nix
+    ../../../modules/system/nix-settings.nix
   ];
 
   # ── Host identity ───────────────────────────────────────────────
@@ -250,15 +251,6 @@
   ];
 
   # ── Nix ─────────────────────────────────────────────────────────
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-  };
   # nixpkgs.config.allowUnfree moved to flake.nix linuxPkgs (import nixpkgs { config.allowUnfree = true; })
   # nixpkgs.config.allowUnfree = true;
 

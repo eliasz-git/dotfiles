@@ -43,38 +43,39 @@
       { name = "nikitabobko/tap"; trusted = true; }
     ];
     brews = [
+      # macOS-specific tools from custom taps (no nixpkgs equivalent)
       "borders" "cups" "opencode" "sketchybar"
-      "pcre2" "ripgrep"
-      "deno" "himalaya" "openjdk@21" "pnpm" "python@3.14" "yt-dlp" "libomp"
+      "pcre2" # sketchybar dependency
+      "deno" "himalaya" "openjdk@21" "pnpm" "libomp"
       "imsg" "remindctl"
       "mole"
-      "mpd" "mpc" "rmpc" "mpdscribble" "nowplaying-cli" "kew" "nicotine-plus"
+      "nowplaying-cli" "kew" "nicotine-plus"
       "docker" "blueutil"
       # AI tools - not in Homebrew, install via npm:
       # "antigravity-cli" -> npm i -g
       # "claude-code" -> npm i -g @anthropic-ai/claude-code
       # "copilot-cli" -> npm i -g @github/copilot-cli
-      "ollama"
-      # Theme tools
-      "eza" "bat" "fd" "zoxide" "atuin"
-      # "pay-respects" not in Homebrew
-      # Utils
-      "jq" "yq" "git-delta" "lazygit" "btop" "dust" "procs" "tealdeer"
+      # Theme tools (eza, bat, fd, zoxide, atuin now via nixpkgs programs.nix)
+      # Utils (jq, yq, git-delta, lazygit, btop, dust, procs, tealdeer via nixpkgs)
+      # CLI tools removed from brews — provided via nixpkgs programs.nix:
+      # ripgrep, eza, bat, fd, zoxide, atuin, yt-dlp, ollama, python@3.11,
+      # python@3.14, scrcpy, mpd, mpc, rmpc, mpdscribble, jq, yq, git-delta,
+      # lazygit, btop, dust, procs, tealdeer
       # Restored 2026-10-12 — zap cleanup removed these previously undeclared strays
-      "apfel" "ggml" "libusb" "llama.cpp" "python@3.11" "scrcpy"
+      "apfel" "ggml" "libusb" "llama.cpp"
       # Declared 2026-10-26 — installed but undeclared, would be removed by zap cleanup
       "i2pd"
       # (syncthing not re-added — nix-managed via launchd agent, modules/darwin/syncthing.nix)
     ];
     casks = [
       "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc"
-      "obsidian" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
+      "joplin" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
       "knockknock" "oversight" "tuta-mail" "boring-notch"
       "beeper" "flux-app" "lm-studio" "netnewswire" "telegram" "macfuse" "fuse-t" "loop"
       "tor-browser" "utm" "veracrypt" "microsoft-teams"
       "opencode-desktop"
-      "calibre" "discord" "gramps" "openwork" "protonvpn"
+      "calibre" "gramps" "openwork" "protonvpn"
       # "copilot-cli" not in Homebrew casks - install via npm
       "burn" "crossover" "tailscale-app"
       "zen" "firefox" "balenaetcher" "tinymediamanager" "godot"

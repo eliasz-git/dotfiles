@@ -7,9 +7,7 @@ let
   # Ghostty's terminfo is not in nixpkgs for Linux, so we compile it from source
   ghostty-terminfo = import ../../pkgs/ghostty-terminfo {
     inherit lib;
-    stdenv = pkgs.stdenv;
-    ncurses = pkgs.ncurses;
-    writeTextFile = pkgs.writeTextFile;
+    inherit (pkgs) stdenv ncurses writeTextFile;
   };
 in {
     imports = [
@@ -17,6 +15,7 @@ in {
       ../../modules/system/themes.nix
       ../../modules/nixos/themes.nix
       ../../modules/nixos/sddm-theme.nix
+      ../../modules/system/nix-settings.nix
     ];
 
   # System-level theme registry and optional Swaylock fallback, plus the
@@ -326,7 +325,7 @@ in {
   ];
 
   environment.systemPackages = with pkgs; [
-    git vim nano curl wget htop pciutils smartmontools usbutils
+    git curl wget pciutils smartmontools usbutils
     wakeonlan # magic packets to mini/other hosts; MAC lives in /sys/class/net/enp4s0/address
     moonlight-qt # client, for testing the loopback from this machine
     android-tools # Android SDK platform tools (adb/fastboot)
@@ -370,15 +369,5 @@ in {
   systemd.coredump.enable = true;
 
   # ── NIX ───────────────────────────────────────────────────────
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-  };
-
   system.stateVersion = "26.05";
 }

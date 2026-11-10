@@ -7,6 +7,7 @@
      else ./hardware-configuration.nix.example)
     ../../modules/system/themes.nix
     ../../modules/nixos/themes.nix
+    ../../modules/system/nix-settings.nix
   ];
 
   # ── THEME ───────────────────────────────────────────────────
@@ -248,7 +249,6 @@
 
   # ── FONTS & PACKAGES ─────────────────────────────────────────
   environment.systemPackages = with pkgs; [
-    nano
     wget
     curl
     git
@@ -297,17 +297,6 @@
   systemd.user.services.syncthing.enable = lib.mkForce false;
 
   # ── NIX ──────────────────────────────────────────────────────
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
-
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code

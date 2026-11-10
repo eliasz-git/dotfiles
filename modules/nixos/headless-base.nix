@@ -27,16 +27,6 @@
   };
   boot.kernel.sysctl."vm.swappiness" = lib.mkDefault 10;
 
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-  };
-
   # Keep the OS journal from consuming a small system disk during a container
   # failure. Application logs have their own Compose rotation policy.
   services.journald.settings.Journal = {

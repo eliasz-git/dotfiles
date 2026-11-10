@@ -5,6 +5,7 @@
     ../../../modules/nixos/headless-base.nix
     ../../../modules/nixos/compose-stack.nix
     ../../../modules/nixos/tailscale-serve.nix
+    ../../../modules/system/nix-settings.nix
   ];
 
   networking.hostName = "mini2"; # media — elias-server2 alias via DNS
@@ -228,17 +229,6 @@
     description = "weekly navidrome archive check";
     wantedBy = [ "timers.target" ];
     timerConfig = { OnCalendar = "weekly"; Persistent = true; Unit = "navidrome-cleaner.service"; };
-  };
-
-
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
   };
 
 
