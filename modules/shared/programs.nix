@@ -19,7 +19,9 @@
     # himalaya is brew-declared in configuration.nix (like mpd/rmpc), so brew's 2.1.0 isn't shadowed by stale nixpkgs 2.0.0
     neomutt aerc
     # Chat — Beeper/Discord
-    weechat discordo gurk-rs
+    weechat discordo
+    # gurk-rs dropped: fails to build on current nixpkgs (missing sqlite3
+    # build input for its Rust linkage). Discord + element-desktop cover chat.
     # RSS — NetNewsWire
     newsboat
     # Notes/Markdown — Obsidian
