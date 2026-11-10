@@ -11,15 +11,20 @@
 
   home.file.".config/fuzzel/fuzzel.ini".text = ''
     [launcher]
-    command=foot -e {}
-    width=60
-    lines=10
-    prompt=>
+    width=48
+    height=22
+    lines=11
+    prompt=❯
+    fuzzy=true
+    case-sensitive=false
+    font=JetBrainsMono Nerd Font:size=11
 
     [color]
-    normal=#2d353bff,#d3c6aaff,#2d353bff,#7fbbb3ff,#d3c6aaff
-    selected=#7fbbb3ff,#2d353bff,#7fbbb3ff,#d3c6aaff,#2d353bff
-    active=#a7c080ff,#2d353bff,#a7c080ff,#d3c6aaff,#2d353bff
-    urgent=#e67e80ff,#2d353bff,#e67e80ff,#d3c6aaff,#2d353bff
-  '';
+    # Everforest Blue palette — fg, bg, border, separator, shadow
+    normal=#d3c6aaff,#2d353bff,#343f44ff,#7fbbb3ff,#00000000
+    selected=#2d353bff,#7fbbb3ff,#7fbbb3ff,#d3c6aaff,#00000000
+    active=#7fbbb3ff,#2d353bff,#343f44ff,#7fbbb3ff,#00000000
+    urgent=#e67e80ff,#2d353bff,#343f44ff,#e67e80ff,#00000000
+    match=#dbbc7fff,#2d353bff,#343f44ff,#dbbc7fff,#00000000
+'';
 }
