@@ -250,7 +250,9 @@ in {
     };
 
     # ── Byzantine color theme ──
-    home.file.".config/gtk-3.0/settings.ini" = lib.mkIf (config.services.orthodox.theme.enable or false) {
+    # Defer to the host's programs.gtk configuration when it owns
+    # ~/.config/gtk-3.0/settings.ini, to avoid a managed-target conflict.
+    home.file.".config/gtk-3.0/settings.ini" = lib.mkIf ( (config.services.orthodox.theme.enable or false) && !(config.programs.gtk.enable or false) ) {
       text = ''
         [Settings]
         gtk-theme-name=Adwaita-dark
