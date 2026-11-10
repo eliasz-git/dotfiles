@@ -71,6 +71,11 @@
         # and the package builds. Only the laptop installs it.
         calibre = prev.calibre.overrideAttrs (_: { doInstallCheck = false; });
 
+        # termusic 0.13.2's test suite fails on delete_unreferenced_albums
+        # (upstream test bug); the package itself builds and works. Keep it
+        # for the local music library workflow.
+        termusic = prev.termusic.overrideAttrs (_: { doCheck = false; });
+
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (pyFinal: pyPrev:
             prev.lib.genAttrs
