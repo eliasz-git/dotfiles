@@ -10,6 +10,7 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/orthodox.nix
     ../../modules/shared/secrets.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
@@ -186,6 +187,17 @@
     s6vnc = "adb forward tcp:5901 tcp:5901 >/dev/null && open vnc://localhost:5901";  # Kali KeX desktop
     s6frida = "~/s6/tools/venv/bin/frida-ps -U";
     s6obj = "~/s6/tools/venv/bin/objection";
+  };
+
+  # ── ORTHODOX / GOARCH LITURGICAL CALENDAR ──
+  # (systemd prayer timers are Linux-only; on macOS use launchd or run manually)
+  services.orthodox = {
+    enable = true;
+    calendar.enable = true;
+    calendar.showFasting = true;
+    theme.enable = true;
+    theme.accentColor = "#D4AF37";
+    notifications.enable = false;
   };
 
   # macOS-specific update function

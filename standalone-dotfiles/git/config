@@ -1,9 +1,0 @@
-[init]
-	defaultBranch = "main"
-
-[pull]
-	rebase = false
-
-[user]
-	email = "117379918+tundra-node@users.noreply.github.com"
-	name = "tundra-node"

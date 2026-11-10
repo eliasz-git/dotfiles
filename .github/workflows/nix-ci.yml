@@ -1,0 +1,98 @@
+name: Nix CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: nix-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# ── Codeberg-first / GitHub mirror ────────────────────────────────────
+# This repository is hosted primarily on Codeberg (codeberg.org) and mirrored
+# to GitHub. CI runs on GitHub Actions; flake inputs and documentation
+# reference Codeberg as the canonical forge. Public upstream flake inputs
+# (nixpkgs, nix-darwin, home-manager, etc.) remain on GitHub as they are not
+# hosted on Codeberg.
+jobs:
+  # ── Lint & validation ──────────────────────────────────────────────
+  # Runs the three required gates on every push/PR:
+  #   1. nix flake check        — hermetic flake evaluation
+  #   2. deadnix                     — unused bindings / dead code
+  #   3. statix check                — Nix anti-patterns & formatting
+  lint:
+    name: Flake check + deadnix + statix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Flake check
+        run: nix flake check --accept-flake-config
+
+      - name: Dead code analysis (deadnix)
+        # `deadnix --check` is not a valid flag in deadnix v1.x;
+        # plain `deadnix` checks the flake directory (`.`) by default.
+        run: nix shell nixpkgs#deadnix --command deadnix
+
+      - name: Anti-pattern linting (statix)
+        run: nix shell nixpkgs#statix --command statix check
+
+  # ── NixOS system builds ────────────────────────────────────────────
+  nixos-builds:
+    name: Build NixOS ${{ matrix.host }}
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [laptop, mini1, mini2, desktop]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build ${{ matrix.host }} without activation
+        run: nix build --no-link ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel"
+
+  # ── Home Manager builds ────────────────────────────────────────────
+  home-manager-builds:
+    name: Build Home Manager ${{ matrix.host }}
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [mini1, mini2]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build Home Manager activation package for ${{ matrix.host }}
+        run: nix build --no-link ".#homeConfigurations.${{ matrix.host }}.activationPackage"
+
+  # ── Darwin evaluation (cannot build macOS on Linux runners) ─────────
+  darwin-evaluation:
+    name: Evaluate Darwin output (macbook)
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Evaluate macOS system derivation without cross-building
+        run: nix eval --raw '.#darwinConfigurations.macbook.system.drvPath'

@@ -1,0 +1,18 @@
+# statix lint configuration.
+#
+# All lints are enabled by default. The two lints below are intentionally
+# disabled because they fire on idiomatic patterns used throughout this
+# repository and are not actionable here:
+#
+#   * empty_pattern — every Home Manager / NixOS module uses the
+#     `{ config, pkgs, lib, ... }:` signature convention; the ellipsis is a
+#     catch-all, not an empty pattern. Statix flags it anyway.
+#   * repeated_keys — hardware-configuration.nix fileSystems use distinct
+#     mount-point string keys; statix flags them as a false positive.
+#
+# These warnings predate this change and are unrelated to the dotfile
+# migration (modules/shared/thefuck.nix is statix-clean).
+disabled = [
+  "empty_pattern",
+  "repeated_keys",
+]

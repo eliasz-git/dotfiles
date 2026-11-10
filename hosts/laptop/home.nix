@@ -7,6 +7,7 @@
     ../../modules/shared/git.nix
     ../../modules/shared/multiplexer.nix
     ../../modules/shared/fastfetch.nix
+    ../../modules/shared/orthodox.nix
     ../../modules/shared/secrets.nix
     ../../modules/shared/slskd.nix
     ../../modules/shared/operations.nix
@@ -20,19 +21,28 @@
   tundra.enable = true;
   tundra.theme = "everforest-blue";
 
+  # ── ORTHODOX / GOARCH LITURGICAL CALENDAR ──
+  services.orthodox = {
+    enable = true;
+    calendar.enable = true;
+    calendar.showFasting = true;
+    theme.enable = false;
+    notifications.enable = false;
+  };
+
   home.packages = with pkgs; [
     ghostty
     powertop brightnessctl playerctl
     bluetuith netop
     wl-clipboard grim slurp swappy
-    dunst rofi swaybg
+    dunst fuzzel swaybg
     # Zen comes from the zen-browser flake input (not in nixpkgs); binary is `zen-beta`.
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
     vscodium signal-desktop
-    bitwarden-desktop obsidian libreoffice
+    bitwarden-desktop joplin-desktop libreoffice
     mpd rmpc mpdscribble mpc slskd
-    steam calibre discord gramps rustdesk tailscale docker
+    steam calibre revolt gramps rustdesk tailscale docker
     yubioath-flutter prismlauncher
     nextcloud-client
     jetbrains-toolbox
@@ -41,6 +51,7 @@
     bibata-cursors
     papirus-icon-theme
     everforest-gtk-theme
+    nano
   ];
 
   programs.zsh.initContent = lib.mkOrder 600 ''
@@ -86,91 +97,25 @@
     gtk4.theme = config.gtk.theme; # keep the pre-26.05 behaviour explicitly (silences HM warning)
   };
 
-  programs.rofi = {
+  programs.fuzzel = {
     enable = true;
-    package = pkgs.rofi;
-    theme = let
-      inherit (config.lib.formats.rasi) mkLiteral;
-      palette = config.tundra.palette;
-    in {
-      "*" = {
-        background-color = mkLiteral palette.base;
-        text-color = mkLiteral palette.text;
-        margin = 0;
-        padding = 0;
-        spacing = 0;
-      };
-      "window" = {
-        location = mkLiteral "center";
-        width = 640;
-        background-color = mkLiteral palette.base;
-        border-radius = 8;
-        border = mkLiteral "2px";
-        border-color = mkLiteral palette.surface0;
-      };
-      "mainbox" = {
-        background-color = mkLiteral palette.base;
-      };
-      "inputbar" = {
-        spacing = 8;
-        padding = 12;
-        background-color = mkLiteral palette.mantle;
-        border-radius = mkLiteral "8px 8px 0 0";
-      };
-      "prompt, entry, element-icon, element-text" = {
-        vertical-align = mkLiteral "0.5";
-      };
-      "prompt" = {
-        text-color = mkLiteral palette.blue;
-      };
-      "textbox" = {
-        padding = 8;
-        background-color = mkLiteral palette.mantle;
-        text-color = mkLiteral palette.text;
-      };
-      "listview" = {
-        padding = mkLiteral "4px 0";
-        lines = 8;
-        columns = 1;
-        fixed-height = false;
-      };
-      "element" = {
-        background-color = mkLiteral "transparent";
-        padding = 8;
-        spacing = 8;
-      };
-      "element normal normal" = {
-        text-color = mkLiteral palette.text;
-      };
-      "element normal urgent" = {
-        text-color = mkLiteral palette.red;
-      };
-      "element normal active" = {
-        text-color = mkLiteral palette.green;
-      };
-      "element selected normal" = {
-        background-color = mkLiteral palette.blue;
-        text-color = mkLiteral palette.base;
-        border-radius = 4;
-      };
-      "element selected urgent" = {
-        background-color = mkLiteral palette.red;
-        text-color = mkLiteral palette.base;
-        border-radius = 4;
-      };
-      "element selected active" = {
-        background-color = mkLiteral palette.green;
-        text-color = mkLiteral palette.base;
-        border-radius = 4;
-      };
-      "element-icon" = {
-        size = mkLiteral "1em";
-      };
-      "element-text" = {
-        text-color = mkLiteral palette.text;
-      };
-    };
+    # Wayland-native application launcher (replaces stale X11 rofi).
+    # Config file written below via home.file.
   };
+
+  home.file.".config/fuzzel/fuzzel.ini".text = ''
+    [launcher]
+    command=foot -e {}
+    width=60
+    lines=10
+    prompt=>
+
+    [color]
+    normal=#2d353bff,#d3c6aaff,#2d353bff,#7fbbb3ff,#d3c6aaff
+    selected=#7fbbb3ff,#2d353bff,#7fbbb3ff,#d3c6aaff,#2d353bff
+    active=#a7c080ff,#2d353bff,#a7c080ff,#d3c6aaff,#2d353bff
+    urgent=#e67e80ff,#2d353bff,#e67e80ff,#d3c6aaff,#2d353bff
+  '';
 
   programs.niri = {
     # Use nixpkgs' niri (same one programs.niri.enable installs system-wide), not
