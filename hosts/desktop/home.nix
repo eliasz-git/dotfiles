@@ -315,6 +315,10 @@ in {
     # Apps
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
+    # Matrix client (element-desktop) and Discord (unfree, allowed via
+    # config.allowUnfree in flake.nix).
+    element-desktop
+    discord
     brightnessctl
     heroic
     keepassxc

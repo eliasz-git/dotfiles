@@ -265,22 +265,22 @@ in {
     systemd.user = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       services = {
         "orthodox-morning-prayer" = lib.mkIf (config.services.orthodox.notifications.enable or false) {
-          description = "Orthodox Morning Prayer reminder";
-          serviceConfig = {
+          Unit = { Description = "Orthodox Morning Prayer reminder"; };
+          Service = {
             Type = "oneshot";
             ExecStart = "${pkgs.libnotify}/bin/notify-send -u normal -i emblem-symbolic \"Orthodox Morning Prayer\" \"Time for Orthros / Morning Prayers\"";
           };
         };
         "orthodox-evening-prayer" = lib.mkIf (config.services.orthodox.notifications.enable or false) {
-          description = "Orthodox Evening Prayer reminder";
-          serviceConfig = {
+          Unit = { Description = "Orthodox Evening Prayer reminder"; };
+          Service = {
             Type = "oneshot";
             ExecStart = "${pkgs.libnotify}/bin/notify-send -u normal -i emblem-symbolic \"Orthodox Evening Prayer\" \"Time for Vespers / Evening Prayers\"";
           };
         };
         "orthodox-vespers" = lib.mkIf (config.services.orthodox.notifications.vespersEnable or false) {
-          description = "Saturday Great Vespers reminder";
-          serviceConfig = {
+          Unit = { Description = "Saturday Great Vespers reminder"; };
+          Service = {
             Type = "oneshot";
             ExecStart = "${pkgs.libnotify}/bin/notify-send -u normal -i emblem-symbolic \"Great Vespers\" \"Saturday evening Vespers — prepare for the Lord's Day\"";
           };
@@ -288,28 +288,28 @@ in {
       };
       timers = {
         "orthodox-morning-prayer" = lib.mkIf (config.services.orthodox.notifications.enable or false) {
-          description = "Daily Morning Prayer timer";
-          timerConfig = {
+          Unit = { Description = "Daily Morning Prayer timer"; };
+          Timer = {
             OnCalendar = "${builtins.toString (config.services.orthodox.notifications.morningHour or 6)}:00";
             Persistent = true;
           };
-          wantedBy = [ "timers.target" ];
+          Install = { WantedBy = [ "timers.target" ]; };
         };
         "orthodox-evening-prayer" = lib.mkIf (config.services.orthodox.notifications.enable or false) {
-          description = "Daily Evening Prayer timer";
-          timerConfig = {
+          Unit = { Description = "Daily Evening Prayer timer"; };
+          Timer = {
             OnCalendar = "${builtins.toString (config.services.orthodox.notifications.eveningHour or 18)}:00";
             Persistent = true;
           };
-          wantedBy = [ "timers.target" ];
+          Install = { WantedBy = [ "timers.target" ]; };
         };
         "orthodox-vespers" = lib.mkIf (config.services.orthodox.notifications.vespersEnable or false) {
-          description = "Weekly Saturday Great Vespers";
-          timerConfig = {
+          Unit = { Description = "Weekly Saturday Great Vespers"; };
+          Timer = {
             OnCalendar = "Sat *:18:00";
             Persistent = true;
           };
-          wantedBy = [ "timers.target" ];
+          Install = { WantedBy = [ "timers.target" ]; };
         };
       };
     };
