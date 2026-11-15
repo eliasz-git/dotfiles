@@ -518,7 +518,7 @@
     script = ''
       set -euo pipefail
       mkdir -p /mnt/storage/backups
-      ${pkgs.gnutar}/bin/tar --create --gzip --file="/mnt/storage/backups/mini2-media-state-$(date +%F).tgz" \
+      ${pkgs.gnutar}/bin/tar --create --file="/mnt/storage/backups/mini2-media-state-$(date +%F).tgz" \
         --exclude='homelab-media/*/cache' \
         --exclude='homelab-media/*/logs' \
         --exclude='homelab-media/prowlarr/asp' \
