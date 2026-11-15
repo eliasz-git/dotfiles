@@ -498,6 +498,36 @@
     "d /mnt/storage/music-archive 0775 elias users -"
     "d /mnt/storage/backups 0755 elias users -"
   ];
+
+  # Back up mini2's local database/config state to mini1's NFS storage.
+  # Media libraries stay on NFS; caches and logs are regenerated after restore.
+  systemd.services.homelab-media-state-backup = {
+    description = "Back up mini2 media application state";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "elias";
+      Group = "users";
+    };
+    script = ''
+      set -euo pipefail
+      mkdir -p /mnt/storage/backups
+      tar --create --gzip --file="/mnt/storage/backups/mini2-media-state-$(date +%F).tgz" \
+        --exclude='homelab-media/*/cache' \
+        --exclude='homelab-media/*/logs' \
+        --directory=/var/lib homelab-media
+      find /mnt/storage/backups -maxdepth 1 -name 'mini2-media-state-*.tgz' \
+        -printf '%T@ %p\n' | sort -nr | tail -n +8 | cut -d' ' -f2- | xargs -r rm -f
+    '';
+  };
+
+  systemd.timers.homelab-media-state-backup = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "daily";
+      Persistent = true;
+      Unit = "homelab-media-state-backup.service";
+    };
+  };
   # ── Navidrome cleaner — archive not-played music (dry-run logs, no delete until you approve) ──
   # Queries navidrome.db for tracks not played in 90 days, then unmonitors artist in Lidarr with deleteFiles=false (keeps files, moves to music-archive if you enable mv)
   # Run: sudo systemctl start navidrome-cleaner && cat /mnt/storage/backups/navidrome-clean.log

@@ -21,6 +21,7 @@ Back up first:
 - Photos and personal documents
 - Music that would be difficult to replace
 - Secret metadata and recovery documentation
+- mini2 local application state under `/var/lib/homelab-media` (daily archive to mini1 `/mnt/storage/backups`)
 
 Exclude by default:
 
@@ -28,6 +29,7 @@ Exclude by default:
 - temporary downloads
 - downloaded movies and TV that can be re-acquired
 - transcoding caches
+- application caches and logs under `/var/lib/homelab-media` (regenerated after restore)
 
 ## Initial desktop setup
 
