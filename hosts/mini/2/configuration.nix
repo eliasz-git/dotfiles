@@ -521,6 +521,8 @@
       ${pkgs.gnutar}/bin/tar --create --gzip --file="/mnt/storage/backups/mini2-media-state-$(date +%F).tgz" \
         --exclude='homelab-media/*/cache' \
         --exclude='homelab-media/*/logs' \
+        --exclude='homelab-media/prowlarr/asp' \
+        --use-compress-program=${pkgs.gzip}/bin/gzip \
         --directory=/var/lib homelab-media
       ${pkgs.findutils}/bin/find /mnt/storage/backups -maxdepth 1 -name 'mini2-media-state-*.tgz' \
         -printf '%T@ %p\n' | ${pkgs.coreutils}/bin/sort -nr | ${pkgs.coreutils}/bin/tail -n +8 | \
