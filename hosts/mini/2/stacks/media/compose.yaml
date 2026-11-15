@@ -161,18 +161,7 @@ services:
       - ARM_UID=1000
       - ARM_GID=100
 
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    ports: ["3000:3000"]
-    volumes:
-      - /mnt/storage/appdata/media/homepage:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - HOMEPAGE_ALLOWED_HOSTS=home.adal-matrix.ts.net,mini2.adal-matrix.ts.net,localhost,127.0.0.1
-    restart: unless-stopped
+  # homepage moved to services.homepage-dashboard in configuration.nix (Nix-native, still :3000)
 
   rdt-client:
     image: rogerfar/rdtclient:latest

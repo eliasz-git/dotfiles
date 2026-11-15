@@ -37,6 +37,7 @@ If you use Nix-native AdGuard (`services.adguardhome.enable = true`), don't run 
 | stack | compose | ports | via gluetun? |
 |-------|---------|-------|--------------|
 | `media` | `hosts/mini/2/stacks/media/compose.yaml` | 8096 jellyfin, 2283 immich, 4533 navidrome, 9696 prowlarr, 8989 sonarr, 7878 radarr, 5055 jellyseerr, 9091 transmission | transmission (+ optionally prowlarr/sonarr/radarr) behind gluetun |
+| `homepage` | **Nix-native** — `services.homepage-dashboard` in `configuration.nix` | 3000 | config generated from Nix at build; widget keys via `/var/lib/secrets/stacks/media.env`; Docker container removed 2026-11-15. See [`MIGRATION.md`](./MIGRATION.md). |
 | `jellyfin` | same file, `jellyfin` service | 8096/8920 | no — direct LAN+Tailscale, VAAPI `/dev/dri/renderD128` |
 
 Both paths are valid:
