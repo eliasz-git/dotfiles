@@ -184,6 +184,13 @@
   systemd.services.tautulli.serviceConfig = {
     BindReadOnlyPaths = [ "/mnt/storage/appdata/media/jellyfin/config:/config-jellyfin" ];
   };
+  systemd.services.tautulli.preStart = ''
+    if grep -q '^http_proxy' /var/lib/homelab-media/tautulli/config.ini; then
+      sed -i 's/^http_proxy.*/http_proxy = 1/' /var/lib/homelab-media/tautulli/config.ini
+    else
+      printf '\nhttp_proxy = 1\n' >> /var/lib/homelab-media/tautulli/config.ini
+    fi
+  '';
 
   services.seerr = {
     enable = true;
