@@ -107,8 +107,99 @@
 
   # ── Media services — Nix-native where trivial, else Docker compose ─
   # Option A (native, simple): Jellyfin via NixOS module — uses VAAPI above.
-  services.jellyfin = {
-    enable = false; # flip true if you want nix-managed Jellyfin on :8096
+  # Jellyfin remains Docker: its existing config uses the Docker single-config-dir layout.
+  # Native Arr services. State is local to mini2; media remains on NFS.
+  services.sonarr = {
+    enable = true;
+    dataDir = "/var/lib/homelab-media/sonarr";
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+  };
+  systemd.services.sonarr.serviceConfig = {
+    PrivateUsers = lib.mkForce false;
+    BindPaths = [ "/mnt/storage/tvshows:/tv" "/mnt/storage/downloads:/downloads" ];
+  };
+
+  services.radarr = {
+    enable = true;
+    dataDir = "/var/lib/homelab-media/radarr";
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+  };
+  systemd.services.radarr.serviceConfig = {
+    PrivateUsers = lib.mkForce false;
+    BindPaths = [ "/mnt/storage/movies:/movies" "/mnt/storage/downloads:/downloads" ];
+  };
+
+  services.lidarr = {
+    enable = true;
+    dataDir = "/var/lib/homelab-media/lidarr";
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+  };
+  systemd.services.lidarr.serviceConfig = {
+    PrivateUsers = lib.mkForce false;
+    BindPaths = [ "/mnt/storage/music:/music" "/mnt/storage/downloads:/downloads" ];
+  };
+
+  services.prowlarr = {
+    enable = true;
+    dataDir = "/var/lib/homelab-media/prowlarr";
+    openFirewall = true;
+  };
+
+  services.bazarr = {
+    enable = true;
+    dataDir = "/var/lib/homelab-media/bazarr";
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+  };
+  systemd.services.bazarr.serviceConfig = {
+    PrivateUsers = lib.mkForce false;
+    BindPaths = [ "/mnt/storage/movies:/movies" "/mnt/storage/tvshows:/tv" ];
+  };
+
+  services.navidrome = {
+    enable = true;
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+    settings.MusicFolder = "/music";
+  };
+  systemd.services.navidrome.serviceConfig = {
+    BindReadOnlyPaths = [ "/mnt/storage/music:/music" ];
+  };
+
+  services.tautulli = {
+    enable = true;
+    dataDir = "/var/lib/homelab-media/tautulli";
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+  };
+  systemd.services.tautulli.serviceConfig = {
+    BindReadOnlyPaths = [ "/mnt/storage/appdata/media/jellyfin/config:/config-jellyfin" ];
+  };
+
+  services.seerr = {
+    enable = true;
+    configDir = "/var/lib/homelab-media/seerr";
+    openFirewall = true;
+  };
+  systemd.services.seerr.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    User = "elias";
+    Group = "users";
+    StateDirectory = lib.mkForce "";
+    ProtectSystem = lib.mkForce "full";
+  };
+
+  services.flaresolverr = {
+    enable = true;
     openFirewall = true;
   };
 
@@ -137,6 +228,201 @@
     composeFile = ./stacks/media/compose.yaml;
     requiredMounts = [ "/mnt/storage" ];
     environmentFile = "/var/lib/secrets/stacks/media.env";
+  };
+
+  # ── Homepage dashboard — NixOS-native (replaces the Docker `homepage` container) ──
+  # Config is generated from this file into /etc/homepage-dashboard at build time.
+  # Widget credentials come from /var/lib/secrets/stacks/media.env via {{HOMEPAGE_VAR_*}}
+  # substitution (see stacks/media/.env.example). Port stays 3000 so the tailscale serve
+  # entry (https://home.adal-matrix.ts.net) keeps working unchanged.
+  services.homepage-dashboard = {
+    enable = true;
+    listenPort = 3000;
+    allowedHosts = "home.adal-matrix.ts.net,mini2.adal-matrix.ts.net,localhost,127.0.0.1";
+    environmentFiles = [ "/var/lib/secrets/stacks/media.env" ];
+
+    settings = {
+      title = "Adal Matrix";
+      theme = "dark";
+      color = "slate";
+      headerStyle = "boxed";
+      statusStyle = "dot";
+      layout = {
+        Media = { style = "row"; columns = 3; };
+        Arr = { style = "row"; columns = 4; };
+        Docs = { style = "row"; columns = 1; };
+        Infra = { style = "row"; columns = 3; };
+        Tools = { style = "row"; columns = 4; };
+      };
+    };
+
+    widgets = [
+      # mini2 resources; the NixOS module grants /proc access for the cpu widget
+      { resources = { cpu = true; memory = true; disk = "/mnt/storage"; }; }
+    ];
+
+    services = [
+      {
+        Media = [
+          {
+            Jellyfin = {
+              icon = "jellyfin";
+              href = "https://media.adal-matrix.ts.net";
+              description = "Media Server (VAAPI)";
+            };
+          }
+          {
+            Navidrome = {
+              icon = "navidrome";
+              href = "https://music.adal-matrix.ts.net";
+              description = "Music Server";
+            };
+          }
+          {
+            Immich = {
+              icon = "immich";
+              href = "https://photos.adal-matrix.ts.net";
+              description = "Photo Library";
+            };
+          }
+        ];
+      }
+      {
+        Arr = [
+          {
+            Sonarr = {
+              icon = "sonarr";
+              href = "https://sonarr.adal-matrix.ts.net";
+              description = "TV Shows";
+            };
+          }
+          {
+            Radarr = {
+              icon = "radarr";
+              href = "https://radarr.adal-matrix.ts.net";
+              description = "Movies";
+            };
+          }
+          {
+            Lidarr = {
+              icon = "lidarr";
+              href = "https://lidarr.adal-matrix.ts.net";
+              description = "Music Downloader";
+            };
+          }
+          {
+            Prowlarr = {
+              icon = "prowlarr";
+              href = "https://prowlarr.adal-matrix.ts.net";
+              description = "Indexer Manager";
+            };
+          }
+          {
+            Bazarr = {
+              icon = "bazarr";
+              href = "https://bazarr.adal-matrix.ts.net";
+              description = "Subtitles";
+            };
+          }
+          {
+            Seerr = {
+              icon = "jellyseerr";
+              href = "https://seerr.adal-matrix.ts.net";
+              description = "Requests (was Jellyseerr)";
+            };
+          }
+          {
+            Tautulli = {
+              icon = "tautulli";
+              href = "https://tautulli.adal-matrix.ts.net";
+              description = "Jellyfin Stats";
+            };
+          }
+          {
+            RDT-Client = {
+              icon = "download";
+              href = "https://rdt-client.adal-matrix.ts.net";
+              description = "TorBox Bridge";
+            };
+          }
+          {
+            Maintainerr = {
+              icon = "maintainerr";
+              href = "https://maintainerr.adal-matrix.ts.net";
+              description = "Auto-clean watched media";
+            };
+          }
+        ];
+      }
+      {
+        Docs = [
+          {
+            "Paperless-NGX" = {
+              icon = "paperless";
+              href = "https://paperless.adal-matrix.ts.net";
+              description = "Document Archive";
+            };
+          }
+        ];
+      }
+      {
+        Infra = [
+          {
+            "AdGuard Home" = {
+              icon = "adguard";
+              href = "https://adguard.adal-matrix.ts.net";
+              description = "DNS Filtering (mini1)";
+            };
+          }
+          {
+            "Home Assistant" = {
+              icon = "home-assistant";
+              href = "https://ha.adal-matrix.ts.net";
+              description = "Home Automation";
+            };
+          }
+          {
+            "Cockpit mini1" = {
+              icon = "server";
+              href = "http://192.168.1.75:9090";
+              description = "mini1 System";
+            };
+          }
+        ];
+      }
+      {
+        Tools = [
+          {
+            Homepage = {
+              icon = "homepage";
+              href = "https://home.adal-matrix.ts.net";
+              description = "This Dashboard";
+            };
+          }
+          {
+            "Uptime Kuma" = {
+              icon = "uptimekuma";
+              href = "https://status.adal-matrix.ts.net";
+              description = "Uptime Monitor";
+            };
+          }
+          {
+            "Cockpit mini2" = {
+              icon = "server";
+              href = "http://192.168.1.76:9090";
+              description = "mini2 System";
+            };
+          }
+          {
+            ARM = {
+              icon = "disc";
+              href = "https://arm.adal-matrix.ts.net";
+              description = "DVD Auto Rip";
+            };
+          }
+        ];
+      }
+    ];
   };
 
   services.cockpit = {
@@ -192,6 +478,19 @@
   # Path Mapping can be Remote=/downloads Local=/downloads (Host=rdt-client). If you switch rdt-client to
   # /data/downloads, change Local/Remote to /data/downloads accordingly.
   systemd.tmpfiles.rules = [
+    "d /var/lib/homelab-media 0755 elias users -"
+    "d /var/lib/homelab-media/jellyfin 0755 elias users -"
+    "d /var/lib/homelab-media/jellyfin/config 0755 elias users -"
+    "d /var/lib/homelab-media/jellyfin/cache 0755 elias users -"
+    "d /var/lib/homelab-media/navidrome 0755 elias users -"
+    "d /var/lib/homelab-media/immich-postgres 0755 elias users -"
+    "d /var/lib/homelab-media/sonarr 0755 elias users -"
+    "d /var/lib/homelab-media/radarr 0755 elias users -"
+    "d /var/lib/homelab-media/lidarr 0755 elias users -"
+    "d /var/lib/homelab-media/prowlarr 0755 elias users -"
+    "d /var/lib/homelab-media/bazarr 0755 elias users -"
+    "d /var/lib/homelab-media/tautulli 0755 elias users -"
+    "d /var/lib/homelab-media/seerr 0755 elias users -"
     "d /mnt/storage/downloads 0775 elias users -"
     "d /mnt/storage/downloads/lidarr 0775 elias users -"
     "d /mnt/storage/downloads/radarr 0775 elias users -"

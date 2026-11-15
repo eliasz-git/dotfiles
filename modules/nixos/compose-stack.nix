@@ -46,7 +46,9 @@ let
           RemainAfterExit = true;
           ExecStartPre = mountChecks ++ secretCheck;
           ExecStart = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} config";
-          ExecStartPost = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} up -d";
+          # Remove services deleted from the declarative Compose file, such as
+          # containers migrated to native NixOS services.
+          ExecStartPost = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} up -d --remove-orphans";
           ExecStop = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} down";
           TimeoutStartSec = "15min";
           TimeoutStopSec = "5min";

@@ -9,124 +9,42 @@ x-common: &common
     options: { max-size: "10m", max-file: "3" }
 
 services:
-  prowlarr:
-    <<: *common
-    image: lscr.io/linuxserver/prowlarr:latest
-    container_name: prowlarr
-    ports: ["9696:9696"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/prowlarr:/config
+  # prowlarr moved to services.prowlarr in configuration.nix (native)
 
-  flaresolverr:
-    <<: *common
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    ports: ["8191:8191"]
-    environment:
-      - LOG_LEVEL=info
-      - LOG_HTML=false
-      - CAPTCHA_SOLVER=none
-      - TZ=America/New_York
+  # flaresolverr moved to services.flaresolverr in configuration.nix (native)
 
-  sonarr:
-    <<: *common
-    image: lscr.io/linuxserver/sonarr:latest
-    container_name: sonarr
-    ports: ["8989:8989"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/sonarr:/config
-      - /mnt/storage/tvshows:/tv
-      - /mnt/storage/downloads:/downloads
-
-  radarr:
-    <<: *common
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
-    ports: ["7878:7878"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/radarr:/config
-      - /mnt/storage/movies:/movies
-      - /mnt/storage/downloads:/downloads
-
-  lidarr:
-    <<: *common
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    ports: ["8686:8686"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/lidarr:/config
-      - /mnt/storage/music:/music
-      - /mnt/storage/downloads:/downloads
-
-  seerr:
-    <<: *common
-    image: seerr/seerr:latest
-    container_name: seerr
-    ports: ["5055:5055"]
-    environment:
-      - LOG_LEVEL=debug
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/seerr:/app/config
+  # seerr moved to services.seerr in configuration.nix (native)
 
   jellyfin:
     <<: *common
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
+    user: "1000:100"
     ports: ["8096:8096", "8920:8920"]
-    devices: ["/dev/dri:/dev/dri"]  # Vega 11 VAAPI
+    devices: ["/dev/dri:/dev/dri"]
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=America/New_York
     volumes:
-      - /mnt/storage/appdata/media/jellyfin/config:/config
-      - /mnt/storage/appdata/media/jellyfin/cache:/cache
+      - /var/lib/homelab-media/jellyfin/config:/config
+      - /var/lib/homelab-media/jellyfin/cache:/cache
       - /mnt/storage/tvshows:/media/tv:ro
       - /mnt/storage/movies:/media/movies:ro
       - /mnt/storage/music:/media/music:ro
 
-  navidrome:
-    <<: *common
-    image: deluan/navidrome:latest
-    container_name: navidrome
-    ports: ["4533:4533"]
-    env_file: [/var/lib/secrets/stacks/media.env]
-    environment:
-      - ND_SCANSCHEDULE=1h
-      - ND_LOGLEVEL=info
-      - ND_LASTFM_ENABLED=true
-      # API key/secret via /var/lib/secrets/stacks/media.env (not in git).
-    volumes:
-      - /mnt/storage/appdata/media/navidrome:/data
-      - /mnt/storage/music:/music:ro
+  # navidrome moved to services.navidrome in configuration.nix (native)
 
   immich-postgres:
     image: pgvector/pgvector:pg16
     container_name: immich-postgres
+    # Postgres data must be local; the media NFS export is root-squashed.
+    user: "1000:100"
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD:?IMMICH_DB_PASSWORD must be set}
       POSTGRES_DB: immich
     volumes:
-      - /mnt/storage/appdata/media/immich-postgres:/var/lib/postgresql/data
+      - /var/lib/homelab-media/immich-postgres:/var/lib/postgresql/data
 
   immich-redis:
     image: redis:7
@@ -161,18 +79,7 @@ services:
       - ARM_UID=1000
       - ARM_GID=100
 
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    ports: ["3000:3000"]
-    volumes:
-      - /mnt/storage/appdata/media/homepage:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - HOMEPAGE_ALLOWED_HOSTS=home.adal-matrix.ts.net,mini2.adal-matrix.ts.net,localhost,127.0.0.1
-    restart: unless-stopped
+  # homepage moved to services.homepage-dashboard in configuration.nix (Nix-native, still :3000)
 
   rdt-client:
     image: rogerfar/rdtclient:latest
@@ -193,32 +100,9 @@ services:
       - PGID=1000
     restart: unless-stopped
 
-  bazarr:
-    <<: *common
-    image: lscr.io/linuxserver/bazarr:latest
-    container_name: bazarr
-    ports: ["6767:6767"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/bazarr:/config
-      - /mnt/storage/movies:/movies
-      - /mnt/storage/tvshows:/tv
+  # bazarr moved to services.bazarr in configuration.nix (native)
 
-  tautulli:
-    <<: *common
-    image: ghcr.io/tautulli/tautulli:latest
-    container_name: tautulli
-    ports: ["8181:8181"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/tautulli:/config
-      - /mnt/storage/appdata/media/jellyfin/config:/config-jellyfin:ro
+  # tautulli moved to services.tautulli in configuration.nix (native)
 
   maintainerr:
     image: ghcr.io/maintainerr/maintainerr:latest
@@ -245,6 +129,8 @@ services:
     <<: *common
     image: ghcr.io/immich-app/immich-server:release
     container_name: immich
+    # Upload state is NFS-backed and owned by elias; avoid root_squash writes.
+    user: "1000:100"
     ports: ["2283:2283"]
     # serves photos at /mnt/storage/photos → https://photos.adal-matrix.ts.net via svc:photos
     depends_on:
