@@ -112,6 +112,25 @@
     openFirewall = true;
   };
 
+  # Phase 2 migration: Sonarr runs natively while retaining the existing config.
+  # BindPaths preserve the container's /tv and /downloads paths in its database.
+  # The service runs as elias because the existing NFS appdata is uid 1000:users.
+  services.sonarr = {
+    enable = true;
+    dataDir = "/mnt/storage/appdata/media/sonarr";
+    user = "elias";
+    group = "users";
+    openFirewall = true;
+  };
+
+  systemd.services.sonarr.serviceConfig = {
+    PrivateUsers = false;
+    BindPaths = [
+      "/mnt/storage/tvshows:/tv"
+      "/mnt/storage/downloads:/downloads"
+    ];
+  };
+
   # Option B (Docker compose, matches your old Ubuntu stack):
   # Put your compose at /etc/stacks/media/compose.yaml and enable:
   # virtualisation.oci-containers.containers handled by compose, not Nix.

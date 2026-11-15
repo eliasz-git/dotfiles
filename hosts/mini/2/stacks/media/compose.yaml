@@ -32,19 +32,7 @@ services:
       - CAPTCHA_SOLVER=none
       - TZ=America/New_York
 
-  sonarr:
-    <<: *common
-    image: lscr.io/linuxserver/sonarr:latest
-    container_name: sonarr
-    ports: ["8989:8989"]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - /mnt/storage/appdata/media/sonarr:/config
-      - /mnt/storage/tvshows:/tv
-      - /mnt/storage/downloads:/downloads
+  # sonarr moved to services.sonarr in configuration.nix (native, port 8989)
 
   radarr:
     <<: *common

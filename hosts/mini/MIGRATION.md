@@ -23,7 +23,8 @@ Rules for every phase:
 | Phase | Service | Target | Status |
 |-------|---------|--------|--------|
 | 1 | homepage | `services.homepage-dashboard` (port 3000) | **done 2026-11-15** |
-| 2 | sonarr, radarr, lidarr, prowlarr, bazarr | `services.sonarr/radarr/lidarr/prowlarr/bazarr`, `dataDir` → appdata | pending |
+| 2 | sonarr | `services.sonarr`, existing dataDir + BindPaths for `/tv` and `/downloads` | **prepared, deploy next** |
+| 2b | radarr, lidarr, prowlarr, bazarr | same modules; validate path mappings per app | pending |
 | 3 | tautulli, seerr, flaresolverr, recyclarr | `services.tautulli` / `services.seerr` / `services.flaresolverr` / `services.recyclarr` | pending |
 | 4 | navidrome | `services.navidrome` + `ND_LASTFM_*` env (env file) | pending |
 | 5 | jellyfin | `services.jellyfin`, VAAPI via `hardware.graphics` | pending |
