@@ -518,12 +518,13 @@
     script = ''
       set -euo pipefail
       mkdir -p /mnt/storage/backups
-      tar --create --gzip --file="/mnt/storage/backups/mini2-media-state-$(date +%F).tgz" \
+      ${pkgs.gnutar}/bin/tar --create --gzip --file="/mnt/storage/backups/mini2-media-state-$(date +%F).tgz" \
         --exclude='homelab-media/*/cache' \
         --exclude='homelab-media/*/logs' \
         --directory=/var/lib homelab-media
-      find /mnt/storage/backups -maxdepth 1 -name 'mini2-media-state-*.tgz' \
-        -printf '%T@ %p\n' | sort -nr | tail -n +8 | cut -d' ' -f2- | xargs -r rm -f
+      ${pkgs.findutils}/bin/find /mnt/storage/backups -maxdepth 1 -name 'mini2-media-state-*.tgz' \
+        -printf '%T@ %p\n' | ${pkgs.coreutils}/bin/sort -nr | ${pkgs.coreutils}/bin/tail -n +8 | \
+        ${pkgs.coreutils}/bin/cut -d' ' -f2- | ${pkgs.findutils}/bin/xargs -r ${pkgs.coreutils}/bin/rm -f
     '';
   };
 
