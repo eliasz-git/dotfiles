@@ -283,6 +283,16 @@
   # nixpkgs.config.allowUnfree moved to flake.nix linuxPkgs (import nixpkgs { config.allowUnfree = true; })
   # nixpkgs.config.allowUnfree = true;
 
+  # patchelf 0.15.2 source patches fail to apply on this Haswell host
+  # (transient nixpkgs issue). Skip them so the rebuild can proceed.
+  nixpkgs.overlays = [
+    (self: super: {
+      patchelf = super.patchelf.overrideAttrs (old: {
+        patches = [ ];
+      });
+    })
+  ];
+
 
   # ── Syncthing — vault sync (replaces iCloud on Linux) ──────────
   services.syncthing = {
