@@ -19,6 +19,14 @@
   nix.enable = false;
   nix.extraOptions = ''
     extra-platforms = x86_64-darwin aarch64-darwin
+    # cache.nixos.org returns SSL error 35 under default connection limits on
+    # macOS rebuilds. http-connections = 10 raises the ceiling so large
+    # binary-cache fetches complete instead of failing mid-download. Mirrors
+    # modules/system/nix-settings.nix on the NixOS hosts.
+    http-connections = 10
+    # Hard-link identical store paths instead of duplicating them, keeping the
+    # /nix/store smaller on repeated rebuilds and channel rollbacks.
+    auto-optimise-store = true
   '';
 
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.hostPlatform.isLinux then [ gutenprint ] else []; in [
