@@ -101,6 +101,20 @@
     darwinPkgs     = import nixpkgs { system = darwinSystem; config.allowUnfree = true; inherit overlays; };
     linuxPkgs      = import nixpkgs { system = linuxSystem;  config.allowUnfree = true; inherit overlays; };
     unstablePkgs   = linuxPkgs;
+
+    # patchelf 0.15.2 source patches fail to apply on mini1's Haswell host.
+    # Skip them so nixos-rebuild can proceed (transient nixpkgs issue).
+    mini1Pkgs = import nixpkgs {
+      system = linuxSystem;
+      config.allowUnfree = true;
+      overlays = [
+        (self: super: {
+          patchelf = super.patchelf.overrideAttrs (old: {
+            patches = [ ];
+          });
+        })
+      ];
+    };
   in {
 
     # ── macOS M2 ──────────────────────────────────────────────────
@@ -150,7 +164,7 @@
     #  mini2 — HP ProDesk 405 G4 DM (R5 PRO 2400GE) — media, 192.168.1.76
     nixosConfigurations.mini1 = nixpkgs.lib.nixosSystem {
       system = linuxSystem;
-      pkgs   = unstablePkgs;
+      pkgs   = mini1Pkgs;
       specialArgs = { inherit hermes-agent; };
       modules = [
         ./hosts/mini/1/configuration.nix
