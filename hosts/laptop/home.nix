@@ -42,7 +42,7 @@
     vscodium signal-desktop
     bitwarden-desktop joplin-desktop libreoffice
     mpd rmpc mpdscribble mpc slskd
-    steam calibre revolt gramps rustdesk tailscale docker
+    steam calibre gramps rustdesk tailscale docker
     prismlauncher
     nextcloud-client
     jetbrains-toolbox
