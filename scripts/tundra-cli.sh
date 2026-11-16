@@ -231,7 +231,18 @@ cmd_update() {
     log_warn "Skipping GitHub pull; updating the current checkout"
   fi
   log_warn "Updating flake.lock; this is a reviewed repository mutation."
-  nix flake update
+  if ! update_out="$(nix flake update 2>&1)"; then
+    if echo "$update_out" | grep -q -E '429|Too Many Requests'; then
+      log_error "GitHub rate limit (HTTP 429) hit while updating flake inputs."
+      echo "  Retry later, or run: tundra rbu --no-pull $host  (skip input update)"
+      echo "  Or raise tarball-ttl in nix settings to cache inputs longer."
+      exit 1
+    fi
+    log_error "flake update failed:"
+    echo "$update_out" >&2
+    exit 1
+  fi
+  echo "$update_out"
   echo "--- flake.lock changes ---"
   git diff -- flake.lock || true
   log_info "Building updated $host without activation..."
@@ -265,7 +276,18 @@ cmd_rebuild_update_switch() {
     log_warn "Skipping GitHub pull; updating and activating the current checkout"
   fi
   log_warn "Updating flake.lock; this is a reviewed repository mutation."
-  nix flake update
+  if ! update_out="$(nix flake update 2>&1)"; then
+    if echo "$update_out" | grep -q -E '429|Too Many Requests'; then
+      log_error "GitHub rate limit (HTTP 429) hit while updating flake inputs."
+      echo "  Retry later, or run: tundra rbu --no-pull $host  (skip input update)"
+      echo "  Or raise tarball-ttl in nix settings to cache inputs longer."
+      exit 1
+    fi
+    log_error "flake update failed:"
+    echo "$update_out" >&2
+    exit 1
+  fi
+  echo "$update_out"
   echo "--- flake.lock changes ---"
   git diff -- flake.lock || true
   log_info "Building updated $host..."

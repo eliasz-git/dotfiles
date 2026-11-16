@@ -12,6 +12,9 @@
     # complete instead of failing mid-download. (Was previously only in
     # /etc/nix/nix.custom.conf on each host; now centralised in the repo.)
     http-connections = 10;
+    # Cache flake input tarballs for 30 days so `nix flake update` doesn't
+    # re-download (and re-rate-limit against) GitHub on every rebuild.
+    tarball-ttl = "30 days";
   };
 
   nix.gc = {

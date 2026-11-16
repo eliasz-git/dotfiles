@@ -27,6 +27,9 @@
     # Hard-link identical store paths instead of duplicating them, keeping the
     # /nix/store smaller on repeated rebuilds and channel rollbacks.
     auto-optimise-store = true
+    # Cache flake input tarballs for 30 days so `nix flake update` doesn't
+    # re-download (and re-rate-limit against) GitHub on every rebuild.
+    tarball-ttl = "30 days"
   '';
 
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.hostPlatform.isLinux then [ gutenprint ] else []; in [
