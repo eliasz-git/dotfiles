@@ -41,7 +41,14 @@
   # nmcli device wifi connect "SSID" password "PASS"  or  nmtui
 
   # Tailscale — replaces WireGuard for remote access. `sudo tailscale up`.
-  services.tailscale.enable = true;
+  # mini1 is an exit node: advertise itself and enable IP forwarding so it can
+  # route tailnet traffic to the internet. Must be approved as an exit node in
+  # the Tailscale admin console (login.tailscale.com/admin) before it functions.
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "server";
+    extraSetFlags = [ "--advertise-exit-node" ];
+  };
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   networking.firewall.allowedUDPPorts = [ 41641 111 2049 20048 ]; # tailscale + NFS
 
