@@ -46,7 +46,7 @@
       # macOS-specific tools from custom taps (no nixpkgs equivalent)
       "borders" "cups" "opencode" "sketchybar"
       "pcre2" # sketchybar dependency
-      "deno" "himalaya" "openjdk@21" "pnpm" "libomp"
+      "deno" "gurk" "himalaya" "openjdk@21" "pnpm" "libomp"
       "imsg" "remindctl"
       "mole"
       "nowplaying-cli" "kew" "nicotine-plus"
@@ -68,7 +68,7 @@
       # (syncthing not re-added — nix-managed via launchd agent, modules/darwin/syncthing.nix)
     ];
     casks = [
-      "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc"
+      "cloudflare-warp" "libreoffice" "lulu" "signal" "keepassxc" "bitwarden"
       "joplin" "pearcleaner" "raycast" "steam" "thunderbird" "yubico-authenticator"
       "vscodium" "iina" "karabiner-elements" "sf-symbols" "claude" "prismlauncher"
       "knockknock" "oversight" "tuta-mail" "boring-notch"

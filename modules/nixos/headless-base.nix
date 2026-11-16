@@ -14,7 +14,8 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = false;
+      # mkDefault so hosts can enable password auth without a type conflict.
+      PasswordAuthentication = lib.mkDefault false;
       PermitRootLogin = "no";
       KbdInteractiveAuthentication = false;
     };

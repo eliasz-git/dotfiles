@@ -216,7 +216,10 @@ in {
     home.packages = [
       pkgs.curl
       pkgs.jq
-      pkgs.python3
+      # python312 is already declared in modules/shared/programs.nix; use it
+      # here instead of unversioned pkgs.python3 (now 3.14) to avoid a
+      # buildEnv bin/idle conflict between python3.12 and python3.14.
+      pkgs.python312
       pkgs.libnotify
     ];
 

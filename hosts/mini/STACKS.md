@@ -21,6 +21,7 @@ Internet
 | `infra` | `hosts/mini/1/stacks/infra/compose.yaml` | 3000 adguard setup, 53 dns, 9090 cockpit | NixOS owns AdGuard/Unbound; do not start the Docker AdGuard service at the same time. |
 | optional | `caddy` | 80/443 | Only if you want `https://mini1.your-tailnet.ts.net` via Tailscale certs. |
 | optional | `uptime-kuma` | 3001 | Uptime monitor for both minis + Deco. |
+| `family` | `hosts/mini/1/stacks/family/compose.yaml` | 6566 netalertx, 6767 beszel, 8081 karakeep, 8000 wger, 8083 calibre-web | beszel, karakeep (+ meilisearch + chrome), calibre-web, wger, netalertx. Secrets: `/var/lib/secrets/stacks/family.env` (root 0600, not in git). |
 
 Deploy (only for services not already owned by NixOS):
 ```bash
@@ -36,7 +37,8 @@ If you use Nix-native AdGuard (`services.adguardhome.enable = true`), don't run 
 
 | stack | compose | ports | via gluetun? |
 |-------|---------|-------|--------------|
-| `media` | `hosts/mini/2/stacks/media/compose.yaml` | 8096 jellyfin, 2283 immich, 4533 navidrome, 9696 prowlarr, 8989 sonarr, 7878 radarr, 5055 jellyseerr, 9091 transmission | transmission (+ optionally prowlarr/sonarr/radarr) behind gluetun |
+| `media` | `hosts/mini/2/stacks/media/compose.yaml` | 8096 jellyfin, 2283 immich, 4533 navidrome, 9696 prowlarr, 8989 sonarr, 7878 radarr, 5055 seerr, 9091 transmission | transmission (+ optionally prowlarr/sonarr/radarr) behind gluetun |
+| `homepage` | **Nix-native** — `services.homepage-dashboard` in `configuration.nix` | 3000 | config generated from Nix at build; widget keys via `/var/lib/secrets/stacks/media.env`; container removed from compose 2026-11-15. See [`MIGRATION.md`](./MIGRATION.md) for the Docker → native plan. |
 | `jellyfin` | same file, `jellyfin` service | 8096/8920 | no — direct LAN+Tailscale, VAAPI `/dev/dri/renderD128` |
 
 Both paths are valid:

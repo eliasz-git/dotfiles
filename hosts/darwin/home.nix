@@ -24,6 +24,39 @@
   programs.home-manager.enable = true;
   manual.manpages.enable = false;
 
+  # Homelab SSH access is declarative and uses the existing Tailscale addresses.
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      mini1 = {
+        hostname = "100.99.239.80";
+        user = "elias";
+        identityFile = "~/.ssh/id_ed25519";
+        identitiesOnly = true;
+        serverAliveInterval = 60;
+      };
+      mini2 = {
+        hostname = "100.65.55.0";
+        user = "elias";
+        identityFile = "~/.ssh/id_ed25519";
+        identitiesOnly = true;
+        serverAliveInterval = 60;
+      };
+      mini1-lan = {
+        hostname = "192.168.1.75";
+        user = "elias";
+        identityFile = "~/.ssh/id_ed25519";
+        identitiesOnly = true;
+      };
+      mini2-lan = {
+        hostname = "192.168.1.76";
+        user = "elias";
+        identityFile = "~/.ssh/id_ed25519";
+        identitiesOnly = true;
+      };
+    };
+  };
+
   # Enable theme system
   tundra.enable = true;
   tundra.theme = "everforest-blue";
@@ -145,7 +178,7 @@
     cmd-ctrl-w = 'close'
     cmd-ctrl-enter = 'exec-and-forget open -b com.mitchellh.ghostty'
     cmd-ctrl-space = 'exec-and-forget open -g raycast://'
-    cmd-ctrl-b = 'exec-and-forget open -b app.zen-browser.zen'
+    cmd-ctrl-b = 'exec-and-forget open -b org.mozilla.firefox'
     cmd-ctrl-o = 'exec-and-forget open -b md.obsidian'
     cmd-ctrl-m = 'exec-and-forget open -b com.apple.Music'
     cmd-ctrl-tab = 'focus dfs-next'

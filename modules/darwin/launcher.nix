@@ -43,7 +43,7 @@
           himalaya) echo "email CLI — Tuta/Himalaya" ;;
           weechat) echo "IRC/chat — Beeper bridge" ;;
           discordo) echo "Discord TUI" ;;
-          gurk-rs) echo "Signal TUI" ;;
+          gurk) echo "Signal TUI" ;;
           newsboat) echo "RSS reader — NetNewsWire replacement" ;;
           glow) echo "markdown renderer — Obsidian preview" ;;
           zk) echo "zettelkasten notes" ;;
@@ -102,7 +102,7 @@
       TUI_FILES="$(printf "yazi\nlf\nnnn\n" )"
       TUI_MUSIC="$(printf "cmus\nmpd\nncmpcpp\ntermusic\nrmpc\nmusikcube\n" )"
       TUI_MAIL="$(printf "neomutt\naerc\nhimalaya\n" )"
-      TUI_CHAT="$(printf "weechat\ndiscordo\ngurk-rs\n" )"
+      TUI_CHAT="$(printf "weechat\ndiscordo\ngurk\n" )"
       TUI_RSS="$(printf "newsboat\n" )"
       TUI_NOTES="$(printf "glow\nzk\nnb\nmdcat\n" )"
       TUI_BROWSER="$(printf "w3m\nlynx\nelinks\nbrowsh\n" )"

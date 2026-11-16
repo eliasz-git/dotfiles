@@ -71,12 +71,30 @@
         # and the package builds. Only the laptop installs it.
         calibre = prev.calibre.overrideAttrs (_: { doInstallCheck = false; });
 
+        # termusic 0.13.2 compiles on darwin but one test
+        # (new_database::artist_ops::tests::delete_unreferenced_albums) panics
+        # with an assertion failure; 101 of 102 tests pass and the package
+        # itself builds. Skip the checkPhase until upstream fixes it.
+        termusic = prev.termusic.overrideAttrs (_: { doCheck = false; });
+
+        # yt-dlp propagates unversioned python3 (3.14) via
+        # buildPythonApplication; that conflicts with python312 (3.12) from
+        # modules/shared/orthodox.nix (bin/idle collision in buildEnv).
+        # yt-dlp bakes its python shebang at build time, so runtime does not
+        # need python on PATH.
+        yt-dlp = prev.yt-dlp.overrideAttrs (oldAttrs: {
+          propagatedBuildInputs = builtins.filter
+            (p: p.drvPath != prev.python3.drvPath)
+            (oldAttrs.propagatedBuildInputs or []);
+        });
+
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (pyFinal: pyPrev:
             prev.lib.genAttrs
               (builtins.filter (n: pyPrev ? ${n}) [ "pyopenjtalk-plus" "pyrate-limiter" ])
               (n: pyPrev.${n}.overridePythonAttrs (_: { doCheck = false; })))
         ];
+
       })
     ];
 

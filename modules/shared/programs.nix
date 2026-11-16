@@ -18,8 +18,9 @@
     # Email — Tuta/Himalaya already + TUI
     # himalaya is brew-declared in configuration.nix (like mpd/rmpc), so brew's 2.1.0 isn't shadowed by stale nixpkgs 2.0.0
     neomutt aerc
-    # Chat — Beeper/Discord
-    weechat discordo gurk-rs
+    # Chat — Beeper/Discord (gurk-rs is brew-declared on macOS; the nixpkgs
+    # build fails on darwin on -lsqlcipher, so it stays Linux-only here)
+    weechat discordo
     # RSS — NetNewsWire
     newsboat
     # Notes/Markdown — Obsidian
@@ -30,8 +31,10 @@
     helix micro
     # Password — Yubico (KeePassXC is brew-declared cask on macOS; nixpkgs build fails on darwin)
     # yubikey-manager = ykman CLI (YubiKey configuration). yubioath-flutter is the
-    # YubiKey Authenticator GUI. KeePassXC stays in the isLinux list below.
-    yubikey-manager yubioath-flutter
+    # YubiKey Authenticator GUI (Linux-only; macOS gets yubico-authenticator via
+    # the homebrew cask in hosts/darwin/configuration.nix). KeePassXC stays in
+    # the isLinux list below.
+    yubikey-manager
     # Media — IINA/GrayJay/YouTube
     mpv yt-dlp ytfzf
     # System — btop already + extras
@@ -39,6 +42,6 @@
     # Misc TUI
     cmatrix cbonsai pipes
   ] ++ lib.optionals stdenv.hostPlatform.isLinux [
-    veracrypt keepassxc
+    veracrypt keepassxc yubioath-flutter gurk-rs
   ];
 }

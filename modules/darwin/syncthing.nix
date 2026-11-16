@@ -16,7 +16,7 @@
       # Keep the existing label; Home Manager would otherwise rename the agent
       # to org.nix-community.home.* and orphan the running one.
       Label = "xyz.syncthing.agent";
-      ProgramArguments = [ "${pkgs.syncthing}/bin/syncthing" ];
+      ProgramArguments = [ "${pkgs.syncthing}/bin/syncthing" "--allow-newer-config" ];
       RunAtLoad = true;
       KeepAlive = true;
       ProcessType = "Background";

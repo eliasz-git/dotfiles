@@ -41,15 +41,11 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = false;
+      PasswordAuthentication = true;
       PermitRootLogin = "no";
       KbdInteractiveAuthentication = false;
     };
   };
-
-  users.users.elias.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
-  ];
 
   users.users.elias = {
     isNormalUser = true;
@@ -137,6 +133,239 @@
     composeFile = ./stacks/media/compose.yaml;
     requiredMounts = [ "/mnt/storage" ];
     environmentFile = "/var/lib/secrets/stacks/media.env";
+  };
+
+  # ── Homepage dashboard — NixOS-native (replaces the Docker `homepage` container) ──
+  # Config is generated from this file into /etc/homepage-dashboard at build time.
+  # Widget credentials come from /var/lib/secrets/stacks/media.env via {{HOMEPAGE_VAR_*}}
+  # substitution (see stacks/media/.env.example). Port stays 3000 so the tailscale serve
+  # entry (https://home.adal-matrix.ts.net) keeps working unchanged.
+  services.homepage-dashboard = {
+    enable = true;
+    listenPort = 3000;
+    allowedHosts = "home.adal-matrix.ts.net,mini2.adal-matrix.ts.net,localhost,127.0.0.1";
+    environmentFiles = [ "/var/lib/secrets/stacks/media.env" ];
+
+    settings = {
+      title = "Adal Matrix";
+      theme = "dark";
+      color = "slate";
+      headerStyle = "boxed";
+      statusStyle = "dot";
+      layout = {
+        Media = { style = "row"; columns = 3; };
+        Arr = { style = "row"; columns = 4; };
+        Docs = { style = "row"; columns = 1; };
+        Infra = { style = "row"; columns = 3; };
+        Tools = { style = "row"; columns = 4; };
+      };
+    };
+
+    widgets = [
+      # mini2 resources; the NixOS module grants /proc access for the cpu widget
+      { resources = { cpu = true; memory = true; disk = "/mnt/storage"; }; }
+      {
+        jellyfin = {
+          url = "http://localhost:8096";
+          key = "{{HOMEPAGE_VAR_JELLYFIN_KEY}}";
+          enableNowPlaying = true;
+        };
+      }
+      {
+        immich = {
+          url = "https://photos.adal-matrix.ts.net";
+          key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
+        };
+      }
+      {
+        sonarr = {
+          url = "https://sonarr.adal-matrix.ts.net";
+          key = "{{HOMEPAGE_VAR_SONARR_KEY}}";
+        };
+      }
+      {
+        radarr = {
+          url = "https://radarr.adal-matrix.ts.net";
+          key = "{{HOMEPAGE_VAR_RADARR_KEY}}";
+        };
+      }
+      {
+        adguard = {
+          url = "https://adguard.adal-matrix.ts.net";
+          username = "{{HOMEPAGE_VAR_ADGUARD_USER}}";
+          password = "{{HOMEPAGE_VAR_ADGUARD_PASSWORD}}";
+        };
+      }
+      {
+        uptimekuma = {
+          url = "https://status.adal-matrix.ts.net";
+          slug = "status"; # Uptime Kuma status page slug; change if renamed
+        };
+      }
+    ];
+
+    services = [
+      {
+        Media = [
+          {
+            Jellyfin = {
+              icon = "jellyfin";
+              href = "https://media.adal-matrix.ts.net";
+              description = "Media Server (VAAPI)";
+            };
+          }
+          {
+            Navidrome = {
+              icon = "navidrome";
+              href = "https://music.adal-matrix.ts.net";
+              description = "Music Server";
+            };
+          }
+          {
+            Immich = {
+              icon = "immich";
+              href = "https://photos.adal-matrix.ts.net";
+              description = "Photo Library";
+            };
+          }
+        ];
+      }
+      {
+        Arr = [
+          {
+            Sonarr = {
+              icon = "sonarr";
+              href = "https://sonarr.adal-matrix.ts.net";
+              description = "TV Shows";
+            };
+          }
+          {
+            Radarr = {
+              icon = "radarr";
+              href = "https://radarr.adal-matrix.ts.net";
+              description = "Movies";
+            };
+          }
+          {
+            Lidarr = {
+              icon = "lidarr";
+              href = "https://lidarr.adal-matrix.ts.net";
+              description = "Music Downloader";
+            };
+          }
+          {
+            Prowlarr = {
+              icon = "prowlarr";
+              href = "https://prowlarr.adal-matrix.ts.net";
+              description = "Indexer Manager";
+            };
+          }
+          {
+            Bazarr = {
+              icon = "bazarr";
+              href = "https://bazarr.adal-matrix.ts.net";
+              description = "Subtitles";
+            };
+          }
+          {
+            Seerr = {
+              icon = "jellyseerr";
+              href = "https://seerr.adal-matrix.ts.net";
+              description = "Requests (was Jellyseerr)";
+            };
+          }
+          {
+            Tautulli = {
+              icon = "tautulli";
+              href = "https://tautulli.adal-matrix.ts.net";
+              description = "Jellyfin Stats";
+            };
+          }
+          {
+            RDT-Client = {
+              icon = "download";
+              href = "https://rdt-client.adal-matrix.ts.net";
+              description = "TorBox Bridge";
+            };
+          }
+          {
+            Maintainerr = {
+              icon = "maintainerr";
+              href = "https://maintainerr.adal-matrix.ts.net";
+              description = "Auto-clean watched media";
+            };
+          }
+        ];
+      }
+      {
+        Docs = [
+          {
+            "Paperless-NGX" = {
+              icon = "paperless";
+              href = "https://paperless.adal-matrix.ts.net";
+              description = "Document Archive";
+            };
+          }
+        ];
+      }
+      {
+        Infra = [
+          {
+            "AdGuard Home" = {
+              icon = "adguard";
+              href = "https://adguard.adal-matrix.ts.net";
+              description = "DNS Filtering (mini1)";
+            };
+          }
+          {
+            "Home Assistant" = {
+              icon = "home-assistant";
+              href = "https://ha.adal-matrix.ts.net";
+              description = "Home Automation";
+            };
+          }
+          {
+            "Cockpit mini1" = {
+              icon = "server";
+              href = "http://192.168.1.75:9090";
+              description = "mini1 System";
+            };
+          }
+        ];
+      }
+      {
+        Tools = [
+          {
+            Homepage = {
+              icon = "homepage";
+              href = "https://home.adal-matrix.ts.net";
+              description = "This Dashboard";
+            };
+          }
+          {
+            "Uptime Kuma" = {
+              icon = "uptimekuma";
+              href = "https://status.adal-matrix.ts.net";
+              description = "Uptime Monitor";
+            };
+          }
+          {
+            "Cockpit mini2" = {
+              icon = "server";
+              href = "http://192.168.1.76:9090";
+              description = "mini2 System";
+            };
+          }
+          {
+            ARM = {
+              icon = "disc";
+              href = "https://arm.adal-matrix.ts.net";
+              description = "DVD Auto Rip";
+            };
+          }
+        ];
+      }
+    ];
   };
 
   services.cockpit = {

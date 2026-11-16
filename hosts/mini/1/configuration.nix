@@ -45,18 +45,15 @@
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   networking.firewall.allowedUDPPorts = [ 41641 111 2049 20048 ]; # tailscale + NFS
 
-  # ── SSH — password + key (both minis have key) ─────────────────
+  # ── SSH — password + key (keys live in mutable ~/.ssh/authorized_keys) ──
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = false;
+      PasswordAuthentication = true;
       PermitRootLogin = "no";
       KbdInteractiveAuthentication = false;
     };
   };
-  users.users.elias.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFa0mPA2Wbc4JsyzHxjgBrQubUYAq0qXa/ZCyl4TNMj3 tundra-node@github"
-  ];
 
   # ── User ────────────────────────────────────────────────────────
   users.users.elias = {
@@ -65,6 +62,15 @@
     extraGroups = [ "wheel" "networkmanager" "docker" ];
     shell = pkgs.zsh;
     # set via `passwd elias` on first boot, or use sops-nix / hashedPassword
+  };
+  # Samba-only account for per-user Drives access. Set its SMB password with
+  # `sudo smbpasswd -a erin` after the next rebuild.
+  users.users.erin = {
+    isSystemUser = true;
+    group = "users";
+    home = "/var/empty";
+    createHome = false;
+    shell = "${pkgs.shadow}/bin/nologin";
   };
   programs.zsh.enable = true;
   security.sudo.wheelNeedsPassword = true;
@@ -99,6 +105,17 @@
       "read only" = "no";
       "guest ok" = "no";
       "valid users" = "elias";
+    };
+    # Beginner-friendly mapped drive root: \\mini1\Drives
+    settings.Drives = {
+      # Each authenticated SMB user lands in their own Drive directory.
+      path = "/mnt/storage/Drives/%U";
+      browseable = "yes";
+      "read only" = "no";
+      "guest ok" = "no";
+      "valid users" = "%U";
+      "create mask" = "0664";
+      "directory mask" = "0775";
     };
   };
 
@@ -202,6 +219,18 @@
     requiredMounts = [ "/mnt/storage" ];
   };
 
+  # Family stack — tracked since 2026-11-15. Image fixes vs the previously
+  # manual deploy: zenika/alpine-chrome (Docker Hub; gcr.io/zenika-hub now
+  # requires GCP billing) and ghcr.io/linuxserver/calibre-web (lscr.io
+  # deprecated). Secrets in /var/lib/secrets/stacks/family.env (root 0600,
+  # never in git).
+  services.homelabCompose.stacks.family = {
+    enable = true;
+    composeFile = ./stacks/family/compose.yaml;
+    requiredMounts = [ "/mnt/storage" ];
+    environmentFile = "/var/lib/secrets/stacks/family.env";
+  };
+
   # Enable only after the desktop has a restricted SSH destination and this
   # root-only password file exists: /var/lib/homelab-backup/restic-password.
   services.homelabBackup.enable = false;
@@ -275,6 +304,10 @@
   # syncthing config, and homepage data daily to /mnt/storage/backups.
   systemd.tmpfiles.rules = [
     "d /mnt/storage/backups 0755 elias users -"
+    "d /mnt/storage/Drives 0775 elias users -"
+    "L+ /mnt/storage/Drives/elias - - - - Elias' Drive"
+    "L+ /mnt/storage/Drives/erin - - - - Erin's Drive"
+    "d /mnt/storage/Drives/Erin' Drive 0770 erin users -"
     "d /mnt/storage/uptime-kuma 0755 elias users -"
     "d /mnt/storage/paperless 0755 elias users -"
     "d /mnt/storage/paperless/data 0755 elias users -"
@@ -417,6 +450,16 @@
 
   # Tailscale serve svc:paperless -> Paperless 8010 (see modules/nixos/tailscale-serve.nix)
   services.tailscaleServe.services.paperless = { port = 8010; description = "Paperless-NGX"; };
+
+  # Family stack (mini1, infra) — containers run via homelab-compose-family. These
+  # tailscale serve entries make them reachable (and show "online") in the tailnet
+  # services dashboard. Ports are the host ports the containers listen on.
+  services.tailscaleServe.services.beszel = { port = 6767; description = "Beszel monitoring"; };
+  services.tailscaleServe.services."calibre-web" = { port = 8083; description = "Calibre-Web"; };
+  services.tailscaleServe.services.karakeep = { port = 8081; description = "Karakeep bookmarks"; };
+  services.tailscaleServe.services.netalertx = { port = 20211; description = "NetAlertX LAN discovery"; };
+  services.tailscaleServe.services.wger = { port = 8000; description = "wger workout tracker"; };
+  services.tailscaleServe.services.passwords = { port = 8084; description = "Vaultwarden (passwords)"; };
 
   # ── Hermes Agent — always-on when Mac is closed ────────────────
   # Single profile at /home/elias/.hermes (same as Mac). Copy Mac's

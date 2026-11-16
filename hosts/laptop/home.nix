@@ -43,7 +43,7 @@
     bitwarden-desktop joplin-desktop libreoffice
     mpd rmpc mpdscribble mpc slskd
     steam calibre revolt gramps rustdesk tailscale docker
-    yubioath-flutter prismlauncher
+    prismlauncher
     nextcloud-client
     jetbrains-toolbox
     davmail
