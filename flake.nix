@@ -110,7 +110,8 @@
       overlays = [
         (self: super: {
           patchelf = super.patchelf.overrideAttrs (old: {
-            patches = [ ];
+            patches  = [ ];
+            dontPatch = true;
           });
         })
       ];
