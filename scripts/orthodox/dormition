@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#
+# dormition — Open Dormition of the Theotokos Greek Orthodox Church (Oakmont, PA)
+# resources in your browser.
+#
+# Usage:
+#   dormition            Parish home page
+#   dormition calendar   Parish calendar
+#   dormition clergy     Parish clergy
+#   dormition festival   Greek Food Festival / Gyro Fest page
+#   dormition live       Live-streamed services (YouTube)
+#   dormition veil       Monthly parish newsletter ("The Veil")
+#
+set -euo pipefail
+
+case "${1:-home}" in
+  home|"")
+    URL="https://dormitionpgh.org/"
+    ;;
+  calendar)
+    URL="https://dormitionpgh.org/calendar"
+    ;;
+  clergy)
+    URL="https://dormitionpgh.org/ourcommunity/clergy"
+    ;;
+  festival)
+    URL="https://dormitionpgh.org/festival/"
+    ;;
+  live|youtube|stream)
+    URL="https://www.youtube.com/@DormitionOakmont/streams"
+    ;;
+  veil|newsletter)
+    URL="https://dormitionpgh.org/assets/files/the-veil/"
+    ;;
+  metropolis)
+    URL="https://www.pittsburgh.goarch.org/"
+    ;;
+  goarch|archdiocese)
+    URL="https://www.goarch.org/"
+    ;;
+  chapel|readings)
+    URL="https://www.goarch.org/chapel/online-chapel"
+    ;;
+  *)
+    echo "Unknown option: $1" >&2
+    echo "Options: home calendar clergy festival live veil metropolis goarch chapel" >&2
+    exit 1
+    ;;
+esac
+
+if command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$URL"
+elif command -v open >/dev/null 2>&1; then
+  open "$URL"
+else
+  echo "No browser opener found. Visit: $URL" >&2
+  exit 1
+fi

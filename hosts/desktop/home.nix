@@ -45,6 +45,10 @@ in {
     ../../modules/shared/orthodox.nix
     ../../modules/shared/operations.nix
     ../../modules/home/themes.nix
+    # iCloud on Linux (icloudpd, rclone, python3/pip + icloud-export venv)
+    ../../modules/home/icloud.nix
+    # Eastern Orthodox (Xiphos, BibleTime, parish shortcuts)
+    ../../modules/home/orthodox.nix
     ../../modules/nixos/mango/monitors.nix
     ../../modules/nixos/mango/input.nix
     ../../modules/nixos/mango/bindings.nix
@@ -114,6 +118,14 @@ in {
     ".local/bin/tundra-wallpaper-daemon".source = ../../scripts/wallpaper-daemon.sh;
     ".local/bin/tundra-wallpaper".source = ../../scripts/wallpaper.sh;
     ".local/bin/tundra-lock".source = ../../scripts/tundra-lock.sh;
+
+    # iCloud on Linux
+    ".local/bin/icloud-photos-sync".source = ../../scripts/icloud/icloud-photos-sync;
+    ".local/bin/icloud-export".source = ../../scripts/icloud/icloud-export;
+
+    # Eastern Orthodox
+    ".local/bin/orthodox-readings".source = ../../scripts/orthodox/orthodox-readings;
+    ".local/bin/dormition".source = ../../scripts/orthodox/dormition;
 
     # The Philips monitor rule lives here, not in monitors.nix, so the VRR
     # toggle can rewrite its vrr field. home-manager rewrites this file on every
@@ -243,7 +255,6 @@ in {
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
     size = 24;
-    gtk.enable = true;
     x11.enable = true;
   };
 
@@ -304,7 +315,10 @@ in {
     # Apps
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
-    revolt
+    # Matrix client (element-desktop) and Discord (unfree, allowed via
+    # config.allowUnfree in flake.nix).
+    element-desktop
+    discord
     brightnessctl
     heroic
     keepassxc

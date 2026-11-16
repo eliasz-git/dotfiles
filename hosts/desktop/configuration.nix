@@ -33,8 +33,6 @@ in {
   # Zen 3 P-state driver. Falls back to acpi-cpufreq on its own if the BIOS
   # has CPPC turned off, so it is safe either way.
   boot.kernelParams = [
-    "amd_pstate=active"
-
     # ── AMD GPU (RX 6600 / Navi 23) stability mitigations ──
     # BACO / runtime PM is a frequent RDNA2 hang source with VRR + multi-monitor.
     "amdgpu.runpm=0"
@@ -329,9 +327,6 @@ in {
     wakeonlan # magic packets to mini/other hosts; MAC lives in /sys/class/net/enp4s0/address
     moonlight-qt # client, for testing the loopback from this machine
     android-tools # Android SDK platform tools (adb/fastboot)
-    # Hermes Agent (Nous Research). Portable state (skills/memory/config)
-    # syncs Mac <-> desktop via Syncthing; state.db stays local per machine.
-    hermes-agent.packages.x86_64-linux.default
     bemenu # menu program for xdg-desktop-portal-wlr screen/window picker (OBS screen capture)
     ghostty-terminfo # terminfo for xterm-ghostty (Ghostty terminal)
     # ── Graphics (ensure Mesa/RADV + Vulkan loader are present for Proton) ──

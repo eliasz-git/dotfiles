@@ -239,6 +239,41 @@ cmd_update() {
   log_success "Inputs updated and $host build verified; nothing was activated"
 }
 
+cmd_rebuild_update_switch() {
+  local host="" attr pull=true argument
+  while (($#)); do
+    argument="$1"
+    case "$argument" in
+      --no-pull|--offline) pull=false ;;
+      macbook|laptop|desktop|mini1|mini2) host="$argument" ;;
+      *) log_error "Unknown option or host: $argument"; echo "Usage: tundra rba [--no-pull|--offline] [host]" >&2; exit 2 ;;
+    esac
+    shift
+  done
+  host="$(resolve_host "$host")"
+  attr="$(flake_attr "$host")"
+  require_repo
+  if [[ "$pull" == true ]]; then
+    if [[ -n "$(git status --porcelain)" ]]; then
+      log_error "Refusing to pull with local changes in $NIX_CONFIG_DIR"
+      echo "Commit or stash them, or rerun as: tundra rba --no-pull $host" >&2
+      exit 1
+    fi
+    log_info "Pulling latest GitHub revision before updating and activating..."
+    git pull --ff-only
+  else
+    log_warn "Skipping GitHub pull; updating and activating the current checkout"
+  fi
+  log_warn "Updating flake.lock; this is a reviewed repository mutation."
+  nix flake update
+  echo "--- flake.lock changes ---"
+  git diff -- flake.lock || true
+  log_info "Building updated $host..."
+  nix build --no-link "$attr"
+  log_info "Activating $host..."
+  cmd_system_action switch "$host" "$host rebuilt, inputs updated, and activated"
+}
+
 cmd_doctor() {
   local issues=0
   log_info "Read-only health checks"
@@ -398,6 +433,7 @@ SYSTEM ACTIONS:
 
 INPUTS AND OTHER:
   rbu [--no-pull] <host>      Pull fast-forward, update flake.lock, then build
+  rba [--no-pull] <host>      Pull fast-forward, update flake.lock, build, then activate
   rebuild/update              Compatibility aliases for rb/rbu
   theme [current|list]         Show declared theme information
   gaming [subcommand]          Gaming utilities
@@ -430,6 +466,7 @@ case "${1:-help}" in
   rb|rebuild) shift; cmd_rebuild "$@" ;;
   rollback) cmd_rollback "${2:-}" ;;
   rbu|update) shift; cmd_update "$@" ;;
+  rba) shift; cmd_rebuild_update_switch "$@" ;;
   doctor) cmd_doctor ;;
   gaming) cmd_gaming "${2:-}" ;;
   github|gh) cmd_github "${2:-}" "${3:-}" ;;
