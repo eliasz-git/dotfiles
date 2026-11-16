@@ -1,0 +1,38 @@
+# mini1 — headscale: self-hosted Tailscale control server
+# Deploy: sudo docker compose -f /etc/stacks/headscale/compose.yaml up -d
+# Config + SQLite DB live under ./data (created on first start).
+# Reachable via Tailscale serve: svc:headscale -> 127.0.0.1:8080
+#   (see services.tailscaleServe.services.headscale in mini1 configuration.nix)
+#
+# After first start, create a namespace and a preauth key, then point devices
+# at this control server instead of the commercial Tailscale one:
+#   docker exec headscale headscale namespace create homelab
+#   docker exec headscale headscale preauthkeys create -r 1 -e 24h
+#   tailscale up --login-server https://headscale.<tailnet>.ts.net
+version: "3.9"
+
+services:
+  headscale:
+    image: headscale/headscale:latest
+    container_name: headscale
+    restart: unless-stopped
+    # Bind localhost only; tailscale serve exposes it to the tailnet over 443.
+    # Not exposed on the LAN interface — no extra firewall rule needed.
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./data:/etc/headscale
+    user: "0:0"
+    # Generate config on first boot if missing, then serve.
+    command: >
+      sh -c "
+        if [ ! -f /etc/headscale/config.yaml ]; then
+          headscale create-config;
+        fi
+        exec headscale serve
+      "
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

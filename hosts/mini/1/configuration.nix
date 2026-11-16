@@ -238,6 +238,14 @@
     environmentFile = "/var/lib/secrets/stacks/family.env";
   };
 
+  # Headscale — self-hosted Tailscale control server (mini1, infra)
+  # Docker Compose stack; config + SQLite DB under /etc/stacks/headscale/data.
+  # Exposed to the tailnet via tailscale serve (svc:headscale -> :8080).
+  services.homelabCompose.stacks.headscale = {
+    enable = true;
+    composeFile = ./stacks/headscale/compose.yaml;
+  };
+
   # Enable only after the desktop has a restricted SSH destination and this
   # root-only password file exists: /var/lib/homelab-backup/restic-password.
   services.homelabBackup.enable = false;
@@ -467,6 +475,7 @@
   services.tailscaleServe.services.netalertx = { port = 20211; description = "NetAlertX LAN discovery"; };
   services.tailscaleServe.services.wger = { port = 8000; description = "wger workout tracker"; };
   services.tailscaleServe.services.passwords = { port = 8084; description = "Vaultwarden (passwords)"; };
+  services.tailscaleServe.services.headscale = { port = 8080; description = "Headscale control server"; };
 
   # ── Hermes Agent — always-on when Mac is closed ────────────────
   # Single profile at /home/elias/.hermes (same as Mac). Copy Mac's
