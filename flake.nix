@@ -113,6 +113,13 @@
             patches  = [ ];
             dontPatch = true;
           });
+
+          # tzdata 2026f checkPhase (zdump across all timezones) fails to build
+          # from source on mini1's Haswell host. Skip the check so the
+          # nixos-rebuild evaluation can proceed (transient nixpkgs issue).
+          tzdata = super.tzdata.overrideAttrs (old: {
+            doCheck = false;
+          });
         })
       ];
     };
