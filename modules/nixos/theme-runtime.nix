@@ -13,10 +13,6 @@
 let
   cfg = config.tundra;
   applier = ../../scripts/tundra-theme-apply.sh;
-  catalog = {
-    sh = config.xdg.configFile."tundra/themes.sh";
-    json = config.xdg.configFile."tundra/themes.json";
-  };
 
   # A user unit gets a minimal PATH, and on NixOS the usual locations for these
   # tools do not exist, so the ones the applier shells out to are named here.
@@ -51,14 +47,14 @@ in {
     Unit = {
       Description = "Apply the active Tundra theme to the colour fragments";
 
-      # The catalogue is a store symlink, so watching its target is what
-      # detects a rebuild that changed the theme registry. This is the same
-      # mechanism a PathChanged= line would use, expressed so that Home Manager
-      # activation can act on it.
+      # The applier script lives in the repo; edits to it should restart the
+      # service. `applier` is a path, so Nix coerces it to a store path string
+      # with proper context — `toString` strips that context and triggers the
+      # "builtins.derivation without proper context" warning. The catalogue
+      # files use `.text` (inline content), so `.source` is null; they only
+      # change on a Nix rebuild, which already restarts services.
       X-Restart-Triggers = [
-        (toString applier)
-        catalog.sh.source
-        catalog.json.source
+        applier
       ];
     };
 
