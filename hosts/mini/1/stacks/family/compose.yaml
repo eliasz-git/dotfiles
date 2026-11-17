@@ -14,10 +14,13 @@ services:
     image: ghcr.io/netalertx/netalertx:latest
     container_name: netalertx
     # netalertx does passive LAN discovery (ARP/NBNS/mDNS) — bridge networking
-    # blocks it and the container exits 126. Host networking is required.
+    # blocks it and the container exits 126. Host networking is required so it
+    # sees the host's LAN (192.168.1.0/24) and Tailscale (100.64.0.0/10).
     network_mode: host
     environment:
       - PORT=20211
+      - TZ=America/New_York
+      - NETWORKS=192.168.1.0/24,100.64.0.0/10
     cap_add:
       - NET_ADMIN
       - NET_BIND_SERVICE
