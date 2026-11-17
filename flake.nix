@@ -6,7 +6,7 @@
     # substitutes always available via cache.flakehub.com. Avoids the
     # hours-long from-source rebuilds that happen when nixos-unstable moves
     # faster than its binary cache publishes substitutes.
-    nixpkgs.url           = "flake:https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly";
+    nixpkgs.url           = "github:NixOS/nixpkgs/nixos-unstable";
     darwin.url            = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url      = "github:nix-community/home-manager/master";
