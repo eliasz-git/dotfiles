@@ -113,6 +113,8 @@
   services.navidrome = {
     enable = true;
     openFirewall = true;
+    user = "elias";
+    group = "users";
     settings = {
       MusicFolder = "/mnt/storage/music";
       LogLevel = "info";
