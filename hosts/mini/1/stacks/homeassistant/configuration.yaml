@@ -10,3 +10,14 @@ http:
     - 100.64.0.0/10
     - 127.0.0.1
     - "::1"
+
+# Auto-discovery of LAN services (SSDP, mDNS, etc.)
+discovery:
+ssdp:
+mdns:
+
+# Enable UPnP for port forwarding / discovery where supported
+upnp:
+
+# Allows integrations to scan the LAN for devices
+network:
