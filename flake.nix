@@ -2,9 +2,11 @@
   description = "Multi-system nix configuration — Tundra Dark";
 
   inputs = {
-    # Everything tracks nixpkgs unstable now — single channel, latest
-    # packages everywhere (tailscale, neovim, ly, etc.)
-    nixpkgs.url           = "github:NixOS/nixpkgs/nixos-unstable";
+    # Determinate Systems flakehub weekly — rolling nixpkgs with binary
+    # substitutes always available via cache.flakehub.com. Avoids the
+    # hours-long from-source rebuilds that happen when nixos-unstable moves
+    # faster than its binary cache publishes substitutes.
+    nixpkgs.url           = "flake:https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly";
     darwin.url            = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url      = "github:nix-community/home-manager/master";
