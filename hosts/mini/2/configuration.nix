@@ -108,6 +108,19 @@
     openFirewall = true;
   };
 
+  # ── Navidrome — Nix-native music server (replaces manually-created systemd unit) ──
+  # Music files live on mini1's 2TB disk, exported to mini2 via NFS at /mnt/storage.
+  services.navidrome = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      MusicFolder = "/mnt/storage/music";
+      LogLevel = "info";
+      ScanSchedule = "1h";
+      LastFmEnabled = true;
+    };
+  };
+
   # Option B (Docker compose, matches your old Ubuntu stack):
   # Put your compose at /etc/stacks/media/compose.yaml and enable:
   # virtualisation.oci-containers.containers handled by compose, not Nix.
