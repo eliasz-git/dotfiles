@@ -20,7 +20,7 @@ services:
     environment:
       - PORT=20211
       - TZ=America/New_York
-      - NETWORKS=192.168.1.0/24,100.64.0.0/10
+      - NETWORKS=192.168.1.0/24,192.168.68.0/24,100.64.0.0/10
     cap_add:
       - NET_ADMIN
       - NET_BIND_SERVICE
