@@ -289,6 +289,7 @@
     3001 # uptime kuma
     8123 # home assistant docker (host mode)
     8081 # metube
+    8088 # nextcloud / cloud
     111  # rpcbind (NFS)
     2049 # nfs
     20048 # mountd (NFS)
@@ -297,24 +298,7 @@
   # ── Nix ─────────────────────────────────────────────────────────
   # nixpkgs.config.allowUnfree moved to flake.nix linuxPkgs (import nixpkgs { config.allowUnfree = true; })
   # nixpkgs.config.allowUnfree = true;
-
-  # Determinate flakehub binary cache — prebuilt substitutes so we never
-  # compile rustc/nix/openssl from source again on mini1.
-  nix.settings = {
-    extra-substituters = [ "https://cache.flakehub.com" ];
-    extra-trusted-substituters = [ "cache.flakehub.com" ];
-    extra-trusted-public-keys = [
-      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-      "cache.flakehub.com-4:Asi8qIv291s0aYLyH6IOnr5Kf6+OF14WVjkE6t3xMio="
-      "cache.flakehub.com-5:zB96CRlL7tiPtzA9/WKyPkp3A2vqxqgdgyTVNGShPDU="
-      "cache.flakehub.com-6:W4EGFwAGgBj3he7c5fNh9NkOXw0PUVaxygCVKeuvaqU="
-      "cache.flakehub.com-7:mvxJ2DZVHn/kRxlIaxYNMuDG1OvMckZu32um1TadOR8="
-      "cache.flakehub.com-8:moO+OVS0mnTjBTcOUh2kYLQEd59ExzyoW1QgQ8XAARQ="
-      "cache.flakehub.com-9:wChaSeTI6TeCuV/Sg2513ZIM9i0qJaYsF+lZCXg0J6o="
-      "cache.flakehub.com-10:2GqeNlIp6AKp4EF2MVbE1kBOp9iBSyo0UPR9KoR0o1Y="
-    ];
-  };
-
+  # Binary cache (flakehub) and store settings come from modules/system/nix-settings.nix.
 
   # ── Syncthing — vault sync (replaces iCloud on Linux) ──────────
   services.syncthing = {
@@ -486,13 +470,17 @@
   # Family stack (mini1, infra) — containers run via homelab-compose-family. These
   # tailscale serve entries make them reachable (and show "online") in the tailnet
   # services dashboard. Ports are the host ports the containers listen on.
+  services.tailscaleServe.services.adguard = { port = 3000; description = "AdGuard Home"; };
   services.tailscaleServe.services.beszel = { port = 6767; description = "Beszel monitoring"; };
   services.tailscaleServe.services."calibre-web" = { port = 8083; description = "Calibre-Web"; };
+  services.tailscaleServe.services.ha = { port = 8123; description = "Home Assistant"; };
+  services.tailscaleServe.services.mini1 = { port = 8123; description = "mini1 host (Home Assistant)"; };
   services.tailscaleServe.services.karakeep = { port = 8081; description = "Karakeep bookmarks"; };
   services.tailscaleServe.services.netalertx = { port = 20211; description = "NetAlertX LAN discovery"; };
   services.tailscaleServe.services.wger = { port = 8000; description = "wger workout tracker"; };
   services.tailscaleServe.services.passwords = { port = 8084; description = "Vaultwarden (passwords)"; };
   services.tailscaleServe.services.headscale = { port = 8080; description = "Headscale control server"; };
+  services.tailscaleServe.services.cloud = { port = 8088; description = "Nextcloud"; };
 
   # ── Hermes Agent — always-on when Mac is closed ────────────────
   # Single profile at /home/elias/.hermes (same as Mac). Copy Mac's
