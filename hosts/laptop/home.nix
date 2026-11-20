@@ -172,6 +172,9 @@
         { matches = [ { app-id = "^ghostty$"; } ]; opacity = 0.85; }
         { matches = [ { app-id = "^VSCodium$"; } ]; opacity = 0.88; }
         { matches = [ { app-id = "^zen-beta$"; } ]; opacity = 0.92; }
+        { matches = [ { app-id = "^epiphany$"; } ]; opacity = 0.92; }
+        { matches = [ { app-id = "^thunderbird$"; } ]; opacity = 0.88; }
+        { matches = [ { app-id = "^tor-browser$"; } ]; opacity = 0.92; }
         { matches = [ { app-id = "^thunar$"; } ]; opacity = 0.85; }
         { matches = [ { app-id = "^obsidian$"; } ]; opacity = 0.88; }
       ];

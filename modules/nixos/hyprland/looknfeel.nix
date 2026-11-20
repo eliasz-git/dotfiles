@@ -85,10 +85,10 @@ in
       "opacity 0.88, match:class ^obsidian$"
 
       # Workspace assignments
-      "workspace 1 silent, match:class ^(zen-beta|firefox|chromium)$"
+      "workspace 1 silent, match:class ^(zen-beta|firefox|chromium|epiphany|tor-browser)$"
       "workspace 2 silent, match:class ^(code|VSCodium|vscodium)$"
       "workspace 3 silent, match:class ^(foot|ghostty|alacritty|kitty)$"
-      "workspace 4 silent, match:class ^(discord|signal|telegram|beeper)$"
+      "workspace 4 silent, match:class ^(discord|signal|telegram|beeper|thunderbird)$"
       "workspace 5 silent, match:class ^(obsidian|thunar|libreoffice)$"
       "workspace 6 silent, match:class ^(spotify|mpv|iina|vlc)$"
       "workspace 7 silent, match:class ^(steam|heroic|bottles|lutris|prismlauncher)$"
