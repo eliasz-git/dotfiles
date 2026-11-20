@@ -46,7 +46,7 @@ let
           RemainAfterExit = true;
           ExecStartPre = mountChecks ++ secretCheck;
           ExecStart = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} config";
-          ExecStartPost = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} up -d";
+          ExecStartPost = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} up -d --pull=always";
           ExecStop = "${pkgs.docker-compose}/bin/docker-compose ${envArg} -f ${composeFile} down";
           TimeoutStartSec = "15min";
           TimeoutStopSec = "5min";

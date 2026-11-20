@@ -29,7 +29,7 @@
     auto-optimise-store = true
     # Cache flake input tarballs for 30 days so `nix flake update` doesn't
     # re-download (and re-rate-limit against) GitHub on every rebuild.
-    tarball-ttl = "30 days"
+    tarball-ttl = "30d"
   '';
 
   environment.systemPackages = with pkgs; let extraPrinting = if stdenv.hostPlatform.isLinux then [ gutenprint ] else []; in [
