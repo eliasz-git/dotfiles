@@ -39,6 +39,7 @@
     # Zen comes from the zen-browser flake input (not in nixpkgs); binary is `zen-beta`.
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
+    epiphany
     vscodium signal-desktop
     bitwarden-desktop joplin-desktop libreoffice
     mpd rmpc mpdscribble mpc slskd
