@@ -40,6 +40,8 @@
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
     epiphany
+    thunderbird
+    tor-browser
     vscodium signal-desktop
     bitwarden-desktop joplin-desktop libreoffice
     mpd rmpc mpdscribble mpc slskd

@@ -316,11 +316,19 @@ in {
     zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     firefox
     epiphany
+    thunderbird
+    tor-browser
     # Matrix client (element-desktop) and Discord (unfree, allowed via
     # config.allowUnfree in flake.nix).
     element-desktop
     discord
     signal-desktop
+    bitwarden-desktop
+    calibre
+    gramps
+    libreoffice
+    docker
+    slskd
     brightnessctl
     heroic
     keepassxc
