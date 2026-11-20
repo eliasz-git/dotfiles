@@ -103,6 +103,9 @@
       "localsend" "android-platform-tools"
       # Declared 2026-10-26 — installed but undeclared, would be removed by zap cleanup
       "aerial"
+      # Re-added 2026-11-20 — zapped by `cleanup = "zap"` because undeclared; declared
+      # so they survive future rebuilds.
+      "hex" "search"
     ];
   };
 
