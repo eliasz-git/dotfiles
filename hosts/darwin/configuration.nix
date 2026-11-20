@@ -52,6 +52,7 @@
       { name = "anomalyco/tap"; trusted = true; }
       { name = "steipete/tap"; trusted = true; }
       { name = "nikitabobko/tap"; trusted = true; }
+      { name = "driceroland/tap"; trusted = true; }
     ];
     brews = [
       # macOS-specific tools from custom taps (no nixpkgs equivalent)
